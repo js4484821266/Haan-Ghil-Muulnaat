@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Haan Ghil Muulnaat</title>
+  <meta name="description" content="Archived project overview for an on-device portrait privacy testing app." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a class="brand" href="#top">Haan Ghil Muulnaat</a>
+      <div class="header-actions">
+        <label class="lang-label" for="languageSelect" data-i18n="ui.languageLabel"></label>
+        <select id="languageSelect" class="lang-select" data-i18n-aria-label="ui.languageSelectAria" aria-label="">
+          <option value="en" data-i18n="ui.languageOptions.en">English</option>
+          <option value="ko" data-i18n="ui.languageOptions.ko">Korean</option>
+        </select>
+      </div>
+    </div>
+    <nav class="top-nav container" aria-label="Primary navigation">
+      <a href="#overview" data-i18n="nav.overview"></a>
+      <a href="#what-built" data-i18n="nav.whatBuilt"></a>
+      <a href="#evaluation" data-i18n="nav.evaluation"></a>
+      <a href="#results" data-i18n="nav.results"></a>
+      <a href="#help" data-i18n="nav.help"></a>
+      <a href="#build-process" data-i18n="nav.buildProcess"></a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero" id="overview">
+      <p class="eyebrow" data-i18n="hero.eyebrow"></p>
+      <h1 data-i18n="hero.title"></h1>
+      <p class="hero-sub" data-i18n="hero.subtitle"></p>
+      <p class="hero-note" data-i18n="hero.honesty"></p>
+      <div class="status-callout" data-i18n="hero.callout"></div>
+    </section>
+
+    <section class="section" id="what-built">
+      <h2 data-i18n="whatBuilt.title"></h2>
+      <p class="section-intro" data-i18n="whatBuilt.intro"></p>
+      <ul id="whatBuiltList" class="bullet-list"></ul>
+    </section>
+
+    <section class="section" id="approach">
+      <h2 data-i18n="approach.title"></h2>
+      <div class="grid-2">
+        <article class="card">
+          <h3 data-i18n="approach.offlineTitle"></h3>
+          <ul id="offlineList" class="bullet-list compact"></ul>
+        </article>
+        <article class="card">
+          <h3 data-i18n="approach.pipelineTitle"></h3>
+          <ol id="pipelineList" class="bullet-list compact"></ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="evaluation">
+      <h2 data-i18n="evaluation.title"></h2>
+      <p class="section-intro" data-i18n="evaluation.intro"></p>
+      <div class="grid-2 status-grid">
+        <article class="status-card held">
+          <h3 data-i18n="evaluation.statusHeld"></h3>
+          <p data-i18n="evaluation.held"></p>
+        </article>
+        <article class="status-card broken">
+          <h3 data-i18n="evaluation.statusBroken"></h3>
+          <p data-i18n="evaluation.broken"></p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="results">
+      <h2 data-i18n="results.title"></h2>
+      <p class="section-intro" data-i18n="results.intro"></p>
+      <div class="table-wrap">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th data-i18n="results.headers.area"></th>
+              <th data-i18n="results.headers.current"></th>
+              <th data-i18n="results.headers.note"></th>
+            </tr>
+          </thead>
+          <tbody id="resultsRows"></tbody>
+        </table>
+      </div>
+      <p class="small-note" data-i18n="results.note"></p>
+    </section>
+
+    <section class="section" id="help">
+      <h2 data-i18n="help.title"></h2>
+      <p class="section-intro" data-i18n="help.intro"></p>
+      <ol id="helpSteps" class="bullet-list"></ol>
+    </section>
+
+    <section class="section" id="build-process">
+      <h2 data-i18n="buildProcess.title"></h2>
+      <p data-i18n="buildProcess.body"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer container">
+    <p data-i18n="footer.line"></p>
+  </footer>
+
+  <script src="translations.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

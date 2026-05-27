@@ -1,0 +1,128 @@
+<resources>
+    <string name="app_name">Haan Ghil Muulnaat</string>
+    <string name="header_title">Haan Ghil Muulnaat Research Console</string>
+    <string name="header_subtitle">Offline adversarial protection and restoration robustness diagnostics</string>
+    <string name="help_button_label">?</string>
+
+    <string name="share_ready_to_save_label">Haan Ghil Muulnaat: Load image</string>
+    <string name="share_auto_save_label">Haan Ghil Muulnaat: Find optimal and save</string>
+    <string name="pick_from_gallery">Pick from Gallery</string>
+    <string name="noise_strength">Perturbation strength</string>
+    <string name="noise_strength_value">Perturbation strength: %1$d</string>
+    <string name="apply_noise">Apply Protection</string>
+    <string name="run_comparison_test">Run Defense Evaluation</string>
+    <string name="save_protected_image">Save Protected Image</string>
+    <string name="find_minimum_strength">Find Minimum Strength</string>
+    <string name="reset_to_optimal_strength">Use Optimal Strength</string>
+    <string name="auto_recovery_toggle">Auto-run defense evaluation on Apply/Optimal</string>
+
+    <string name="result_placeholder">Select an image and run processing.</string>
+    <string name="result_no_image_selected">No image selected.</string>
+    <string name="result_load_failed">Failed to load image.</string>
+    <string name="result_image_loaded_scanning">Image loaded. Scanning for optimal strength via defense evaluation...</string>
+    <string name="result_scanning_optimal">Scanning optimal strength...</string>
+    <string name="result_scan_none">Scan complete: no HELD point in defense evaluation across 0-100. Increase strength and try again.</string>
+    <string name="result_scan_found">Scan complete: optimal strength is %1$d. Apply protection to continue.</string>
+    <string name="result_auto_applying_optimal">Scan complete: optimal strength %1$d found. Applying protection and running defense evaluation...</string>
+    <string name="result_applying_protection">Applying protection...</string>
+    <string name="result_protection_applied">Protection applied at strength %1$d. Run defense evaluation.</string>
+    <string name="result_running_recovery">Running defense evaluation...</string>
+    <string name="result_recovery_complete">Defense evaluation complete. Status: %1$s</string>
+    <string name="result_auto_recovery_complete">Optimal flow complete at strength %1$d. Defense status: %2$s</string>
+    <string name="result_reset_optimal">Reset strength to optimal value %1$d.</string>
+    <string name="result_reset_optimal_auto">Reset strength to %1$d. Applying protection and running defense evaluation...</string>
+    <string name="result_save_failed_entry">Save failed: could not create media entry.</string>
+    <string name="result_saved_image">Saved protected image: %1$s</string>
+    <string name="result_save_failed_write">Save failed: could not write image data.</string>
+    <string name="result_save_error">Save error: %1$s</string>
+    <string name="result_saving_protected_image">Saving protected image...</string>
+    <string name="result_batch_start">Batch auto-save started for %1$d images.</string>
+    <string name="result_batch_item_processing">Processing image %1$d of %2$d...</string>
+    <string name="result_batch_item_load_failed">Skipped image %1$d of %2$d: failed to load.</string>
+    <string name="result_batch_item_scan_failed">Skipped image %1$d of %2$d: no optimal strength found.</string>
+    <string name="result_batch_item_saved">Saved image %1$d of %2$d: %3$s</string>
+    <string name="result_batch_item_save_failed">Skipped image %1$d of %2$d: save failed.</string>
+    <string name="result_batch_complete">Batch complete: %1$d saved, %2$d skipped.</string>
+    <string name="error_unknown">unknown</string>
+
+    <string name="toast_storage_permission_denied">Storage permission denied</string>
+    <string name="toast_pick_image_first">Pick an image first</string>
+    <string name="toast_apply_protection_first">Apply protection first</string>
+    <string name="toast_no_optimal_strength">No optimal strength has been found yet</string>
+    <string name="toast_saved_to_gallery">Saved to Gallery</string>
+    <string name="toast_autosave_permission_denied">Auto-save permissions were denied</string>
+
+    <string name="notification_autosave_channel_name">Protection jobs</string>
+    <string name="notification_autosave_channel_description">Progress for background Haan Ghil Muulnaat protection jobs</string>
+    <string name="notification_autosave_running_title">Haan Ghil Muulnaat auto-save</string>
+    <string name="notification_autosave_starting">Starting background protection for %1$d images.</string>
+    <string name="notification_autosave_queued">Queued images for background protection: %1$d total.</string>
+    <string name="notification_autosave_loading">Loading image %1$d of %2$d...</string>
+    <string name="notification_autosave_searching">Finding optimal strength for image %1$d of %2$d: probe %3$d...</string>
+    <string name="notification_autosave_saving">Saving image %1$d of %2$d at strength %3$d...</string>
+    <string name="notification_autosave_load_failed">Skipped image %1$d of %2$d: failed to load.</string>
+    <string name="notification_autosave_no_strength">Skipped image %1$d of %2$d: no optimal strength found.</string>
+    <string name="notification_autosave_item_saved">Saved image %1$d of %2$d.</string>
+    <string name="notification_autosave_item_failed">Skipped image %1$d of %2$d: save failed.</string>
+    <string name="notification_autosave_cancel_action">Cancel</string>
+    <string name="notification_autosave_canceling_title">Canceling Haan Ghil Muulnaat auto-save</string>
+    <string name="notification_autosave_canceling_body">Stopping after the current checkpoint...</string>
+    <string name="notification_autosave_canceled_title">Haan Ghil Muulnaat auto-save canceled</string>
+    <string name="notification_autosave_canceled_body">Canceled: %1$d saved, %2$d skipped.</string>
+    <string name="notification_autosave_complete_title">Haan Ghil Muulnaat auto-save complete</string>
+    <string name="notification_autosave_complete_body">Complete: %1$d saved, %2$d skipped.</string>
+
+    <string name="original_image">Original image</string>
+    <string name="protected_image">Protected image</string>
+    <string name="recovered_image">Recovered image</string>
+    <string name="original_panel_label">Original</string>
+    <string name="protected_panel_label">Protected</string>
+    <string name="recovered_panel_label">After recovery attempt</string>
+
+    <string name="protection_status_title">Protection Status</string>
+    <string name="status_caption">PASS: baseline resistant, HELD: resistant after restoration attack, BROKEN: vulnerable</string>
+    <string name="status_na">N/A</string>
+    <string name="status_pass">PASS</string>
+    <string name="status_held">HELD</string>
+    <string name="status_broken">BROKEN</string>
+
+    <string name="model_probe_metrics_title">Model Evaluation Metrics</string>
+    <string name="metric_face_count_placeholder">Face count: -</string>
+    <string name="metric_label_shift_placeholder">Label shift: -</string>
+    <string name="metric_score_placeholder">Score: -</string>
+    <string name="metric_face_count_help">Face count compares original vs tested image to show detector suppression.</string>
+    <string name="metric_label_shift_help">Label shift is semantic drift in image labeling (higher means stronger perturbation effect).</string>
+    <string name="metric_score_help">Score blends face suppression and label shift to evaluate anti-detection robustness.</string>
+
+    <string name="image_quality_metrics_title">Image Quality Metrics</string>
+    <string name="metric_psnr_placeholder">PSNR: -</string>
+    <string name="metric_delta_placeholder">Delta: -</string>
+    <string name="metric_edge_delta_placeholder">Edge delta: -</string>
+    <string name="metric_psnr_help" formatted="false">PSNR tracks visual fidelity (8 dB=0%, 50 dB=100%).</string>
+    <string name="metric_delta_help">Delta is mean absolute per-channel pixel difference from original.</string>
+    <string name="metric_edge_delta_help">Edge delta measures structure change in local edge energy.</string>
+
+    <string name="metric_face_count_format">Face count: %1$d -&gt; %2$d</string>
+    <string name="metric_label_shift_format">Label shift: %1$.3f</string>
+    <string name="metric_score_format">Score: %1$.3f</string>
+    <string name="metric_psnr_format">PSNR: %1$.2f dB (%2$.1f%%)</string>
+    <string name="metric_delta_format">Delta: %1$.2f</string>
+    <string name="metric_edge_delta_format">Edge delta: %1$.3f</string>
+
+    <string name="perturbation_summary_placeholder">Perturbation magnitude: -</string>
+    <string name="perturbation_magnitude_format">Perturbation magnitude: %1$.2f / 255 (%2$.2f%%)</string>
+    <string name="simulate_ai_attack">Run Defense Evaluation</string>
+    <string name="recommended_strength_default">Optimal Strength: run scan after selecting an image.</string>
+    <string name="recommended_strength_none">Optimal Strength: no HELD point in defense evaluation across 0-100. Increase strength and retry.</string>
+    <string name="recommended_strength_found">Optimal Strength: %1$d</string>
+    <string name="search_progress_idle">Binary search status appears here after selecting an image.</string>
+    <string name="search_progress_step">Step %1$d - range %2$d..%4$d, probe %3$d -&gt; %5$s</string>
+    <string name="technical_details_hidden">Technical Details: Hidden</string>
+    <string name="technical_details_shown">Technical Details: Shown</string>
+
+    <string name="help_dialog_title">Research workflow</string>
+    <string name="help_dialog_message">1. Pick image -&gt; auto scan suggests optimal strength from defense evaluation outcomes.\n2. Apply Protection to generate protected image.\n3. Run Defense Evaluation for post-attack robustness.\n\nStatus semantics:\nPASS: model is still disrupted before restoration attack.\nHELD: resistance remains after defense evaluation.\nBROKEN: detector recovered enough signal; increase strength.</string>
+    <string name="help_dialog_positive">I understand</string>
+
+</resources>
+

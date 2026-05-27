@@ -1,0 +1,104 @@
+<resources>
+    <string name="app_name">Haan Ghil Muulnaat</string>
+    <string name="header_title">Console de recherche Haan Ghil Muulnaat</string>
+    <string name="header_subtitle">Diagnostic hors ligne de protection adversariale et de robustesse après restauration</string>
+    <string name="help_button_label">?</string>
+
+    <string name="pick_from_gallery">Choisir depuis la galerie</string>
+    <string name="noise_strength">Intensité de la perturbation</string>
+    <string name="noise_strength_value">Intensité de la perturbation : %1$d</string>
+    <string name="apply_noise">Appliquer la protection</string>
+    <string name="run_comparison_test">Exécuter l’évaluation de défense</string>
+    <string name="save_protected_image">Enregistrer une image protégée</string>
+    <string name="find_minimum_strength">Trouver l’intensité minimale</string>
+    <string name="reset_to_optimal_strength">Utiliser l’intensité optimale</string>
+    <string name="auto_recovery_toggle">Lancer automatiquement l’évaluation de défense après Appliquer/Optimal</string>
+
+    <string name="result_placeholder">Sélectionnez une image puis lancez le traitement.</string>
+    <string name="result_no_image_selected">Aucune image sélectionnée.</string>
+    <string name="result_load_failed">Échec du chargement de l’image.</string>
+    <string name="result_image_loaded_scanning">Image chargée. Recherche de l’intensité optimale via évaluation de défense...</string>
+    <string name="result_scanning_optimal">Recherche de l’intensité optimale...</string>
+    <string name="result_scan_none">Recherche terminée : aucun point HELD trouvé en évaluation de défense entre 0 et 100. Augmentez l’intensité et réessayez.</string>
+    <string name="result_scan_found">Recherche terminée : intensité optimale %1$d. Appliquez la protection pour continuer.</string>
+    <string name="result_auto_applying_optimal">Recherche terminée : intensité optimale %1$d trouvée. Application de la protection et évaluation de défense automatiques...</string>
+    <string name="result_applying_protection">Application de la protection...</string>
+    <string name="result_protection_applied">Protection appliquée avec intensité %1$d. Lancez l’évaluation de défense.</string>
+    <string name="result_running_recovery">Exécution de l’évaluation de défense...</string>
+    <string name="result_recovery_complete">Évaluation de défense terminée. Statut : %1$s</string>
+    <string name="result_auto_recovery_complete">Flux optimal terminé à l’intensité %1$d. Statut de défense : %2$s</string>
+    <string name="result_reset_optimal">Intensité réinitialisée à la valeur optimale %1$d.</string>
+    <string name="result_reset_optimal_auto">Intensité réinitialisée à %1$d. Application de la protection et évaluation de défense en cours...</string>
+    <string name="result_save_failed_entry">Échec de l’enregistrement : impossible de créer une entrée média.</string>
+    <string name="result_saved_image">Image protégée enregistrée : %1$s</string>
+    <string name="result_save_failed_write">Échec de l’enregistrement : impossible d’écrire les données image.</string>
+    <string name="result_save_error">Erreur d’enregistrement : %1$s</string>
+    <string name="error_unknown">inconnu</string>
+
+    <string name="toast_storage_permission_denied">Autorisation de stockage refusée</string>
+    <string name="toast_pick_image_first">Sélectionnez d’abord une image</string>
+    <string name="toast_apply_protection_first">Appliquez d’abord la protection</string>
+    <string name="toast_no_optimal_strength">Aucune intensité optimale trouvée pour l’instant</string>
+    <string name="toast_saved_to_gallery">Enregistré dans la galerie</string>
+
+    <string name="original_image">Image originale</string>
+    <string name="protected_image">Image protégée</string>
+    <string name="recovered_image">Image après récupération</string>
+    <string name="original_panel_label">Original</string>
+    <string name="protected_panel_label">Protégée</string>
+    <string name="recovered_panel_label">Après tentative de récupération</string>
+
+    <string name="protection_status_title">Statut de protection</string>
+    <string name="status_caption">PASS : résistance de base, HELD : résistance maintenue après attaque de restauration, BROKEN : vulnérable</string>
+    <string name="status_na">N/A</string>
+    <string name="status_pass">PASS</string>
+    <string name="status_held">HELD</string>
+    <string name="status_broken">BROKEN</string>
+
+    <string name="model_probe_metrics_title">Métriques d\'évaluation du modèle</string>
+    <string name="metric_face_count_placeholder">Nombre de visages : -</string>
+    <string name="metric_label_shift_placeholder">Dérive des labels : -</string>
+    <string name="metric_score_placeholder">Score : -</string>
+    <string name="metric_face_count_help">Le nombre de visages compare l’original et l’image testée pour montrer la suppression du détecteur.</string>
+    <string name="metric_label_shift_help">La dérive des labels représente la dérive sémantique de l’étiquetage (plus élevée = perturbation plus forte).</string>
+    <string name="metric_score_help">Le score combine suppression du visage et dérive des labels pour évaluer la robustesse anti-détection.</string>
+
+    <string name="image_quality_metrics_title">Métriques de qualité image</string>
+    <string name="metric_psnr_placeholder">PSNR : -</string>
+    <string name="metric_delta_placeholder">Delta : -</string>
+    <string name="metric_edge_delta_placeholder">Delta contour : -</string>
+    <string name="metric_psnr_help" formatted="false">Le PSNR mesure la fidélité visuelle relative à l’original (8 dB=0%, 50 dB=100%).</string>
+    <string name="metric_delta_help">Le Delta est la différence moyenne absolue par canal de pixel relative à l’original.</string>
+    <string name="metric_edge_delta_help">Le delta contour mesure le changement structurel de l’énergie de contour locale.</string>
+
+    <string name="metric_face_count_format">Nombre de visages : %1$d -&gt; %2$d</string>
+    <string name="metric_label_shift_format">Dérive des labels : %1$.3f</string>
+    <string name="metric_score_format">Score : %1$.3f</string>
+    <string name="metric_psnr_format">PSNR : %1$.2f dB (%2$.1f%%)</string>
+    <string name="metric_delta_format">Delta : %1$.2f</string>
+    <string name="metric_edge_delta_format">Delta contour : %1$.3f</string>
+
+    <string name="perturbation_summary_placeholder">Amplitude de perturbation : -</string>
+    <string name="perturbation_magnitude_format">Amplitude de perturbation : %1$.2f / 255 (%2$.2f%%)</string>
+    <string name="simulate_ai_attack">Exécuter l’évaluation de défense</string>
+    <string name="recommended_strength_default">Intensité optimale : lancez une recherche après avoir sélectionné une image.</string>
+    <string name="recommended_strength_none">Intensité optimale : aucun point HELD en évaluation de défense entre 0 et 100. Augmentez l’intensité et réessayez.</string>
+    <string name="recommended_strength_found">Intensité optimale : %1$d</string>
+    <string name="search_progress_idle">L’état de la recherche binaire s’affiche ici après la sélection d’une image.</string>
+    <string name="search_progress_step">Étape %1$d - plage %2$d..%4$d, test %3$d -&gt; %5$s</string>
+    <string name="technical_details_hidden">Détails techniques : masqués</string>
+    <string name="technical_details_shown">Détails techniques : affichés</string>
+
+    <string name="help_dialog_title">Flux de travail de recherche</string>
+    <string name="help_dialog_message">1. Choisissez une image -&gt; la recherche automatique propose l’intensité optimale selon les résultats d’évaluation de défense.
+2. Appliquez la protection pour générer l’image protégée.
+3. Exécutez l’évaluation de défense pour vérifier la robustesse post-attaque.
+
+Signification des statuts :
+PASS : le modèle reste perturbé avant l’attaque de restauration.
+HELD : la résistance reste maintenue après l’évaluation de défense.
+BROKEN : le détecteur récupère suffisamment de signal ; augmentez l’intensité.</string>
+    <string name="help_dialog_positive">Compris</string>
+
+</resources>
+
