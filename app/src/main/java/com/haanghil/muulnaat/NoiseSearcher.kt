@@ -3,6 +3,8 @@ package com.haanghil.muulnaat
 import android.graphics.Bitmap
 
 object NoiseSearcher {
+    private val DEFAULT_CANDIDATE_STRENGTHS = (0..90 step 10).toList()
+
     data class SearchStep(
         val iteration: Int,
         val low: Int,
@@ -12,9 +14,9 @@ object NoiseSearcher {
     )
 
     /**
-     * Binary-searches the minimum noise strength in [lo, hi] (inclusive) for which
-     * [test] returns true when protection holds at that strength.
-     * Returns null if no strength in the range achieves a passing result.
+     * Binary-searches the default candidate strengths in [lo, hi] (inclusive) for
+     * the minimum value where [test] returns true.
+     * Returns null if no candidate in the range achieves a passing result.
      */
     fun findMinimumStrength(
         lo: Int = 0,
@@ -24,28 +26,31 @@ object NoiseSearcher {
         shouldCancel: () -> Boolean = { false },
     ): Int? {
         if (shouldCancel()) return null
-        if (!test(hi)) return null
+        val candidates = DEFAULT_CANDIDATE_STRENGTHS.filter { it in lo..hi }
+        if (candidates.isEmpty()) return null
+        if (!test(candidates.last())) return null
 
-        var low = lo
-        var high = hi
+        var low = 0
+        var high = candidates.lastIndex
         var result: Int? = null
         var iteration = 1
 
         while (low <= high) {
             if (shouldCancel()) return null
             val mid = low + (high - low) / 2
-            val passed = test(mid)
+            val strength = candidates[mid]
+            val passed = test(strength)
             onStep?.invoke(
                 SearchStep(
                     iteration = iteration,
-                    low = low,
-                    mid = mid,
-                    high = high,
+                    low = candidates[low],
+                    mid = strength,
+                    high = candidates[high],
                     passed = passed,
                 )
             )
             if (passed) {
-                result = mid
+                result = strength
                 high = mid - 1
             } else {
                 low = mid + 1

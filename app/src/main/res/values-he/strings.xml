@@ -19,7 +19,7 @@
     <string name="result_load_failed">טעינת התמונה נכשלה.</string>
     <string name="result_image_loaded_scanning">התמונה נטענה. מתבצעת סריקה לעוצמה מיטבית לפי הערכת הגנה...</string>
     <string name="result_scanning_optimal">סריקת עוצמה מיטבית...</string>
-    <string name="result_scan_none">הסריקה הושלמה: לא נמצאה נקודת HELD בהערכת הגנה בטווח 0-100. הגדילו את העוצמה ונסו שוב.</string>
+    <string name="result_scan_none">הסריקה הושלמה: לא נמצאה נקודת HELD בהערכת הגנה בין המועמדים 0, 10, ..., 90. הגדילו את העוצמה ונסו שוב.</string>
     <string name="result_scan_found">הסריקה הושלמה: העוצמה המיטבית היא %1$d. כדי להמשיך, החילו הגנה.</string>
     <string name="result_auto_applying_optimal">הסריקה הושלמה: נמצאה עוצמה מיטבית %1$d. מתבצעת החלת הגנה והרצת הערכת הגנה אוטומטית...</string>
     <string name="result_applying_protection">החלת הגנה...</string>
@@ -82,7 +82,7 @@
     <string name="perturbation_magnitude_format">עוצמת הפרעה: %1$.2f / 255 (%2$.2f%%)</string>
     <string name="simulate_ai_attack">הרצת הערכת הגנה</string>
     <string name="recommended_strength_default">עוצמה מיטבית: הריצו סריקה לאחר בחירת תמונה.</string>
-    <string name="recommended_strength_none">עוצמה מיטבית: לא נמצאה נקודת HELD בהערכת הגנה בטווח 0-100. הגדילו את העוצמה ונסו שוב.</string>
+    <string name="recommended_strength_none">עוצמה מיטבית: לא נמצאה נקודת HELD בהערכת הגנה בין המועמדים 0, 10, ..., 90. הגדילו את העוצמה ונסו שוב.</string>
     <string name="recommended_strength_found">עוצמה מיטבית: %1$d</string>
     <string name="search_progress_idle">מצב החיפוש הבינארי יוצג כאן לאחר בחירת תמונה.</string>
     <string name="search_progress_step">שלב %1$d - טווח %2$d..%4$d, בדיקה %3$d -&gt; %5$s</string>

@@ -19,7 +19,7 @@
     <string name="result_load_failed">Не удалось загрузить изображение.</string>
     <string name="result_image_loaded_scanning">Изображение загружено. Идёт поиск оптимальной силы по оценке защиты...</string>
     <string name="result_scanning_optimal">Поиск оптимальной силы...</string>
-    <string name="result_scan_none">Поиск завершён: точка HELD в оценке защиты в диапазоне 0-100 не найдена. Увеличьте силу и попробуйте снова.</string>
+    <string name="result_scan_none">Поиск завершён: точка HELD в оценке защиты среди кандидатов 0, 10, ..., 90 не найдена. Увеличьте силу и попробуйте снова.</string>
     <string name="result_scan_found">Поиск завершён: оптимальная сила %1$d. Примените защиту, чтобы продолжить.</string>
     <string name="result_auto_applying_optimal">Поиск завершён: найдена оптимальная сила %1$d. Автоматически применяется защита и запускается оценка защиты...</string>
     <string name="result_applying_protection">Применение защиты...</string>
@@ -82,7 +82,7 @@
     <string name="perturbation_magnitude_format">Амплитуда искажения: %1$.2f / 255 (%2$.2f%%)</string>
     <string name="simulate_ai_attack">Запустить оценку защиты</string>
     <string name="recommended_strength_default">Оптимальная сила: запустите поиск после выбора изображения.</string>
-    <string name="recommended_strength_none">Оптимальная сила: точка HELD в оценке защиты в диапазоне 0-100 не найдена. Увеличьте силу и повторите попытку.</string>
+    <string name="recommended_strength_none">Оптимальная сила: точка HELD в оценке защиты среди кандидатов 0, 10, ..., 90 не найдена. Увеличьте силу и повторите попытку.</string>
     <string name="recommended_strength_found">Оптимальная сила: %1$d</string>
     <string name="search_progress_idle">Статус бинарного поиска появится здесь после выбора изображения.</string>
     <string name="search_progress_step">Шаг %1$d - диапазон %2$d..%4$d, проверка %3$d -&gt; %5$s</string>

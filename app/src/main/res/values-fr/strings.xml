@@ -19,7 +19,7 @@
     <string name="result_load_failed">Échec du chargement de l’image.</string>
     <string name="result_image_loaded_scanning">Image chargée. Recherche de l’intensité optimale via évaluation de défense...</string>
     <string name="result_scanning_optimal">Recherche de l’intensité optimale...</string>
-    <string name="result_scan_none">Recherche terminée : aucun point HELD trouvé en évaluation de défense entre 0 et 100. Augmentez l’intensité et réessayez.</string>
+    <string name="result_scan_none">Recherche terminée : aucun point HELD trouvé en évaluation de défense parmi 0, 10, ..., 90. Augmentez l’intensité et réessayez.</string>
     <string name="result_scan_found">Recherche terminée : intensité optimale %1$d. Appliquez la protection pour continuer.</string>
     <string name="result_auto_applying_optimal">Recherche terminée : intensité optimale %1$d trouvée. Application de la protection et évaluation de défense automatiques...</string>
     <string name="result_applying_protection">Application de la protection...</string>
@@ -82,7 +82,7 @@
     <string name="perturbation_magnitude_format">Amplitude de perturbation : %1$.2f / 255 (%2$.2f%%)</string>
     <string name="simulate_ai_attack">Exécuter l’évaluation de défense</string>
     <string name="recommended_strength_default">Intensité optimale : lancez une recherche après avoir sélectionné une image.</string>
-    <string name="recommended_strength_none">Intensité optimale : aucun point HELD en évaluation de défense entre 0 et 100. Augmentez l’intensité et réessayez.</string>
+    <string name="recommended_strength_none">Intensité optimale : aucun point HELD en évaluation de défense parmi 0, 10, ..., 90. Augmentez l’intensité et réessayez.</string>
     <string name="recommended_strength_found">Intensité optimale : %1$d</string>
     <string name="search_progress_idle">L’état de la recherche binaire s’affiche ici après la sélection d’une image.</string>
     <string name="search_progress_step">Étape %1$d - plage %2$d..%4$d, test %3$d -&gt; %5$s</string>
