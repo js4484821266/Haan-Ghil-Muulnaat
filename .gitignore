@@ -78,10 +78,13 @@ lint/tmp/
 *.hprof
 
 # Project-local artifacts and datasets
-ipynbbbbb/
+ipynbbbbb/*
+!ipynbbbbb/face_detection_test_realtime.py
 .vscode/
 .venv/
 test-set/
-original-set/
-test-result.csv
-optimal-strength.csv
+original-set/*/*
+#!original-set/faces/*.csv
+#!original-set/faces/*.txt
+face_detection_result_with_NA.csv
+face_detection_result_without_NA.csv
