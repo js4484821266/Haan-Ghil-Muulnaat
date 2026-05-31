@@ -55,7 +55,7 @@
     <string name="status_held">HELD</string>
     <string name="status_broken">BROKEN</string>
 
-    <string name="model_probe_metrics_title">Метрики оценки модели</string>
+    <string name="model_metrics_title">Метрики оценки модели</string>
     <string name="metric_face_count_placeholder">Количество лиц: -</string>
     <string name="metric_label_shift_placeholder">Сдвиг меток: -</string>
     <string name="metric_score_placeholder">Оценка: -</string>

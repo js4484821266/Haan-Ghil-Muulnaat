@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Haan Ghil Muulnaat</string>
-    <string name="header_title">Haan Ghil Muulnaat Research Console</string>
-    <string name="header_subtitle">Offline adversarial protection and restoration robustness diagnostics</string>
+    <string name="header_title">Haan Ghil Muulnaat</string>
+    <string name="header_subtitle">Local image perturbation and recovery check</string>
     <string name="help_button_label">?</string>
 
     <string name="share_ready_to_save_label">Haan Ghil Muulnaat: Load image</string>
@@ -58,7 +58,7 @@
     <string name="notification_autosave_starting">Starting background protection for %1$d images.</string>
     <string name="notification_autosave_queued">Queued images for background protection: %1$d total.</string>
     <string name="notification_autosave_loading">Loading image %1$d of %2$d...</string>
-    <string name="notification_autosave_searching">Finding optimal strength for image %1$d of %2$d: probe %3$d...</string>
+    <string name="notification_autosave_searching">Finding optimal strength for image %1$d of %2$d: checking %3$d...</string>
     <string name="notification_autosave_saving">Saving image %1$d of %2$d at strength %3$d...</string>
     <string name="notification_autosave_load_failed">Skipped image %1$d of %2$d: failed to load.</string>
     <string name="notification_autosave_no_strength">Skipped image %1$d of %2$d: no optimal strength found.</string>
@@ -86,7 +86,7 @@
     <string name="status_held">HELD</string>
     <string name="status_broken">BROKEN</string>
 
-    <string name="model_probe_metrics_title">Model Evaluation Metrics</string>
+    <string name="model_metrics_title">Model Evaluation Metrics</string>
     <string name="metric_face_count_placeholder">Face count: -</string>
     <string name="metric_label_shift_placeholder">Label shift: -</string>
     <string name="metric_score_placeholder">Score: -</string>
@@ -116,11 +116,11 @@
     <string name="recommended_strength_none">Optimal Strength: no HELD point in defense evaluation across 0, 10, ..., 90. Increase strength and retry.</string>
     <string name="recommended_strength_found">Optimal Strength: %1$d</string>
     <string name="search_progress_idle">Binary search status appears here after selecting an image.</string>
-    <string name="search_progress_step">Step %1$d - range %2$d..%4$d, probe %3$d -&gt; %5$s</string>
+    <string name="search_progress_step">Step %1$d - range %2$d..%4$d, check %3$d -&gt; %5$s</string>
     <string name="technical_details_hidden">Technical Details: Hidden</string>
     <string name="technical_details_shown">Technical Details: Shown</string>
 
-    <string name="help_dialog_title">Research workflow</string>
+    <string name="help_dialog_title">How to use</string>
     <string name="help_dialog_message">1. Pick image -&gt; auto scan suggests optimal strength from defense evaluation outcomes.\n2. Apply Protection to generate protected image.\n3. Run Defense Evaluation for post-attack robustness.\n\nStatus semantics:\nPASS: model is still disrupted before restoration attack.\nHELD: resistance remains after defense evaluation.\nBROKEN: detector recovered enough signal; increase strength.</string>
     <string name="help_dialog_positive">I understand</string>
 
