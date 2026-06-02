@@ -1,14 +1,15 @@
 <resources>
-    <color name="navy_black">#02040A</color>
-    <color name="navy_surface">#070D18</color>
-    <color name="navy_surface_high">#0D1828</color>
-    <color name="navy_outline">#26364D</color>
-    <color name="navy_primary">#14243A</color>
-    <color name="navy_primary_container">#0B1728</color>
-    <color name="navy_secondary">#20334F</color>
-    <color name="navy_secondary_container">#101E32</color>
-    <color name="navy_text">#F1F5FF</color>
-    <color name="navy_text_muted">#A9B8D0</color>
+    <color name="navy_black">#000000</color>
+    <color name="navy_surface">#030812</color>
+    <color name="navy_surface_high">#071525</color>
+    <color name="navy_outline">#34577F</color>
+    <color name="navy_primary">#1A3D66</color>
+    <color name="navy_primary_container">#102A47</color>
+    <color name="navy_secondary">#234A78</color>
+    <color name="navy_secondary_container">#132B49</color>
+    <color name="navy_button">#1A3D66</color>
+    <color name="navy_text">#F7FAFF</color>
+    <color name="navy_text_muted">#D6E2F4</color>
     <color name="navy_error">#FFB4AB</color>
     <color name="navy_error_container">#551D17</color>
 </resources>

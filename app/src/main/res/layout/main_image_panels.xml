@@ -23,7 +23,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/original_panel_label"
-                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                android:textColor="@color/navy_text" />
 
             <ImageView
                 android:id="@+id/originalImage"
@@ -46,7 +47,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/protected_panel_label"
-                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                android:textColor="@color/navy_text" />
 
             <ImageView
                 android:id="@+id/noisyImage"
@@ -69,7 +71,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/recovered_panel_label"
-                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                android:textColor="@color/navy_text" />
 
             <ImageView
                 android:id="@+id/recoveredImage"
@@ -90,5 +93,6 @@
         android:padding="8dp"
         android:text="@string/perturbation_summary_placeholder"
         android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        android:textColor="@color/navy_text"
         android:textStyle="bold" />
 </LinearLayout>

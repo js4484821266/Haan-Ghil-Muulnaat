@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="12dp"
+    app:cardBackgroundColor="@color/navy_surface"
     app:cardElevation="0dp"
     app:strokeColor="?attr/colorOutline"
     app:strokeWidth="1dp">
@@ -18,7 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/protection_status_title"
-            android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:textColor="@color/navy_text" />
 
         <TextView
             android:id="@+id/protectionStatusValue"
@@ -27,6 +29,7 @@
             android:layout_marginTop="6dp"
             android:text="@string/status_na"
             android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:textColor="@color/navy_text"
             android:textStyle="bold" />
 
         <TextView
@@ -35,6 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="@string/status_caption"
-            android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="@color/navy_text_muted" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

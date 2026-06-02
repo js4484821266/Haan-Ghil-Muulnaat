@@ -6,6 +6,14 @@
         <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="android:textColorPrimary">@color/navy_text</item>
+        <item name="android:textColorSecondary">@color/navy_text_muted</item>
+        <item name="android:textColorTertiary">@color/navy_text_muted</item>
+        <item name="android:textColorHint">@color/navy_text_muted</item>
+        <item name="colorControlNormal">@color/navy_text_muted</item>
+        <item name="colorControlActivated">@color/navy_secondary</item>
+        <item name="colorControlHighlight">@color/navy_secondary_container</item>
+        <item name="android:colorButtonNormal">@color/navy_button</item>
         <item name="colorPrimary">@color/navy_primary</item>
         <item name="colorOnPrimary">@color/navy_text</item>
         <item name="colorPrimaryContainer">@color/navy_primary_container</item>
@@ -25,6 +33,23 @@
         <item name="colorError">@color/navy_error</item>
         <item name="colorErrorContainer">@color/navy_error_container</item>
         <item name="android:colorAccent">@color/navy_secondary</item>
+        <item name="buttonStyle">@style/Widget.HaanGhilMuulnaat.Button</item>
+        <item name="materialButtonStyle">@style/Widget.HaanGhilMuulnaat.Button</item>
+        <item name="android:buttonStyle">@style/Widget.HaanGhilMuulnaat.Button</item>
+    </style>
+
+    <style name="Widget.HaanGhilMuulnaat.Button" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/navy_button</item>
+        <item name="android:backgroundTint">@color/navy_button</item>
+        <item name="android:textColor">@color/navy_text</item>
+        <item name="cornerRadius">28dp</item>
+    </style>
+
+    <style name="Widget.HaanGhilMuulnaat.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
+        <item name="backgroundTint">@color/navy_button</item>
+        <item name="android:backgroundTint">@color/navy_button</item>
+        <item name="android:textColor">@color/navy_text</item>
+        <item name="cornerRadius">28dp</item>
     </style>
 
     <style name="Theme.HaanGhilMuulnaat.ShareForwarder" parent="Theme.Material3.DayNight.NoActionBar">
