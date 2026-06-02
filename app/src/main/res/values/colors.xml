@@ -1,0 +1,14 @@
+<resources>
+    <color name="navy_black">#02040A</color>
+    <color name="navy_surface">#070D18</color>
+    <color name="navy_surface_high">#0D1828</color>
+    <color name="navy_outline">#26364D</color>
+    <color name="navy_primary">#14243A</color>
+    <color name="navy_primary_container">#0B1728</color>
+    <color name="navy_secondary">#20334F</color>
+    <color name="navy_secondary_container">#101E32</color>
+    <color name="navy_text">#F1F5FF</color>
+    <color name="navy_text_muted">#A9B8D0</color>
+    <color name="navy_error">#FFB4AB</color>
+    <color name="navy_error_container">#551D17</color>
+</resources>

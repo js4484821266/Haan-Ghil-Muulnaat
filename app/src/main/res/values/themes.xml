@@ -1,8 +1,30 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.HaanGhilMuulnaat" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:statusBarColor">?attr/colorSurface</item>
-        <item name="android:navigationBarColor">?attr/colorSurface</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowBackground">@color/navy_black</item>
+        <item name="android:statusBarColor">@color/navy_black</item>
+        <item name="android:navigationBarColor">@color/navy_black</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="colorPrimary">@color/navy_primary</item>
+        <item name="colorOnPrimary">@color/navy_text</item>
+        <item name="colorPrimaryContainer">@color/navy_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/navy_text</item>
+        <item name="colorSecondary">@color/navy_secondary</item>
+        <item name="colorOnSecondary">@color/navy_text</item>
+        <item name="colorSecondaryContainer">@color/navy_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/navy_text</item>
+        <item name="colorTertiary">@color/navy_primary</item>
+        <item name="colorOnTertiary">@color/navy_text</item>
+        <item name="colorSurface">@color/navy_surface</item>
+        <item name="colorOnSurface">@color/navy_text</item>
+        <item name="colorSurfaceVariant">@color/navy_surface_high</item>
+        <item name="colorOnSurfaceVariant">@color/navy_text_muted</item>
+        <item name="android:colorBackground">@color/navy_black</item>
+        <item name="colorOutline">@color/navy_outline</item>
+        <item name="colorError">@color/navy_error</item>
+        <item name="colorErrorContainer">@color/navy_error_container</item>
+        <item name="android:colorAccent">@color/navy_secondary</item>
     </style>
 
     <style name="Theme.HaanGhilMuulnaat.ShareForwarder" parent="Theme.Material3.DayNight.NoActionBar">
