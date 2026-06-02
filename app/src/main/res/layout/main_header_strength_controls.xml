@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/recommendedStrengthText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="?attr/colorSurfaceVariant"
+        android:padding="10dp"
+        android:text="@string/recommended_strength_default"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        android:textColor="@color/navy_text" />
+
+    <TextView
+        android:id="@+id/searchProgressText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:padding="8dp"
+        android:text="@string/search_progress_idle"
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+        android:textColor="@color/navy_text_muted" />
+
+    <Button
+        android:id="@+id/resetOptimalButton"
+        style="@style/Widget.HaanGhilMuulnaat.Button.Tonal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:enabled="false"
+        android:text="@string/reset_to_optimal_strength"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/strengthLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/noise_strength"
+        android:textColor="@color/navy_text" />
+
+    <SeekBar
+        android:id="@+id/strengthSeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progress="60" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/autoRecoverySwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:checked="true"
+        android:text="@string/auto_recovery_toggle"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        android:textColor="@color/navy_text" />
+</LinearLayout>

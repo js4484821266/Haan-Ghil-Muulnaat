@@ -1,0 +1,21 @@
+<resources>
+    <string name="notification_autosave_channel_name">Protection jobs</string>
+    <string name="notification_autosave_channel_description">Progress for background Haan Ghil Muulnaat protection jobs</string>
+    <string name="notification_autosave_running_title">Haan Ghil Muulnaat auto-save</string>
+    <string name="notification_autosave_starting">Starting background protection for %1$d images.</string>
+    <string name="notification_autosave_queued">Queued images for background protection: %1$d total.</string>
+    <string name="notification_autosave_loading">Loading image %1$d of %2$d...</string>
+    <string name="notification_autosave_searching">Finding optimal strength for image %1$d of %2$d: checking %3$d...</string>
+    <string name="notification_autosave_saving">Saving image %1$d of %2$d at strength %3$d...</string>
+    <string name="notification_autosave_load_failed">Skipped image %1$d of %2$d: failed to load.</string>
+    <string name="notification_autosave_no_strength">Skipped image %1$d of %2$d: no optimal strength found.</string>
+    <string name="notification_autosave_item_saved">Saved image %1$d of %2$d.</string>
+    <string name="notification_autosave_item_failed">Skipped image %1$d of %2$d: save failed.</string>
+    <string name="notification_autosave_cancel_action">Cancel</string>
+    <string name="notification_autosave_canceling_title">Canceling Haan Ghil Muulnaat auto-save</string>
+    <string name="notification_autosave_canceling_body">Stopping after the current checkpoint...</string>
+    <string name="notification_autosave_canceled_title">Haan Ghil Muulnaat auto-save canceled</string>
+    <string name="notification_autosave_canceled_body">Canceled: %1$d saved, %2$d skipped.</string>
+    <string name="notification_autosave_complete_title">Haan Ghil Muulnaat auto-save complete</string>
+    <string name="notification_autosave_complete_body">Complete: %1$d saved, %2$d skipped.</string>
+</resources>

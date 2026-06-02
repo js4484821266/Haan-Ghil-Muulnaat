@@ -5,6 +5,12 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 
+/**
+ * Wires UI controls to MainActivity flows.
+ *
+ * The heavier work lives in flow files; this file answers "what does each
+ * button do?" without mixing in image processing details.
+ */
 internal fun MainActivity.configureUiActions() {
     binding.helpButton.setOnClickListener { showManualDialog() }
     setTechnicalDetailsVisible(false)
@@ -64,6 +70,8 @@ private fun MainActivity.runManualDefenseEvaluation() {
 
     binding.resultText.text = getString(R.string.result_running_recovery)
     setBusy(true, getString(R.string.result_running_recovery))
+    // Defense evaluation calls ML Kit through ModelProbe, so keep it off the UI
+    // thread and only render the final report on the main thread.
     kotlin.concurrent.thread {
         val defenseReport = defenseEvaluator.evaluateAfterAttack(original, source)
         runOnUiThread {
@@ -91,6 +99,8 @@ private fun MainActivity.applyRememberedOptimalStrength() {
 
     binding.strengthSeekBar.progress = rememberedStrength
     binding.strengthLabel.text = getString(R.string.noise_strength_value, rememberedStrength)
+    // Reusing the remembered strength makes the scan result actionable after a
+    // user has changed the slider manually.
     val msg = if (binding.autoRecoverySwitch.isChecked) {
         getString(R.string.result_reset_optimal_auto, rememberedStrength)
     } else {

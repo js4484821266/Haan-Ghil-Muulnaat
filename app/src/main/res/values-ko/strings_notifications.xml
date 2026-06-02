@@ -1,0 +1,21 @@
+<resources>
+    <string name="notification_autosave_channel_name">보호 작업</string>
+    <string name="notification_autosave_channel_description">백그라운드 한 길 물낯 보호 작업 진행 상태</string>
+    <string name="notification_autosave_running_title">한 길 물낯 자동 저장</string>
+    <string name="notification_autosave_starting">이미지 %1$d장의 백그라운드 보호를 시작합니다.</string>
+    <string name="notification_autosave_queued">백그라운드 보호 대기열: 총 %1$d장.</string>
+    <string name="notification_autosave_loading">이미지 %1$d/%2$d 불러오는 중...</string>
+    <string name="notification_autosave_searching">이미지 %1$d/%2$d 최적 강도 탐색 중: 검사 %3$d...</string>
+    <string name="notification_autosave_saving">이미지 %1$d/%2$d 저장 중: 강도 %3$d...</string>
+    <string name="notification_autosave_load_failed">이미지 %1$d/%2$d 건너뜀: 불러오지 못했습니다.</string>
+    <string name="notification_autosave_no_strength">이미지 %1$d/%2$d 건너뜀: 최적 강도를 찾지 못했습니다.</string>
+    <string name="notification_autosave_item_saved">이미지 %1$d/%2$d 저장 완료.</string>
+    <string name="notification_autosave_item_failed">이미지 %1$d/%2$d 건너뜀: 저장에 실패했습니다.</string>
+    <string name="notification_autosave_cancel_action">취소</string>
+    <string name="notification_autosave_canceling_title">한 길 물낯 자동 저장 취소 중</string>
+    <string name="notification_autosave_canceling_body">현재 체크포인트 이후 중단합니다...</string>
+    <string name="notification_autosave_canceled_title">한 길 물낯 자동 저장 취소됨</string>
+    <string name="notification_autosave_canceled_body">취소됨: %1$d장 저장, %2$d장 건너뜀.</string>
+    <string name="notification_autosave_complete_title">한 길 물낯 자동 저장 완료</string>
+    <string name="notification_autosave_complete_body">완료: %1$d장 저장, %2$d장 건너뜀.</string>
+</resources>

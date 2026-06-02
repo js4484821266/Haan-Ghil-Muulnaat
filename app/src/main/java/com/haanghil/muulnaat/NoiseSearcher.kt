@@ -28,6 +28,9 @@ object NoiseSearcher {
         if (shouldCancel()) return null
         val candidates = DEFAULT_CANDIDATE_STRENGTHS.filter { it in lo..hi }
         if (candidates.isEmpty()) return null
+
+        // Probe the strongest candidate first. If even that fails, binary search
+        // would only spend more expensive ML Kit evaluations to reach null.
         if (!test(candidates.last())) return null
 
         var low = 0
@@ -50,6 +53,8 @@ object NoiseSearcher {
                 )
             )
             if (passed) {
+                // Passing means this strength is viable; keep searching left for
+                // the smallest viable candidate.
                 result = strength
                 high = mid - 1
             } else {

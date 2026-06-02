@@ -14,6 +14,9 @@ private const val CANCEL_REQUEST_CODE = 2103
 
 internal fun AutoSaveProtectionService.completedCount(): Int = savedCount + skippedCount
 
+/**
+ * Replaces the foreground notification while the worker is still active.
+ */
 internal fun AutoSaveProtectionService.updateProgressNotification(
     progress: Int,
     total: Int,
@@ -27,6 +30,9 @@ internal fun AutoSaveProtectionService.updateProgressNotification(
     )
 }
 
+/**
+ * Builds both running and final notifications.
+ */
 internal fun AutoSaveProtectionService.buildProgressNotification(
     progress: Int,
     total: Int,
@@ -52,55 +58,6 @@ internal fun AutoSaveProtectionService.buildProgressNotification(
         }
     }
     .build()
-
-internal fun AutoSaveProtectionService.finishWorker() {
-    val wasCanceled = cancelRequested
-    synchronized(queueLock) {
-        if (wasCanceled) {
-            skippedCount += queue.size
-            queue.clear()
-        }
-        workerRunning = false
-    }
-
-    val title = getString(
-        if (wasCanceled) R.string.notification_autosave_canceled_title else R.string.notification_autosave_complete_title
-    )
-    val message = if (wasCanceled) {
-        getString(R.string.notification_autosave_canceled_body, savedCount, skippedCount)
-    } else {
-        getString(R.string.notification_autosave_complete_body, savedCount, skippedCount)
-    }
-    val notification = buildProgressNotification(
-        progress = completedCount().coerceAtLeast(totalCount),
-        total = totalCount.coerceAtLeast(1),
-        title = title,
-        message = message,
-        showCancel = false,
-    )
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        stopForeground(ServiceCompatStop.detachFlag())
-    } else {
-        @Suppress("DEPRECATION")
-        stopForeground(false)
-    }
-    getSystemService(NotificationManager::class.java).notify(AUTO_SAVE_NOTIFICATION_ID, notification)
-    stopSelf()
-}
-
-internal fun AutoSaveProtectionService.createNotificationChannel() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-
-    val channel = NotificationChannel(
-        AUTO_SAVE_CHANNEL_ID,
-        getString(R.string.notification_autosave_channel_name),
-        NotificationManager.IMPORTANCE_LOW
-    ).apply {
-        description = getString(R.string.notification_autosave_channel_description)
-    }
-    getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
-}
 
 private fun AutoSaveProtectionService.openAppPendingIntent(title: String, message: String): PendingIntent {
     val intent = Intent(this, MainActivity::class.java).apply {

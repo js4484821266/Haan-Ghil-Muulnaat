@@ -3,6 +3,12 @@ package com.haanghil.muulnaat
 import android.net.Uri
 import kotlin.concurrent.thread
 
+/**
+ * Starts the service queue worker.
+ *
+ * The service owns exactly one worker at a time; later share intents append to
+ * the queue and the existing worker drains them.
+ */
 internal fun AutoSaveProtectionService.startWorker() {
     // The foreground service owns one queue worker; new share intents append to the same queue.
     thread(name = "HaanGhilMuulnaatAutoSave") {
@@ -15,6 +21,12 @@ internal fun AutoSaveProtectionService.startWorker() {
     }
 }
 
+/**
+ * Processes one URI from the auto-save queue.
+ *
+ * The item is skipped unless every step succeeds: load bitmap, find a held
+ * strength, generate protection, and write to MediaStore.
+ */
 private fun AutoSaveProtectionService.processQueueItem(item: Uri) {
     val itemNumber = completedCount() + 1
     val total = totalCount.coerceAtLeast(itemNumber)
@@ -55,6 +67,9 @@ private fun AutoSaveProtectionService.processQueueItem(item: Uri) {
     notifyItemSaved(itemNumber, total, saveResult.success)
 }
 
+/**
+ * Runs the expensive minimum-strength search with service-level cancellation.
+ */
 private fun AutoSaveProtectionService.findStrengthForItem(
     loaded: android.graphics.Bitmap,
     itemNumber: Int,
@@ -74,59 +89,5 @@ private fun AutoSaveProtectionService.findStrengthForItem(
             )
         },
         shouldCancel = { cancelRequested },
-    )
-}
-
-private fun AutoSaveProtectionService.notifyLoading(itemNumber: Int, total: Int) {
-    updateProgressNotification(
-        progress = completedCount(),
-        total = total,
-        title = getString(R.string.notification_autosave_running_title),
-        message = getString(R.string.notification_autosave_loading, itemNumber, total),
-        showCancel = true,
-    )
-}
-
-private fun AutoSaveProtectionService.notifySkippedLoad(itemNumber: Int, total: Int) {
-    updateProgressNotification(
-        progress = completedCount(),
-        total = totalCount.coerceAtLeast(1),
-        title = getString(R.string.notification_autosave_running_title),
-        message = getString(R.string.notification_autosave_load_failed, itemNumber, total),
-        showCancel = true,
-    )
-}
-
-private fun AutoSaveProtectionService.notifyNoStrength(itemNumber: Int, total: Int) {
-    updateProgressNotification(
-        progress = completedCount(),
-        total = totalCount.coerceAtLeast(1),
-        title = getString(R.string.notification_autosave_running_title),
-        message = getString(R.string.notification_autosave_no_strength, itemNumber, total),
-        showCancel = true,
-    )
-}
-
-private fun AutoSaveProtectionService.notifySaving(itemNumber: Int, total: Int, minStrength: Int) {
-    updateProgressNotification(
-        progress = completedCount(),
-        total = totalCount.coerceAtLeast(1),
-        title = getString(R.string.notification_autosave_running_title),
-        message = getString(R.string.notification_autosave_saving, itemNumber, total, minStrength),
-        showCancel = true,
-    )
-}
-
-private fun AutoSaveProtectionService.notifyItemSaved(itemNumber: Int, total: Int, success: Boolean) {
-    updateProgressNotification(
-        progress = completedCount(),
-        total = totalCount.coerceAtLeast(1),
-        title = getString(R.string.notification_autosave_running_title),
-        message = if (success) {
-            getString(R.string.notification_autosave_item_saved, itemNumber, total)
-        } else {
-            getString(R.string.notification_autosave_item_failed, itemNumber, total)
-        },
-        showCancel = true,
     )
 }

@@ -3,6 +3,12 @@ package com.haanghil.muulnaat
 import android.net.Uri
 import kotlin.concurrent.thread
 
+/**
+ * Entry point for visible batch processing.
+ *
+ * The foreground service handles silent auto-save. This path is for batches that
+ * still mirror each item on the main screen so the user can see what happened.
+ */
 internal fun MainActivity.processImageBatch(uris: List<Uri>) {
     if (uris.isEmpty()) return
 
@@ -25,6 +31,12 @@ internal fun MainActivity.processImageBatch(uris: List<Uri>) {
     }
 }
 
+/**
+ * Clears single-image state before a batch starts.
+ *
+ * The batch will reuse the same preview widgets for each item, so stale images
+ * and metrics must be removed up front.
+ */
 private fun MainActivity.resetBatchUi(total: Int) {
     state.originalBitmap = null
     state.protectedBitmap = null
@@ -40,6 +52,11 @@ private fun MainActivity.resetBatchUi(total: Int) {
     setBusy(true, getString(R.string.result_batch_start, total))
 }
 
+/**
+ * Runs one batch item from load through save.
+ *
+ * Returns true only when the protected PNG is actually written to the gallery.
+ */
 private fun MainActivity.processBatchItem(itemNumber: Int, total: Int, uri: Uri): Boolean {
     runOnUiThread {
         binding.resultText.text = getString(R.string.result_batch_item_processing, itemNumber, total)
@@ -73,70 +90,4 @@ private fun MainActivity.processBatchItem(itemNumber: Int, total: Int, uri: Uri)
         renderBatchResult(loaded, protected, minStrength, defenseReport, saveResult, itemNumber, total)
     }
     return saveResult.success
-}
-
-private fun MainActivity.findBatchStrength(
-    loaded: android.graphics.Bitmap,
-    itemNumber: Int,
-    total: Int,
-): Int? {
-    val minStrength = StrengthAdvisor.findRecommendedStrength(
-        original = loaded,
-        perturbationModule = perturbationModule,
-        defenseEvaluator = defenseEvaluator,
-        onStep = { step -> runOnUiThread { renderBatchSearchStep(step) } },
-    )
-    if (minStrength == null) {
-        runOnUiThread {
-            state.optimalStrength = null
-            binding.recommendedStrengthText.text = StrengthAdvisor.recommendationText(this, null)
-            showSearchProgress(getString(R.string.result_scan_none))
-            binding.resultText.text = getString(R.string.result_batch_item_scan_failed, itemNumber, total)
-        }
-    }
-    return minStrength
-}
-
-private fun MainActivity.renderBatchSearchStep(step: NoiseSearcher.SearchStep) {
-    binding.strengthSeekBar.progress = step.mid
-    binding.strengthLabel.text = getString(R.string.noise_strength_value, step.mid)
-    showSearchProgress(
-        getString(R.string.search_progress_step, step.iteration, step.low, step.mid, step.high, statusLabelForSearchStep(step))
-    )
-}
-
-private fun MainActivity.renderBatchResult(
-    loaded: android.graphics.Bitmap,
-    protected: android.graphics.Bitmap,
-    minStrength: Int,
-    defenseReport: DefenseEvaluationReport?,
-    saveResult: GallerySaveResult,
-    itemNumber: Int,
-    total: Int,
-) {
-    state.originalBitmap = loaded
-    state.protectedBitmap = protected
-    state.optimalStrength = minStrength
-    state.lastAppliedStrength = minStrength
-    binding.recommendedStrengthText.text = StrengthAdvisor.recommendationText(this, minStrength)
-    binding.strengthSeekBar.progress = minStrength
-    binding.strengthLabel.text = getString(R.string.noise_strength_value, minStrength)
-    showOptimalActionButton()
-    renderProtectedImage(loaded, protected)
-    renderBatchDefense(defenseReport, minStrength)
-    binding.resultText.text = if (saveResult.success) {
-        getString(R.string.result_batch_item_saved, itemNumber, total, saveResult.filename)
-    } else {
-        getString(R.string.result_batch_item_save_failed, itemNumber, total)
-    }
-}
-
-private fun MainActivity.renderBatchDefense(defenseReport: DefenseEvaluationReport?, minStrength: Int) {
-    if (defenseReport == null) {
-        renderRecoveredImage(null)
-    } else {
-        renderRecoveredImage(defenseReport.attackedBitmap)
-        renderDefenseResult(defenseReport.status, defenseReport.evaluationMetrics, defenseReport.qualityMetrics)
-        state.lastEvaluationStrength = minStrength
-    }
 }

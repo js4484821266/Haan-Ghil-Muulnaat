@@ -1,14 +1,18 @@
 package com.haanghil.muulnaat
 
 import android.app.Service
-import android.content.ClipData
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.IBinder
 import java.util.ArrayDeque
 
+/**
+ * Foreground service shell for background image protection.
+ *
+ * The service owns queue state and Android lifecycle callbacks. Queue mutation,
+ * worker execution, notifications, and start-intent construction live in small
+ * neighboring files.
+ */
 class AutoSaveProtectionService : Service() {
     internal val queue = ArrayDeque<Uri>()
     internal val queueLock = Any()
@@ -100,23 +104,5 @@ class AutoSaveProtectionService : Service() {
         skippedCount = 0
     }
 
-    companion object {
-        fun start(context: Context, uris: List<Uri>) {
-            val intent = Intent(context, AutoSaveProtectionService::class.java).apply {
-                action = ShareContract.ACTION_START_AUTO_SAVE
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                putParcelableArrayListExtra(ShareContract.EXTRA_URIS, ArrayList(uris))
-                if (uris.isNotEmpty()) {
-                    clipData = ClipData.newUri(context.contentResolver, "shared image", uris.first()).also { data ->
-                        uris.drop(1).forEach { uri -> data.addItem(ClipData.Item(uri)) }
-                    }
-                }
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
-            } else {
-                context.startService(intent)
-            }
-        }
-    }
+    companion object
 }

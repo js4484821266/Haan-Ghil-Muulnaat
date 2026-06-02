@@ -25,6 +25,8 @@ object NoiseEngine : PerturbationModule {
 
         val edgeMap = buildEdgeMap(srcPixels, width, height)
         val outPixels = IntArray(srcPixels.size)
+        // Deterministic seed: same image size + same strength produce the same
+        // perturbation, which keeps experiments reproducible.
         var seed = ((width * 73856093) xor (height * 19349663) xor (safeStrength * 83492791)).toUInt().toInt()
 
         val baseNoise = NOISE_BASE + safeStrength * NOISE_STRENGTH_MULTIPLIER
@@ -38,6 +40,8 @@ object NoiseEngine : PerturbationModule {
             val edgeBoost = 1f + edgeMap[i] * 0.9f
             val amplitude = baseNoise * edgeBoost
 
+            // Three xorshift draws decorrelate channel noise without allocating
+            // a Random object for every pixel.
             seed = xorshift32(seed)
             val n1 = ((seed and 0xFF) - 128) / 128f
             seed = xorshift32(seed)
@@ -63,6 +67,8 @@ object NoiseEngine : PerturbationModule {
         val map = FloatArray(pixels.size)
         if (width < 3 || height < 3) return map
 
+        // Simple central differences are enough here: the edge map is only used
+        // as a noise amplifier, not as a precise computer-vision feature.
         for (y in 1 until (height - 1)) {
             for (x in 1 until (width - 1)) {
                 val idx = y * width + x
