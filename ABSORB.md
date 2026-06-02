@@ -21,8 +21,9 @@ Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 edge-aware pertur
 
 | 경로 | 역할 | 중요도 | 비고 |
 | --- | --- | --- | --- |
-| [`app/src/main/java/com/haanghil/muulnaat/MainActivity.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt) | 메인 UI, 이미지 선택, 보호 적용, 평가 실행, 저장 흐름 제어 | High | 앱의 수동 사용 흐름 중심 |
-| [`app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt) | 공유 시트 기반 백그라운드 자동 보호/저장 처리 | High | foreground service, 알림, 취소 처리 포함 |
+| [`app/src/main/java/com/haanghil/muulnaat/MainActivity.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`MainActivityActions.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityActions.kt), [`MainActivityImageFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt), [`MainActivityBatchFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityBatchFlow.kt), [`MainActivityProtectionFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityProtectionFlow.kt), [`MainActivityStorage.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityStorage.kt), [`MainActivityUi.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityUi.kt), [`MainActivityIntents.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityIntents.kt) | 메인 UI, 이미지 선택, 보호 적용, 평가 실행, 저장 흐름 제어 | High | 앱의 수동 사용 흐름을 역할별 파일로 분리 |
+| [`app/src/main/java/com/haanghil/muulnaat/MainBindingAliases.kt`](app/src/main/java/com/haanghil/muulnaat/MainBindingAliases.kt) | 분리된 include layout의 ViewBinding 별칭 | Medium | Kotlin 호출부가 기존 `binding.*` 이름을 유지하도록 연결 |
+| [`app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt), [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt), [`AutoSaveNotifications.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveNotifications.kt), [`AutoSaveIntentParsing.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveIntentParsing.kt) | 공유 시트 기반 백그라운드 자동 보호/저장 처리 | High | service entry, worker, 알림, intent parsing을 분리 |
 | [`app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | edge-aware perturbation 생성 | High | [`PerturbationModule`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt) 구현 |
 | [`app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt) | strength 후보에서 최소 통과 강도 탐색 | High | 0..90 step 10 후보를 이분 탐색 |
 | [`app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt) | 권장 strength 탐색 래퍼와 UI 문구 생성 | Medium | [`NoiseSearcher`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)를 감싼 얇은 계층 |
@@ -33,7 +34,7 @@ Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 edge-aware pertur
 | [`app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt) | 상태, 메트릭, 리포트, 인터페이스 정의 | High | 모듈 간 계약 |
 | [`app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt) | Android share intent를 메인 화면 또는 자동 저장 서비스로 전달 | High | `SEND`, `SEND_MULTIPLE` 처리 |
 | [`app/src/main/java/com/haanghil/muulnaat/ShareContract.kt`](app/src/main/java/com/haanghil/muulnaat/ShareContract.kt) | 공유/서비스 intent action, extra, mode 상수 | Medium | MainActivity, 서비스, forwarding activity가 공유 |
-| [`app/src/main/res/layout/activity_main.xml`](app/src/main/res/layout/activity_main.xml) | 메인 화면 레이아웃 | High | 원본/보호/복원 이미지와 메트릭 표시 |
+| [`app/src/main/res/layout/activity_main.xml`](app/src/main/res/layout/activity_main.xml), [`main_header_controls.xml`](app/src/main/res/layout/main_header_controls.xml), [`main_image_panels.xml`](app/src/main/res/layout/main_image_panels.xml), [`main_status_card.xml`](app/src/main/res/layout/main_status_card.xml), [`main_technical_details.xml`](app/src/main/res/layout/main_technical_details.xml), [`main_quality_metrics_card.xml`](app/src/main/res/layout/main_quality_metrics_card.xml) | 메인 화면 레이아웃 | High | header/actions, 이미지 패널, 상태 카드, 기술 지표를 include layout으로 분리 |
 | [`app/src/main/res/values/strings.xml`](app/src/main/res/values/strings.xml), [`values-ko/strings.xml`](app/src/main/res/values-ko/strings.xml), [`values-fr/strings.xml`](app/src/main/res/values-fr/strings.xml), [`values-he/strings.xml`](app/src/main/res/values-he/strings.xml), [`values-ru/strings.xml`](app/src/main/res/values-ru/strings.xml) | 앱 표시 문자열 및 다국어 리소스 | Medium | 기본, 한국어, 프랑스어, 히브리어, 러시아어 |
 | [`app/src/main/AndroidManifest.xml`](app/src/main/AndroidManifest.xml) | 권한, activity, service, ML Kit dependency 선언 | High | 런처와 공유 진입점 정의 |
 | [`app/src/test/java/com/haanghil/muulnaat/NoiseSearcherTest.kt`](app/src/test/java/com/haanghil/muulnaat/NoiseSearcherTest.kt) | strength 탐색 로직 단위 테스트 | High | 후보 범위와 progress callback 검증 |
@@ -53,8 +54,8 @@ Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 edge-aware pertur
 1. 사용자가 [`MainActivity`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt)를 실행한다.
 2. `ActivityResultContracts.PickVisualMedia`로 이미지를 선택한다.
 3. [`ImageStore.loadBitmapFromUri()`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt)가 URI에서 비트맵을 읽고, 큰 이미지는 최대 변 기준 1280px 근처로 downsample하며, EXIF 방향을 보정한다.
-4. [`MainActivity.prepareLoadedImage()`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt)가 원본 이미지를 화면에 표시하고 이전 결과를 초기화한다.
-5. [`MainActivity.startOptimalStrengthFlow()`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt)가 백그라운드 thread에서 [`StrengthAdvisor.findRecommendedStrength()`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt)를 호출한다.
+4. [`prepareLoadedImage()`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt)가 원본 이미지를 화면에 표시하고 이전 결과를 초기화한다.
+5. [`startOptimalStrengthFlow()`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt)가 백그라운드 thread에서 [`StrengthAdvisor.findRecommendedStrength()`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt)를 호출한다.
 6. [`NoiseSearcher.findMinimumStrength()`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)가 strength 후보를 검사한다.
 7. 각 후보마다 [`NoiseEngine.applyProtection()`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)으로 보호 이미지를 만들고 [`RestorationAttackProbe.evaluateAfterAttack()`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)으로 복원 후 평가한다.
 8. 최소 [`HELD`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt) strength가 있으면 UI에 추천값을 표시하고, auto recovery 설정에 따라 보호 적용과 평가를 이어서 실행한다.
@@ -111,18 +112,18 @@ flowchart TD
 ### 이미지 입력과 로드
 
 * 목적: 갤러리 또는 공유 시트에서 들어온 이미지 URI를 앱 내부 `Bitmap`으로 변환한다.
-* 관련 파일: [`MainActivity.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`ShareForwardingActivity.kt`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt), [`ImageStore.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt), [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml)
-* 주요 함수 또는 클래스: [`pickImageLauncher`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`processSingleImageUri`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`ShareForwardingActivity.forwardShare`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt), [`ImageStore.loadBitmapFromUri`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt)
+* 관련 파일: [`MainActivity.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`MainActivityImageFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt), [`MainActivityIntents.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityIntents.kt), [`ShareForwardingActivity.kt`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt), [`ImageStore.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt), [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml)
+* 주요 함수 또는 클래스: [`pickImageLauncher`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`processSingleImageUri`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt), [`ShareForwardingActivity.forwardShare`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt), [`ImageStore.loadBitmapFromUri`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt)
 * 입력: Android Photo Picker 결과 URI, `Intent.EXTRA_STREAM`, `ClipData`
 * 처리: URI 목록 추출, 권한 부여 flag/clipData 전달, bitmap bounds 확인, `inSampleSize` downsample, `ARGB_8888` decode, EXIF 방향 보정
-* 출력: [`originalBitmap`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`binding.originalImage`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt)에 표시된 원본 이미지
+* 출력: [`originalBitmap`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`binding.originalImage`](app/src/main/java/com/haanghil/muulnaat/MainBindingAliases.kt)에 표시된 원본 이미지
 * 예외 또는 주의점: 이미지 읽기 실패 시 `null`을 반환하고 UI에는 load failed 문구를 표시한다. 최대 변 1280px보다 큰 이미지는 downsample된다.
 * 내가 면접에서 설명해야 할 핵심: “입력은 파일 경로가 아니라 Android URI로 받고, ContentResolver 기반으로 안전하게 읽으며 EXIF 회전까지 보정했다.”
 
 ### 보호 이미지 생성
 
 * 목적: 원본 이미지에 strength 기반 perturbation을 적용해 보호 이미지를 만든다.
-* 관련 파일: [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt), [`PipelineContracts.kt`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt), [`MainActivity.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`AutoSaveProtectionService.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt)
+* 관련 파일: [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt), [`PipelineContracts.kt`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt), [`MainActivityProtectionFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityProtectionFlow.kt), [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt)
 * 주요 함수 또는 클래스: [`NoiseEngine.applyProtection`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt), [`NoiseEngine.protect`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt), [`PerturbationModule`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)
 * 입력: `Bitmap source`, `Int strength`
 * 처리: strength를 0..100으로 제한하고, luma 기반 edge map을 만든 뒤 edge가 강한 곳에 더 큰 amplitude의 xorshift 기반 채널별 노이즈를 적용한다.
@@ -133,7 +134,7 @@ flowchart TD
 ### 최소 strength 탐색
 
 * 목적: 복원 후에도 방어 상태가 유지되는 최소 perturbation strength를 찾는다.
-* 관련 파일: [`NoiseSearcher.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt), [`StrengthAdvisor.kt`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt), [`MainActivity.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`AutoSaveProtectionService.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt)
+* 관련 파일: [`NoiseSearcher.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt), [`StrengthAdvisor.kt`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt), [`MainActivityImageFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt), [`MainActivityBatchFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityBatchFlow.kt), [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt)
 * 주요 함수 또는 클래스: [`NoiseSearcher.findMinimumStrength`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt), [`StrengthAdvisor.findRecommendedStrength`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt), [`NoiseSearcher.SearchStep`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)
 * 입력: 원본 bitmap, perturbation module, defense evaluator, optional `onStep`, optional `shouldCancel`
 * 처리: 기본 후보 `0, 10, ..., 90` 중 마지막 후보가 실패하면 `null`을 반환하고, 통과 가능성이 있으면 후보 배열 위에서 이분 탐색한다.
@@ -149,14 +150,14 @@ flowchart TD
 * 입력: 원본 bitmap, 보호 bitmap
 * 처리: [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)으로 복원 시뮬레이션 bitmap을 만들고, [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)로 ML Kit 얼굴/라벨 결과를 점수화하며, [`ImageMetrics`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt)로 PSNR/MAD/edge delta를 계산한다.
 * 출력: [`DefenseEvaluationReport`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)와 [`ProtectionStatus.HELD`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt) 또는 [`ProtectionStatus.BROKEN`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)
-* 예외 또는 주의점: [`ModelProbe.evaluate()`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)는 `Tasks.await()`를 사용하므로 UI thread에서 직접 호출하면 안 된다. [`MainActivity`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt)와 서비스는 thread 안에서 호출한다.
+* 예외 또는 주의점: [`ModelProbe.evaluate()`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)는 `Tasks.await()`를 사용하므로 UI thread에서 직접 호출하면 안 된다. [`MainActivityImageFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt), [`MainActivityProtectionFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivityProtectionFlow.kt), [`AutoSaveWorker`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt)는 thread 안에서 호출한다.
 * 내가 면접에서 설명해야 할 핵심: “방어 평가는 보호 직후가 아니라 복원 시뮬레이션 이후의 얼굴/라벨 신호를 기준으로 한다.”
 
 ### 결과 표시와 기술 세부 지표
 
 * 목적: 보호 상태, 얼굴 수 변화, 라벨 변화량, anti-detection score, 품질 지표를 UI에 표시한다.
-* 관련 파일: [`MainActivity.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`activity_main.xml`](app/src/main/res/layout/activity_main.xml), [`strings.xml`](app/src/main/res/values/strings.xml)
-* 주요 함수 또는 클래스: [`renderDefenseResult`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`renderProtectedImage`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`renderRecoveredImage`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`setTechnicalDetailsVisible`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt)
+* 관련 파일: [`MainActivityUi.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityUi.kt), [`activity_main.xml`](app/src/main/res/layout/activity_main.xml), [`main_image_panels.xml`](app/src/main/res/layout/main_image_panels.xml), [`main_status_card.xml`](app/src/main/res/layout/main_status_card.xml), [`main_technical_details.xml`](app/src/main/res/layout/main_technical_details.xml), [`strings.xml`](app/src/main/res/values/strings.xml)
+* 주요 함수 또는 클래스: [`renderDefenseResult`](app/src/main/java/com/haanghil/muulnaat/MainActivityUi.kt), [`renderProtectedImage`](app/src/main/java/com/haanghil/muulnaat/MainActivityUi.kt), [`renderRecoveredImage`](app/src/main/java/com/haanghil/muulnaat/MainActivityUi.kt), [`setTechnicalDetailsVisible`](app/src/main/java/com/haanghil/muulnaat/MainActivityUi.kt)
 * 입력: [`DefenseEvaluationReport`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt), 원본/보호/복원 bitmap
 * 처리: 이미지 3패널을 갱신하고, PSNR을 8..50 dB 범위로 0..100% 표시값으로 변환한다.
 * 출력: 화면의 status card, model metrics, quality metrics, perturbation magnitude
@@ -166,8 +167,8 @@ flowchart TD
 ### 갤러리 저장
 
 * 목적: 보호된 이미지를 Android 갤러리에 PNG로 저장한다.
-* 관련 파일: [`ImageStore.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt), [`MainActivity.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`AutoSaveProtectionService.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt), [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml)
-* 주요 함수 또는 클래스: [`ImageStore.saveImageToGallery`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt), [`GallerySaveResult`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt), [`runWithStoragePermissionIfNeeded`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt)
+* 관련 파일: [`ImageStore.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt), [`MainActivityStorage.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityStorage.kt), [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt), [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml)
+* 주요 함수 또는 클래스: [`ImageStore.saveImageToGallery`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt), [`GallerySaveResult`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt), [`runWithStoragePermissionIfNeeded`](app/src/main/java/com/haanghil/muulnaat/MainActivityStorage.kt)
 * 입력: 보호 bitmap
 * 처리: 파일명 `haan_ghil_muulnaat_{timestamp}.png` 생성, MediaStore entry 생성, PNG 압축 저장, Android Q 이상에서 `IS_PENDING` 처리
 * 출력: 갤러리에 저장된 PNG와 저장 결과 UI/알림
@@ -177,8 +178,8 @@ flowchart TD
 ### 공유 시트 자동 저장
 
 * 목적: 다른 앱에서 보낸 이미지를 앱 화면 진입 없이 자동 보호/저장한다.
-* 관련 파일: [`ShareForwardingActivity.kt`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt), [`ShareContract.kt`](app/src/main/java/com/haanghil/muulnaat/ShareContract.kt), [`AutoSaveProtectionService.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt), [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml)
-* 주요 함수 또는 클래스: [`ShareReadyToSaveActivity`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt), [`ShareAutoSaveActivity`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt), [`AutoSaveProtectionService.start`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt), [`startWorker`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt)
+* 관련 파일: [`ShareForwardingActivity.kt`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt), [`ShareContract.kt`](app/src/main/java/com/haanghil/muulnaat/ShareContract.kt), [`AutoSaveProtectionService.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt), [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt), [`AutoSaveNotifications.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveNotifications.kt), [`AutoSaveIntentParsing.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveIntentParsing.kt), [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml)
+* 주요 함수 또는 클래스: [`ShareReadyToSaveActivity`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt), [`ShareAutoSaveActivity`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt), [`AutoSaveProtectionService.start`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt), [`startWorker`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt), [`updateProgressNotification`](app/src/main/java/com/haanghil/muulnaat/AutoSaveNotifications.kt)
 * 입력: `ACTION_SEND`, `ACTION_SEND_MULTIPLE`, `ClipData`, URI list
 * 처리: 공유 URI 수집, 권한 요청, foreground service 시작, 큐 처리, strength 탐색, 보호 적용, 저장, notification progress 업데이트
 * 출력: 저장된 PNG, 진행/완료/취소 알림
@@ -354,9 +355,9 @@ graph TD
 | [`targetMaxSide`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt) | [`ImageStore.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt) | 로드 시 최대 변 기준 | `1280` | 품질/성능/메모리 사용량 영향 |
 | PNG filename prefix | [`ImageStore.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt) | 저장 파일명 접두사 | `haan_ghil_muulnaat_` | 갤러리 파일 식별 방식 변화 |
 | 저장 폴더 | [`ImageStore.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt) | Android Q 이상 상대 경로 | `Pictures/Haan Ghil Muulnaat` | 갤러리 내 저장 위치 변경 |
-| notification channel | [`AutoSaveProtectionService.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt) | 알림 채널 ID | `protection_jobs` | 기존 채널과 호환성 영향 |
+| notification channel | [`AutoSaveNotifications.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveNotifications.kt) | 알림 채널 ID | `protection_jobs` | 기존 채널과 호환성 영향 |
 | `POST_NOTIFICATIONS` | [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml), [`ShareForwardingActivity.kt`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt) | Android 13+ 알림 권한 | 런타임 요청 | 자동 저장 알림 표시 가능 여부 |
-| `WRITE_EXTERNAL_STORAGE` | [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml), [`MainActivity.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt) | Android P 이하 저장 권한 | maxSdk 28 | 구버전 저장 가능 여부 |
+| `WRITE_EXTERNAL_STORAGE` | [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml), [`MainActivityStorage.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityStorage.kt) | Android P 이하 저장 권한 | maxSdk 28 | 구버전 저장 가능 여부 |
 | `ML Kit dependencies` | [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml) | 설치 시 모델 의존성 힌트 | `face,ica` | Play Services 모델 준비 방식 영향 |
 | [`ORIGINAL_DIR`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 실험 원본 이미지 경로 | `original-set/faces` | 해당 디렉터리는 `.gitignore` 대상이라 현재 내용 확인하지 않음 |
 | [`TEST_DIR`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 실험 보호 이미지 경로 | `test-set` | 해당 디렉터리는 `.gitignore` 대상이라 현재 내용 확인하지 않음 |
@@ -451,7 +452,7 @@ Haan Ghil Muulnaat는 인물 사진을 기기 안에서 처리하는 Android 앱
 
 ### 기술 질문 대응용 설명
 
-핵심 로직은 세 부분입니다. 첫째, [`NoiseEngine`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)은 luma gradient로 edge map을 만들고 edge가 강한 영역에 더 큰 amplitude를 주는 방식으로 perturbation을 적용합니다. 둘째, [`NoiseSearcher`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)는 모든 strength를 훑지 않고 `0, 10, ..., 90` 후보에서 이분 탐색으로 최소 통과값을 찾습니다. 셋째, [`RestorationAttackProbe`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)는 [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)의 복원 시뮬레이션 결과를 [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)와 [`ImageMetrics`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt)로 평가합니다. [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)는 ML Kit face detection과 image labeling을 호출하고, face suppression 0.35, label shift 0.65 가중치로 anti-detection score를 계산합니다. 이 점수가 threshold 이상이고 원본에서 얼굴이 감지된 경우 얼굴 수가 줄어야 통과합니다. UI thread를 막지 않도록 [`MainActivity`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt)와 [`AutoSaveProtectionService`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt)는 무거운 처리를 background thread에서 실행합니다.
+핵심 로직은 세 부분입니다. 첫째, [`NoiseEngine`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)은 luma gradient로 edge map을 만들고 edge가 강한 영역에 더 큰 amplitude를 주는 방식으로 perturbation을 적용합니다. 둘째, [`NoiseSearcher`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)는 모든 strength를 훑지 않고 `0, 10, ..., 90` 후보에서 이분 탐색으로 최소 통과값을 찾습니다. 셋째, [`RestorationAttackProbe`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)는 [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)의 복원 시뮬레이션 결과를 [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)와 [`ImageMetrics`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt)로 평가합니다. [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)는 ML Kit face detection과 image labeling을 호출하고, face suppression 0.35, label shift 0.65 가중치로 anti-detection score를 계산합니다. 이 점수가 threshold 이상이고 원본에서 얼굴이 감지된 경우 얼굴 수가 줄어야 통과합니다. UI thread를 막지 않도록 [`MainActivityImageFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt), [`MainActivityProtectionFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivityProtectionFlow.kt), [`AutoSaveWorker`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt)는 무거운 처리를 background thread에서 실행합니다.
 
 ### AI 코딩 도구 사용 질문 대응
 
@@ -461,7 +462,7 @@ GitHub Copilot과 Codex를 활용해 구현 속도를 높였고, 구조 이해, 
 
 | 우선순위 | 파일 또는 함수 | 왜 중요한가 | 읽을 때 확인할 것 |
 | --- | --- | --- | --- |
-| 1 | [`MainActivity.startOptimalStrengthFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt) | 이미지 로드 후 자동 strength 탐색과 보호 적용의 중심 | thread 사용, [`StrengthAdvisor`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt), [`runProtectionFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), autoSave callback |
+| 1 | [`startOptimalStrengthFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt) | 이미지 로드 후 자동 strength 탐색과 보호 적용의 중심 | thread 사용, [`StrengthAdvisor`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt), [`runProtectionFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivityProtectionFlow.kt), autoSave callback |
 | 2 | [`NoiseEngine.applyProtection`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | 실제 perturbation 생성 로직 | edge map, strength clamp, xorshift seed, channel clamp |
 | 3 | [`NoiseSearcher.findMinimumStrength`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt) | 최소 strength 탐색 알고리즘 | 후보 범위, 마지막 후보 선검사, 이분 탐색, `null` 조건 |
 | 4 | [`RestorationAttackProbe.evaluateAfterAttack`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt) | 복원 후 평가를 앱 상태로 변환 | [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt), [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt), [`ImageMetrics`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt), HELD/BROKEN 매핑 |
@@ -469,7 +470,7 @@ GitHub Copilot과 Codex를 활용해 구현 속도를 높였고, 구조 이해, 
 | 6 | [`RedTeamEngine.simulateAttack`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt) | 복원 시뮬레이션 가정 | median/mean denoising, sharpening pass, TFLite 미사용 사실 |
 | 7 | [`ImageStore.loadBitmapFromUri`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt) | Android URI 입력 처리 | downsample, EXIF orientation, 실패 시 null |
 | 8 | [`ImageStore.saveImageToGallery`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt) | 출력 저장 처리 | MediaStore, PNG compress, `IS_PENDING`, 실패 타입 |
-| 9 | [`AutoSaveProtectionService.startWorker`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt) | 백그라운드 일괄 처리 | queue, cancel, notification, 저장/skip count |
+| 9 | [`startWorker`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt) | 백그라운드 일괄 처리 | queue, cancel, notification, 저장/skip count |
 | 10 | [`ShareForwardingActivity.forwardShare`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt) | 공유 시트 입력 분기 | `ACTION_SEND_MULTIPLE`, permission request, mode 선택 |
 | 11 | [`PipelineContracts.kt`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt) | 모듈 간 데이터 계약 | status enum, metrics data class, interfaces |
 | 12 | [`NoiseSearcherTest.kt`](app/src/test/java/com/haanghil/muulnaat/NoiseSearcherTest.kt) | 탐색 로직 기대 동작 | 10단위 후보와 edge case |
@@ -478,7 +479,7 @@ GitHub Copilot과 Codex를 활용해 구현 속도를 높였고, 구조 이해, 
 
 ## 14. 현재 구조의 약점
 
-- [`MainActivity`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt)가 입력, 탐색, 평가, 렌더링, 저장까지 많이 들고 있어 화면 로직이 비대하다.
+- 메인 화면 로직은 역할별 파일로 쪼갰지만, 여전히 [`MainActivity`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt)의 extension 함수들이 화면 상태를 직접 공유한다.
 - `thread {}`를 직접 사용해 Android lifecycle 취소, configuration change, structured concurrency 대응이 약하다.
 - [`ModelProbe.evaluate()`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)가 `Tasks.await()`를 사용하므로 호출자가 background thread를 지켜야 한다.
 - [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt) 주석에는 TFLite 모델이 언급되지만 실제 코드는 직접 구현한 필터 기반 시뮬레이션이다. 주석과 구현의 기대치를 정리할 필요가 있다.
@@ -498,10 +499,10 @@ GitHub Copilot과 Codex를 활용해 구현 속도를 높였고, 구조 이해, 
 | Easy | [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt) 주석을 실제 구현 기준으로 정리 | TFLite 사용 여부 오해 감소 | [`RedTeamEngine.kt`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt), [`app/build.gradle.kts`](app/build.gradle.kts) |
 | Easy | `ImageMetrics.evaluate().passed` 사용 여부 결정 | dead-ish field 정리 또는 평가 강화 | [`ImageMetrics.kt`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt), [`RestorationAttackProbe.kt`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt) |
 | Easy | Python 실험 스크립트용 requirements 문서화 | 재현성 향상 | [`ipynbbbbb/face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) |
-| Medium | [`MainActivity`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt)에서 pipeline/use-case 계층 분리 | 유지보수성과 테스트 용이성 향상 | [`MainActivity.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), 신규 use-case 파일 |
-| Medium | `thread {}`를 coroutine/ViewModel 기반으로 전환 | lifecycle 대응과 취소 처리 개선 | [`MainActivity.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt), [`AutoSaveProtectionService.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt) |
+| Medium | 메인 화면 extension 함수에서 pipeline/use-case 계층 분리 | 유지보수성과 테스트 용이성 향상 | [`MainActivityImageFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt), [`MainActivityProtectionFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityProtectionFlow.kt), 신규 use-case 파일 |
+| Medium | `thread {}`를 coroutine/ViewModel 기반으로 전환 | lifecycle 대응과 취소 처리 개선 | [`MainActivityImageFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt), [`MainActivityProtectionFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityProtectionFlow.kt), [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt) |
 | Medium | [`ModelProbe.evaluate()`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)를 suspend API로 감싸기 | 비동기 흐름 명확화 | [`ModelProbe.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt), [`RestorationAttackProbe.kt`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt) |
-| Medium | 자동 저장 서비스 메모리 관리와 진행 상태 저장 강화 | 다중 이미지 처리 안정성 향상 | [`AutoSaveProtectionService.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt), [`ImageStore.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt) |
+| Medium | 자동 저장 서비스 메모리 관리와 진행 상태 저장 강화 | 다중 이미지 처리 안정성 향상 | [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt), [`ImageStore.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt) |
 | Medium | instrumentation test 또는 Robolectric 도입 | Android URI/MediaStore/UI 흐름 검증 | `app/src/androidTest`, Gradle 설정 |
 | Hard | 실제 복원 모델 기반 평가 옵션 추가 | 공격 가정 현실성 향상 | [`RedTeamEngine.kt`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt), assets/model, Gradle |
 | Hard | perturbation 알고리즘 GPU/native 최적화 | 큰 이미지 처리 성능 개선 | [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) |
