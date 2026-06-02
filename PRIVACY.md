@@ -1,30 +1,33 @@
-# Privacy
+# 개인정보 보호
 
-Haan Ghil Muulnaat is designed as an on-device Android image-processing app.
+Haan Ghil Muulnaat는 기기 내에서 실행되는 이미지 처리 앱입니다.
 
-## Image Handling
+## 이미지 처리
 
-- The app lets the user select images from the Android gallery or share images from other apps.
-- Selected images are processed locally on the device.
-- The app does not implement an image upload endpoint or app-level image transfer path.
-- Protected images are saved to the Android gallery only when the user requests saving or uses the auto-save share target.
+- 사용자는 Android 갤러리에서 이미지를 선택하거나 다른 앱에서 이미지를 공유할 수 있습니다.
 
-## Android Permissions
+- 선택된 이미지는 기기 내에서 로컬로 처리됩니다.
 
-The app may request permissions needed for:
+- 이미지 업로드 엔드포인트 또는 앱 수준의 이미지 전송 경로를 구현하지 않습니다.
 
-- foreground background processing for auto-save jobs
-- notifications for background job progress
-- legacy external storage writes on Android versions where that permission is required
+- 보호된 이미지는 사용자가 저장을 요청하거나 자동 저장 공유 대상을 사용할 때만 Android 갤러리에 저장됩니다.
 
-## Google Play Services ML Kit
+## Android 권한
 
-The app uses Google Play Services ML Kit face detection and image labeling APIs for local evaluation. Depending on device state and Google Play Services behavior, ML Kit models may be delivered or updated by Google Play Services outside this app's own image-processing code.
+이 앱은 다음과 같은 권한을 요청할 수 있습니다.
 
-## Network Behavior
+- 자동 저장 작업을 위한 포그라운드 및 백그라운드 처리
+- 백그라운드 작업 진행 상황 알림
+- 해당 권한이 필요한 Android 버전에서의 기존 외부 저장소 쓰기
 
-The app source does not include a custom network client, image upload API, or remote analytics pipeline. If this changes, this document should be updated before release.
+## Google Play 서비스 ML Kit
 
-## Saved Output
+이 앱은 로컬 평가를 위해 Google Play 서비스 ML Kit의 얼굴 인식 및 이미지 라벨링 API를 사용합니다. 기기 상태 및 Google Play 서비스 동작에 따라 ML Kit 모델은 이 앱의 이미지 처리 코드 외부에서 Google Play 서비스를 통해 제공되거나 업데이트될 수 있습니다.
 
-Generated images are saved as PNG files in the user's gallery. On Android 10 and newer, they are written under the Pictures collection using the app's output folder.
+## 네트워크 동작
+
+앱 소스 코드에는 사용자 지정 네트워크 클라이언트, 이미지 업로드 API 또는 원격 분석 파이프라인이 포함되어 있지 않습니다. 이러한 기능이 변경될 경우, 출시 전에 이 문서를 업데이트해야 합니다.
+
+## 저장된 출력
+
+생성된 이미지는 사용자의 갤러리에 PNG 파일로 저장됩니다. Android 10 이상에서는 앱의 출력 폴더를 사용하여 사진 컬렉션에 저장됩니다.
