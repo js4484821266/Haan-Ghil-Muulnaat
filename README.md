@@ -92,20 +92,15 @@ OpenCV Haar와 RetinaFace는 원본 단계의 얼굴 감지 성립성이 낮아 
 
 ## Release APK
 
-APK 바이너리는 저장소에 커밋하지 않습니다. 공개 APK는 GitHub Releases에 첨부합니다.
+APK 바이너리는 저장소에 커밋하지 않습니다. 배포나 공유가 필요할 때는 로컬에서 release APK를 빌드한 뒤 직접 관리합니다.
 
-릴리스 워크플로는 다음 repository secret을 사용합니다.
-
-- `ANDROID_KEYSTORE_BASE64`
-- `ANDROID_KEYSTORE_PASSWORD`
-- `ANDROID_KEY_ALIAS`
-- `ANDROID_KEY_PASSWORD`
-
-`v*` 태그를 push하면 GitHub Actions가 서명된 release APK를 빌드하고 다음 이름으로 업로드합니다.
+기본 출력 파일:
 
 ```text
-haan-ghil-muulnaat.apk
+app/build/outputs/apk/release/app-release.apk
 ```
+
+정식 배포용 서명이 필요하면 `ANDROID_KEYSTORE_PATH`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` 환경 변수를 설정한 뒤 `.\build-android.ps1`을 실행합니다.
 
 ## 저장소 메모
 

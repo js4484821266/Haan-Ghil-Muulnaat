@@ -42,7 +42,6 @@ Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 edge-aware pertur
 | [`app/build.gradle.kts`](app/build.gradle.kts) | Android 모듈 빌드 설정과 의존성 | High | ML Kit, TensorFlow Lite 의존성 포함 |
 | [`build-android.ps1`](build-android.ps1) | Windows release APK 빌드 helper | Medium | signing env var 없으면 debug signing release |
 | [`install-apk.ps1`](install-apk.ps1) | release APK를 연결 기기에 설치하는 helper | Medium | `local.properties`의 `sdk.dir` 필요 |
-| [`.github/workflows/release.yml`](.github/workflows/release.yml) | 태그 push/workflow_dispatch 기반 APK 릴리스 | Medium | signing secrets 필요 |
 | [`ipynbbbbb/face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 로컬 얼굴 감지 실험 CSV 생성 스크립트 | Medium | 입력 데이터와 결과 CSV는 `.gitignore` 대상이라 내용 확인하지 않음 |
 | [`docs/site/index.html`](docs/site/index.html), [`script.js`](docs/site/script.js), [`styles.css`](docs/site/styles.css), [`translations.js`](docs/site/translations.js) | 보존용 정적 사이트 | Low | 앱 실행에는 직접 관여하지 않음 |
 | [`README.md`](README.md), [`PRIVACY.md`](PRIVACY.md), [`LICENSE`](LICENSE) | 공개 문서와 라이선스 | Medium | 구조 이해의 보조 자료 |
@@ -342,9 +341,9 @@ graph TD
 | `applicationId` | [`app/build.gradle.kts`](app/build.gradle.kts) | 앱 패키지 ID | `com.haanghil.muulnaat` | 설치/업데이트 대상 변경 |
 | `versionCode`, `versionName` | [`app/build.gradle.kts`](app/build.gradle.kts) | 앱 버전 | `1`, `1.0` | 배포 업데이트 정책 영향 |
 | `ANDROID_KEYSTORE_PATH` | [`app/build.gradle.kts`](app/build.gradle.kts), [`build-android.ps1`](build-android.ps1) | release signing keystore path | env var | 없으면 local release는 debug signing 사용 |
-| `ANDROID_KEYSTORE_PASSWORD` | [`app/build.gradle.kts`](app/build.gradle.kts), workflow | keystore password | env var/secret | release signing 필요 |
-| `ANDROID_KEY_ALIAS` | [`app/build.gradle.kts`](app/build.gradle.kts), workflow | signing key alias | env var/secret | release signing 필요 |
-| `ANDROID_KEY_PASSWORD` | [`app/build.gradle.kts`](app/build.gradle.kts), workflow | signing key password | env var/secret | release signing 필요 |
+| `ANDROID_KEYSTORE_PASSWORD` | [`app/build.gradle.kts`](app/build.gradle.kts), [`build-android.ps1`](build-android.ps1) | keystore password | env var | release signing 필요 |
+| `ANDROID_KEY_ALIAS` | [`app/build.gradle.kts`](app/build.gradle.kts), [`build-android.ps1`](build-android.ps1) | signing key alias | env var | release signing 필요 |
+| `ANDROID_KEY_PASSWORD` | [`app/build.gradle.kts`](app/build.gradle.kts), [`build-android.ps1`](build-android.ps1) | signing key password | env var | release signing 필요 |
 | [`NOISE_BASE`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | 기본 노이즈 amplitude | `2f` | 전체 perturbation 최소 강도 변화 |
 | [`NOISE_STRENGTH_MULTIPLIER`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | strength당 amplitude 증가량 | `2.5f` | strength 변화 민감도 증가/감소 |
 | [`safeStrength`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) range | [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | strength 제한 범위 | `0..100` | UI/탐색 범위와 맞춰야 함 |
@@ -398,10 +397,6 @@ graph TD
 ```
 
 [`install-apk.ps1`](install-apk.ps1)는 `local.properties`의 `sdk.dir`에서 `adb.exe`를 찾고, `app/build/outputs/apk/release/app-release.apk`를 설치한다. 현재 `local.properties`는 `.gitignore` 대상이므로 내용은 확인하지 않았다.
-
-### GitHub Release
-
-태그 `v*` push 또는 `workflow_dispatch`로 [`.github/workflows/release.yml`](.github/workflows/release.yml)이 실행된다. signing secret 4개가 필요하다.
 
 ### Python 실험 스크립트
 
