@@ -88,3 +88,4 @@ original-set/*/*
 #!original-set/faces/*.txt
 face_detection_result_with_NA.csv
 face_detection_result_without_NA.csv
+models/*
