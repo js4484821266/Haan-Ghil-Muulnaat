@@ -83,7 +83,7 @@ ipynbbbbb/*
 .vscode/
 .venv/
 test-set/
-original-set/*/*
+original-set/*
 #!original-set/faces/*.csv
 #!original-set/faces/*.txt
 face_detection_result_with_NA.csv
