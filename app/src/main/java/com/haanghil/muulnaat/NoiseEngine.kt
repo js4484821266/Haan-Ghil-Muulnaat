@@ -1,6 +1,8 @@
 package com.haanghil.muulnaat
 
 import android.graphics.Bitmap
+import android.graphics.Rect
+import androidx.core.graphics.createBitmap
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -14,7 +16,7 @@ object NoiseEngine : PerturbationModule {
     private const val NOISE_BASE = 2f
     private const val NOISE_STRENGTH_MULTIPLIER = 2.5f
 
-    override fun applyProtection(source: Bitmap, strength: Int): Bitmap {
+    override fun applyProtection(source: Bitmap, strength: Int, regions: List<Rect>?): Bitmap {
         val safeStrength = strength.coerceIn(0, 100)
         val width = source.width
         val height = source.height
@@ -23,6 +25,7 @@ object NoiseEngine : PerturbationModule {
         source.getPixels(srcPixels, 0, width, 0, 0, width, height)
 
         val edgeMap = buildEdgeMap(srcPixels, width, height)
+        val regionMask = NoiseRegionMask.build(width, height, regions)
         val outPixels = IntArray(srcPixels.size)
         // 결정적 시드입니다. 같은 이미지 크기와 같은 강도는 같은 perturbation을 만들며,
         // 그래서 실험을 재현할 수 있습니다.
@@ -32,6 +35,11 @@ object NoiseEngine : PerturbationModule {
 
         for (i in srcPixels.indices) {
             val pixel = srcPixels[i]
+            if (regionMask != null && !regionMask[i]) {
+                outPixels[i] = pixel
+                continue
+            }
+
             val r = (pixel shr 16) and 0xFF
             val g = (pixel shr 8) and 0xFF
             val b = pixel and 0xFF
@@ -55,12 +63,13 @@ object NoiseEngine : PerturbationModule {
             outPixels[i] = (0xFF shl 24) or (nr shl 16) or (ng shl 8) or nb
         }
 
-        return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).also {
+        return createBitmap(width, height).also {
             it.setPixels(outPixels, 0, width, 0, 0, width, height)
         }
     }
 
-    fun protect(source: Bitmap, strength: Int): Bitmap = applyProtection(source, strength)
+    fun protect(source: Bitmap, strength: Int, regions: List<Rect>? = null): Bitmap =
+        applyProtection(source, strength, regions)
 
     private fun buildEdgeMap(pixels: IntArray, width: Int, height: Int): FloatArray {
         val map = FloatArray(pixels.size)

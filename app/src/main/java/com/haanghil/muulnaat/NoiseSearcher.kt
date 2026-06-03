@@ -1,6 +1,7 @@
 package com.haanghil.muulnaat
 
 import android.graphics.Bitmap
+import android.graphics.Rect
 
 object NoiseSearcher {
     private val DEFAULT_CANDIDATE_STRENGTHS = (0..90 step 10).toList()
@@ -69,6 +70,7 @@ object NoiseSearcher {
         original: Bitmap,
         perturbationModule: PerturbationModule,
         defenseEvaluator: DefenseEvaluator,
+        regions: List<Rect>? = null,
         lo: Int = 0,
         hi: Int = 100,
         onStep: ((SearchStep) -> Unit)? = null,
@@ -78,7 +80,7 @@ object NoiseSearcher {
             lo = lo,
             hi = hi,
             test = { strength ->
-                val protected = perturbationModule.applyProtection(original, strength)
+                val protected = perturbationModule.applyProtection(original, strength, regions)
                 defenseEvaluator.evaluateAfterAttack(original, protected).status == ProtectionStatus.HELD
             },
             onStep = onStep,
@@ -91,6 +93,7 @@ object NoiseSearcher {
      */
     fun findMinimumStrength(
         original: Bitmap,
+        regions: List<Rect>? = null,
         lo: Int = 0,
         hi: Int = 100,
         onStep: ((SearchStep) -> Unit)? = null,
@@ -100,7 +103,7 @@ object NoiseSearcher {
             lo = lo,
             hi = hi,
             test = { strength ->
-                val protected = NoiseEngine.protect(original, strength)
+                val protected = NoiseEngine.protect(original, strength, regions)
                 ModelProbe.evaluate(original, protected).passed
             },
             onStep = onStep,

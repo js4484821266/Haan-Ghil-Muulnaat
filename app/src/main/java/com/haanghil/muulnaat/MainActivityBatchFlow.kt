@@ -78,7 +78,8 @@ private fun MainActivity.processBatchItem(itemNumber: Int, total: Int, uri: Uri)
     }
 
     val minStrength = findBatchStrength(loaded, itemNumber, total) ?: return false
-    val protected = perturbationModule.applyProtection(loaded, minStrength)
+    val faceRegions = FaceRegionDetector.detectRegions(loaded)
+    val protected = perturbationModule.applyProtection(loaded, minStrength, faceRegions)
     val defenseReport = if (binding.autoRecoverySwitch.isChecked) {
         defenseEvaluator.evaluateAfterAttack(loaded, protected)
     } else {

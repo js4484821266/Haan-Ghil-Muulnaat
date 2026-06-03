@@ -19,10 +19,13 @@ object StrengthAdvisor {
         onStep: ((NoiseSearcher.SearchStep) -> Unit)? = null,
         shouldCancel: () -> Boolean = { false },
     ): Int? {
+        val faceRegions = FaceRegionDetector.detectRegions(original)
+
         return NoiseSearcher.findMinimumStrength(
             original = original,
             perturbationModule = perturbationModule,
             defenseEvaluator = defenseEvaluator,
+            regions = faceRegions,
             onStep = onStep,
             shouldCancel = shouldCancel,
         )

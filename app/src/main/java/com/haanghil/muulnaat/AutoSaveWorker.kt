@@ -56,7 +56,8 @@ private fun AutoSaveProtectionService.processQueueItem(item: Uri) {
     }
 
     notifySaving(itemNumber, total, minStrength)
-    val protected = perturbationModule.applyProtection(loaded, minStrength)
+    val faceRegions = FaceRegionDetector.detectRegions(loaded)
+    val protected = perturbationModule.applyProtection(loaded, minStrength, faceRegions)
     if (cancelRequested) {
         skippedCount += 1
         return

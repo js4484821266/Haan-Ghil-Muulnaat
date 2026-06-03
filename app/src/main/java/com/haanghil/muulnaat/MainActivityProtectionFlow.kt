@@ -17,7 +17,8 @@ internal fun MainActivity.runProtectionFlow(
     setBusy(true, startMessage)
 
     thread {
-        val output = perturbationModule.applyProtection(source, strength)
+        val faceRegions = FaceRegionDetector.detectRegions(source)
+        val output = perturbationModule.applyProtection(source, strength, faceRegions)
         val defenseReport = if (autoRecovery) defenseEvaluator.evaluateAfterAttack(source, output) else null
 
         runOnUiThread {
