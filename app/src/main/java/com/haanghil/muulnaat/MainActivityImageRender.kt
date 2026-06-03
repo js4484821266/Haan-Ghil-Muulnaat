@@ -3,7 +3,7 @@ package com.haanghil.muulnaat
 import android.graphics.Bitmap
 
 /**
- * Image preview rendering for the three-panel main screen.
+ * 메인 화면의 세 이미지 패널을 그립니다.
  */
 internal fun MainActivity.renderProtectedImage(reference: Bitmap, protected: Bitmap) {
     binding.noisyImage.setImageBitmap(protected)

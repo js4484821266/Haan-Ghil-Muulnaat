@@ -3,10 +3,10 @@ package com.haanghil.muulnaat
 import android.graphics.Bitmap
 
 /**
- * Minimum-strength search for one item in a visible batch.
+ * 화면에 보이는 일괄 처리 항목 하나의 최소 강도를 찾습니다.
  *
- * The search itself is shared with the single-image path; this wrapper only
- * translates progress and failure into main-screen UI updates.
+ * 탐색 자체는 단일 이미지 경로와 공유합니다. 이 래퍼는 진행 상황과 실패 상태를
+ * 메인 화면 UI 업데이트로 바꾸는 역할만 합니다.
  */
 internal fun MainActivity.findBatchStrength(
     loaded: Bitmap,

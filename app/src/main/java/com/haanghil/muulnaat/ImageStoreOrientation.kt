@@ -8,10 +8,10 @@ import android.net.Uri
 import android.util.Log
 
 /**
- * EXIF orientation handling.
+ * EXIF 방향 정보를 처리합니다.
  *
- * Many phone photos are stored sideways with orientation metadata. Correcting
- * that once at load time keeps perturbation, preview, and saved output aligned.
+ * 많은 휴대폰 사진은 픽셀은 옆으로 누운 채 저장되고 방향 메타데이터만 따로 갖습니다.
+ * 로드 시 한 번 바로잡아야 perturbation, 미리보기, 저장 결과가 같은 방향을 봅니다.
  */
 internal fun readExifOrientation(context: Context, uri: Uri): Int {
     return try {

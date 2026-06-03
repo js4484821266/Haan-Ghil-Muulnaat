@@ -5,11 +5,10 @@ import kotlin.math.abs
 import kotlin.math.max
 
 /**
- * Edge-aware perturbation module.
+ * 엣지를 고려하는 perturbation 모듈입니다.
  *
- * Intent: keep perturbations concentrated around high-frequency regions where
- * restoration models tend to reconstruct semantics, while avoiding unnecessary
- * distortion on smooth areas.
+ * 복원 모델이 의미를 재구성하기 쉬운 고주파 영역 주변에 perturbation을 집중시키고,
+ * 매끈한 영역의 불필요한 왜곡은 줄이는 것이 목적입니다.
  */
 object NoiseEngine : PerturbationModule {
     private const val NOISE_BASE = 2f
@@ -25,8 +24,8 @@ object NoiseEngine : PerturbationModule {
 
         val edgeMap = buildEdgeMap(srcPixels, width, height)
         val outPixels = IntArray(srcPixels.size)
-        // Deterministic seed: same image size + same strength produce the same
-        // perturbation, which keeps experiments reproducible.
+        // 결정적 시드입니다. 같은 이미지 크기와 같은 강도는 같은 perturbation을 만들며,
+        // 그래서 실험을 재현할 수 있습니다.
         var seed = ((width * 73856093) xor (height * 19349663) xor (safeStrength * 83492791)).toUInt().toInt()
 
         val baseNoise = NOISE_BASE + safeStrength * NOISE_STRENGTH_MULTIPLIER
@@ -40,8 +39,8 @@ object NoiseEngine : PerturbationModule {
             val edgeBoost = 1f + edgeMap[i] * 0.9f
             val amplitude = baseNoise * edgeBoost
 
-            // Three xorshift draws decorrelate channel noise without allocating
-            // a Random object for every pixel.
+            // xorshift를 세 번 뽑아 픽셀마다 Random 객체를 만들지 않고도
+            // 채널별 노이즈 상관을 줄입니다.
             seed = xorshift32(seed)
             val n1 = ((seed and 0xFF) - 128) / 128f
             seed = xorshift32(seed)
@@ -67,8 +66,8 @@ object NoiseEngine : PerturbationModule {
         val map = FloatArray(pixels.size)
         if (width < 3 || height < 3) return map
 
-        // Simple central differences are enough here: the edge map is only used
-        // as a noise amplifier, not as a precise computer-vision feature.
+        // 여기서는 단순 중앙 차분이면 충분합니다. 엣지 맵은 정밀한 비전 특징이 아니라
+        // 노이즈 증폭 계수로만 사용됩니다.
         for (y in 1 until (height - 1)) {
             for (x in 1 until (width - 1)) {
                 val idx = y * width + x

@@ -15,7 +15,7 @@ private const val CANCEL_REQUEST_CODE = 2103
 internal fun AutoSaveProtectionService.completedCount(): Int = savedCount + skippedCount
 
 /**
- * Replaces the foreground notification while the worker is still active.
+ * 작업자가 실행 중일 때 포그라운드 알림 내용을 교체합니다.
  */
 internal fun AutoSaveProtectionService.updateProgressNotification(
     progress: Int,
@@ -31,7 +31,7 @@ internal fun AutoSaveProtectionService.updateProgressNotification(
 }
 
 /**
- * Builds both running and final notifications.
+ * 진행 중 알림과 최종 결과 알림을 모두 만듭니다.
  */
 internal fun AutoSaveProtectionService.buildProgressNotification(
     progress: Int,

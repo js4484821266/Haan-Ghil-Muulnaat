@@ -1,10 +1,10 @@
 package com.haanghil.muulnaat
 
 /**
- * Per-item notification messages for the auto-save worker.
+ * 자동 저장 작업자의 항목별 알림 문구를 모아 둡니다.
  *
- * Keeping these tiny wrappers separate lets AutoSaveWorker read like the job
- * pipeline instead of a wall of notification formatting.
+ * 알림 포매팅을 작은 래퍼로 분리하면 AutoSaveWorker가 알림 문자열 더미가 아니라
+ * 작업 파이프라인처럼 읽힙니다.
  */
 internal fun AutoSaveProtectionService.notifyLoading(itemNumber: Int, total: Int) {
     updateProgressNotification(

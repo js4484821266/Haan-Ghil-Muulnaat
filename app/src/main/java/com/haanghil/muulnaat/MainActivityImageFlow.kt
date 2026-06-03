@@ -34,7 +34,7 @@ internal fun MainActivity.prepareLoadedImage(loaded: Bitmap) {
 internal fun MainActivity.startOptimalStrengthFlow(source: Bitmap, autoSaveAfterProtection: Boolean) {
     binding.resultText.text = getString(R.string.result_image_loaded_scanning)
     setBusy(true, getString(R.string.result_scanning_optimal))
-    // ML Kit calls block through Tasks.await(), so the strength scan must stay off the UI thread.
+    // ML Kit 호출은 Tasks.await()로 블로킹되므로 강도 탐색은 UI 스레드 밖에서 실행합니다.
     thread {
         val minStrength = StrengthAdvisor.findRecommendedStrength(
             original = source,
@@ -87,7 +87,7 @@ private fun MainActivity.startProtectionFromRecommendedStrength(
     } else {
         getString(R.string.result_scan_found, minStrength)
     }
-    // Shared images can skip the manual save tap after the recommended strength has been applied.
+    // 공유로 들어온 이미지는 추천 강도 적용 후 수동 저장 탭을 건너뛸 수 있습니다.
     runProtectionFlow(source, minStrength, isAutoRecoveryOn, true, msg) { protected ->
         if (autoSaveAfterProtection) saveImageToGalleryAsync(protected)
     }

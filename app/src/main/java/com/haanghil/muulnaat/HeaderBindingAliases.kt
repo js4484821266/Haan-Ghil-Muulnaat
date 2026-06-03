@@ -3,7 +3,7 @@ package com.haanghil.muulnaat
 import com.haanghil.muulnaat.databinding.MainHeaderControlsBinding
 
 /**
- * Keeps Kotlin code readable after the header layout was split into includes.
+ * 헤더 레이아웃을 include로 쪼갠 뒤에도 Kotlin 코드가 평평하게 읽히도록 돕습니다.
  */
 internal val MainHeaderControlsBinding.helpButton get() = headerPickActions.helpButton
 internal val MainHeaderControlsBinding.pickButton get() = headerPickActions.pickButton

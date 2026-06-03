@@ -3,7 +3,7 @@ package com.haanghil.muulnaat
 import androidx.appcompat.app.AlertDialog
 
 /**
- * Small modal help entry point.
+ * 작은 도움말 모달의 진입점입니다.
  */
 internal fun MainActivity.showManualDialog() {
     AlertDialog.Builder(this)

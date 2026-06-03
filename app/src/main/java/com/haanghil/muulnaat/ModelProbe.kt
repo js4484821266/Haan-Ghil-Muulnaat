@@ -21,11 +21,10 @@ data class ModelProbeResult(
 )
 
 /**
- * Local ML Kit-based model probe.
+ * 로컬 ML Kit 기반 모델 평가기입니다.
  *
- * This is not a universal security oracle. It is a practical, on-device signal
- * that combines face-count suppression with image-label drift so the app can
- * decide whether a perturbation was strong enough for the current image.
+ * 이것은 보편적인 보안 판정기가 아닙니다. 얼굴 수 억제와 이미지 라벨 변화를 합쳐
+ * 현재 이미지에 perturbation이 충분했는지 앱 안에서 판단하기 위한 실용적인 신호입니다.
  */
 object ModelProbe {
     internal const val FACE_SUPPRESSION_WEIGHT = 0.35
@@ -33,8 +32,8 @@ object ModelProbe {
     internal const val PASS_THRESHOLD = 0.35
 
     fun evaluate(original: Bitmap, protected: Bitmap): ModelProbeResult {
-        // Fast mode is intentional: this probe runs repeatedly during strength
-        // search, so latency matters more than exhaustive detector accuracy.
+        // 강도 탐색 중 반복 실행되므로 의도적으로 빠른 모드를 씁니다.
+        // 모든 얼굴을 끝까지 찾는 정확도보다 지연 시간이 더 중요합니다.
         val faceOptions = FaceDetectorOptions.Builder()
             .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
             .build()
@@ -42,8 +41,8 @@ object ModelProbe {
         val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
 
         return try {
-            // ML Kit tasks are awaited synchronously here. Callers must keep this
-            // method on a worker thread, which MainActivity and the service do.
+            // 여기서는 ML Kit 작업을 동기적으로 기다립니다. 따라서 호출자는 이 메서드를
+            // 작업자 스레드에서 실행해야 하며, MainActivity와 서비스가 그렇게 합니다.
             val originalFaceTask = faceDetector.process(InputImage.fromBitmap(original, 0))
             val protectedFaceTask = faceDetector.process(InputImage.fromBitmap(protected, 0))
             val originalLabelTask = labeler.process(InputImage.fromBitmap(original, 0))
@@ -58,7 +57,7 @@ object ModelProbe {
             val labelShift = computeLabelShift(originalLabels, protectedLabels)
             val antiDetectionScore = computeAntiDetectionScore(faceSuppression, labelShift)
             
-            // Require face count reduction if faces were detected in the original image.
+            // 원본에서 얼굴이 감지됐다면 보호본에서는 얼굴 수가 줄어야 합니다.
             val faceReductionAchieved = if (originalFaces.isNotEmpty()) {
                 protectedFaces.size < originalFaces.size
             } else {
@@ -67,8 +66,8 @@ object ModelProbe {
             
             val pass = antiDetectionScore >= PASS_THRESHOLD && faceReductionAchieved
 
-            // Keep the reason string explicit because it is useful while tuning
-            // thresholds and explaining why a candidate strength failed.
+            // 후보 강도가 실패한 이유를 설명하고 임계값을 조정할 때 필요하므로
+            // 판정 사유 문자열은 명시적으로 유지합니다.
             val reason = when {
                 pass && originalFaces.isNotEmpty() && protectedFaces.isEmpty() ->
                     "PASS: face suppressed and classifier disrupted (score=${String.format(Locale.US, "%.2f", antiDetectionScore)})"
@@ -100,8 +99,8 @@ object ModelProbe {
                 details = details
             )
         } finally {
-            // FaceDetector and ImageLabeler hold native resources; close them
-            // even when a task fails or is interrupted by an exception.
+            // FaceDetector와 ImageLabeler는 네이티브 리소스를 들고 있으므로,
+            // 작업 실패나 예외 중단이 있어도 반드시 닫습니다.
             faceDetector.close()
             labeler.close()
         }
@@ -116,7 +115,7 @@ object ModelProbe {
         if (originalLabels.isEmpty()) return 0.0
         val originalSet = originalLabels.toSet()
         val intersection = originalSet.intersect(protectedLabels.toSet()).size
-        // A smaller overlap means stronger semantic drift after perturbation.
+        // 겹치는 라벨이 적을수록 perturbation 이후 의미 변화가 더 컸다는 뜻입니다.
         return 1.0 - (intersection.toDouble() / originalSet.size)
     }
 

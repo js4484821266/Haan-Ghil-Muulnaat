@@ -6,10 +6,10 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
- * Simulates a "Red Team" AI attack by attempting to reverse the noise.
- * In a full implementation, this would use a TFLite model like ESRGAN-tiny.
- * This implementation uses a bilateral-inspired denoising
- * algorithm that mimics the "softening" and "edge-preserving" effects of AI restoration.
+ * 노이즈를 되돌리려는 "레드팀" AI 공격을 흉내 냅니다.
+ * 완전한 구현이라면 ESRGAN-tiny 같은 TFLite 모델을 사용할 수 있습니다.
+ * 현재 구현은 양방향 필터에서 착안한 노이즈 제거 알고리즘으로 AI 복원의
+ * "부드럽게 만들기"와 "엣지 보존" 효과를 근사합니다.
  */
 object RedTeamEngine {
 
@@ -21,15 +21,15 @@ object RedTeamEngine {
 
         val outPixels = IntArray(pixels.size)
         
-        // Simulating AI Denoising: A combination of Median filtering (to remove salt-and-pepper)
-        // and a pass of local averaging (to reduce Gaussian variance).
+        // AI 노이즈 제거 근사입니다. 점 잡음(salt-and-pepper)을 줄이는 중앙값 필터와
+        // 가우시안 분산을 낮추는 지역 평균 단계를 함께 사용합니다.
         for (y in 0 until height) {
             for (x in 0 until width) {
                 val windowR = mutableListOf<Int>()
                 val windowG = mutableListOf<Int>()
                 val windowB = mutableListOf<Int>()
 
-                // 3x3 Window for median/mean simulation
+                // 중앙값/평균 근사용 3x3 창입니다.
                 for (ky in -1..1) {
                     for (kx in -1..1) {
                         val px = (x + kx).coerceIn(0, width - 1)
@@ -45,8 +45,8 @@ object RedTeamEngine {
                 windowG.sort()
                 windowB.sort()
 
-                // AI models often find a "consensus" value. We'll use a weighted average 
-                // of the median and the mean to simulate "smart" denoising.
+                // AI 모델은 주변 픽셀의 "합의값"을 찾는 경우가 많습니다. 여기서는 중앙값과
+                // 평균의 가중 평균으로 "영리한" 노이즈 제거를 근사합니다.
                 val medianR = windowR[4]
                 val meanR = windowR.average().toInt()
                 val finalR = (medianR * 0.7 + meanR * 0.3).toInt()
@@ -63,8 +63,8 @@ object RedTeamEngine {
             }
         }
 
-        // Second pass: Upscale/Sharpen simulation (Simulating ESRGAN's edge enhancement)
-        // We'll apply a simple unsharp mask logic.
+        // 두 번째 단계는 업스케일/샤픈 근사입니다. ESRGAN식 엣지 강화를 흉내 내기 위해
+        // 단순 언샤프 마스크 로직을 적용합니다.
         val sharpenedPixels = outPixels.copyOf()
         for (y in 1 until height - 1) {
             for (x in 1 until width - 1) {

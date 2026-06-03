@@ -7,11 +7,11 @@ import android.net.Uri
 import android.util.Log
 
 /**
- * URI-to-Bitmap loading.
+ * URI를 Bitmap으로 읽어 오는 경로입니다.
  *
- * Android shares content URIs, not stable file paths. This helper reads bounds
- * first, downsamples large images, then applies EXIF orientation so the rest of
- * the pipeline can treat the bitmap as display-ready.
+ * Android 공유는 안정적인 파일 경로가 아니라 content URI를 전달합니다. 이 헬퍼는
+ * 먼저 이미지 크기만 읽고, 큰 이미지는 다운샘플링한 뒤, EXIF 방향을 적용해 이후
+ * 파이프라인이 표시 가능한 비트맵으로 다룰 수 있게 합니다.
  */
 fun ImageStore.loadBitmapFromUri(context: Context, uri: Uri): Bitmap? {
     return try {

@@ -3,10 +3,10 @@ package com.haanghil.muulnaat
 import android.view.View
 
 /**
- * Small UI state helpers for MainActivity.
+ * MainActivity의 작은 UI 상태 헬퍼입니다.
  *
- * These functions only toggle existing widgets. Rendering metrics and images is
- * kept in neighboring files so this file stays easy to scan.
+ * 이 함수들은 기존 위젯의 상태만 토글합니다. 메트릭과 이미지 렌더링은 주변 파일에
+ * 두어 이 파일을 빠르게 훑을 수 있게 합니다.
  */
 internal fun MainActivity.clearResultCards() {
     binding.protectionStatusValue.text = getString(R.string.status_na)

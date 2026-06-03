@@ -3,10 +3,10 @@ package com.haanghil.muulnaat
 import android.graphics.Bitmap
 
 /**
- * UI rendering for the latest completed batch item.
+ * 가장 최근에 완료된 일괄 처리 항목을 UI에 그립니다.
  *
- * Batch mode intentionally reuses the single-image preview panels. That keeps
- * the user informed without creating a separate batch-results screen.
+ * 일괄 모드는 의도적으로 단일 이미지 미리보기 패널을 재사용합니다. 별도 결과 화면을
+ * 만들지 않아도 사용자가 현재 상태를 파악할 수 있습니다.
  */
 internal fun MainActivity.renderBatchResult(
     loaded: Bitmap,

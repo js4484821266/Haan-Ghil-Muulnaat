@@ -4,9 +4,9 @@ import android.graphics.Bitmap
 import kotlin.math.abs
 
 /**
- * Display-only math helpers.
+ * 화면 표시 전용 계산 헬퍼입니다.
  *
- * These values are for UI summaries, not for final protection decisions.
+ * 이 값들은 UI 요약용이며 최종 보호 판단에는 쓰지 않습니다.
  */
 internal fun psnrToPercent(psnr: Double): Double {
     val normalized = (psnr - 8.0) / (50.0 - 8.0)

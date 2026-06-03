@@ -2,7 +2,7 @@ package com.haanghil.muulnaat
 
 import com.haanghil.muulnaat.databinding.ActivityMainBinding
 
-// These aliases let the Kotlin flow read like the old flat layout while XML is split into includes.
+// XML은 include로 나뉘어 있어도 Kotlin 흐름은 예전의 평평한 레이아웃처럼 읽히게 합니다.
 internal val ActivityMainBinding.helpButton get() = headerControls.helpButton
 internal val ActivityMainBinding.pickButton get() = headerControls.pickButton
 internal val ActivityMainBinding.recommendedStrengthText get() = headerControls.recommendedStrengthText

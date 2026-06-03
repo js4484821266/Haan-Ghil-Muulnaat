@@ -7,11 +7,10 @@ import android.os.IBinder
 import java.util.ArrayDeque
 
 /**
- * Foreground service shell for background image protection.
+ * 백그라운드 이미지 보호를 담당하는 포그라운드 서비스의 껍데기입니다.
  *
- * The service owns queue state and Android lifecycle callbacks. Queue mutation,
- * worker execution, notifications, and start-intent construction live in small
- * neighboring files.
+ * 이 서비스는 큐 상태와 Android 생명주기 콜백만 직접 들고 있습니다. 큐 변경,
+ * 작업자 실행, 알림, 시작 Intent 구성은 주변의 작은 파일들로 나누어 둡니다.
  */
 class AutoSaveProtectionService : Service() {
     internal val queue = ArrayDeque<Uri>()

@@ -8,10 +8,10 @@ import android.os.Environment
 import android.provider.MediaStore
 
 /**
- * Gallery save path.
+ * 갤러리 저장 경로입니다.
  *
- * MediaStore is used instead of raw filesystem paths so Android version-specific
- * gallery rules are handled by the platform.
+ * 원시 파일 경로 대신 MediaStore를 사용해 Android 버전별 갤러리 규칙을 플랫폼에
+ * 맡깁니다.
  */
 fun ImageStore.saveImageToGallery(context: Context, image: Bitmap): GallerySaveResult {
     val filename = "haan_ghil_muulnaat_${System.currentTimeMillis()}.png"

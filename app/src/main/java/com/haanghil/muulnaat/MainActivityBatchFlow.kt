@@ -4,16 +4,16 @@ import android.net.Uri
 import kotlin.concurrent.thread
 
 /**
- * Entry point for visible batch processing.
+ * 화면에 진행 상태를 보여 주는 일괄 처리의 진입점입니다.
  *
- * The foreground service handles silent auto-save. This path is for batches that
- * still mirror each item on the main screen so the user can see what happened.
+ * 조용한 자동 저장은 포그라운드 서비스가 맡습니다. 이 경로는 각 항목을 메인 화면에
+ * 비춰 주어 사용자가 처리 결과를 볼 수 있는 일괄 처리용입니다.
  */
 internal fun MainActivity.processImageBatch(uris: List<Uri>) {
     if (uris.isEmpty()) return
 
     resetBatchUi(uris.size)
-    // Batch mode reuses the same protection pipeline while keeping progress visible on the main screen.
+    // 일괄 모드는 같은 보호 파이프라인을 재사용하되 진행 상태를 메인 화면에 보여 줍니다.
     thread {
         var savedCount = 0
         var skippedCount = 0
@@ -32,10 +32,10 @@ internal fun MainActivity.processImageBatch(uris: List<Uri>) {
 }
 
 /**
- * Clears single-image state before a batch starts.
+ * 일괄 처리를 시작하기 전에 단일 이미지 상태를 비웁니다.
  *
- * The batch will reuse the same preview widgets for each item, so stale images
- * and metrics must be removed up front.
+ * 일괄 처리는 항목마다 같은 미리보기 위젯을 재사용하므로, 오래된 이미지와 메트릭을
+ * 먼저 지워야 합니다.
  */
 private fun MainActivity.resetBatchUi(total: Int) {
     state.originalBitmap = null
@@ -53,9 +53,9 @@ private fun MainActivity.resetBatchUi(total: Int) {
 }
 
 /**
- * Runs one batch item from load through save.
+ * 일괄 처리 항목 하나를 로드부터 저장까지 실행합니다.
  *
- * Returns true only when the protected PNG is actually written to the gallery.
+ * 보호 PNG가 실제로 갤러리에 쓰였을 때만 true를 반환합니다.
  */
 private fun MainActivity.processBatchItem(itemNumber: Int, total: Int, uri: Uri): Boolean {
     runOnUiThread {
@@ -71,7 +71,7 @@ private fun MainActivity.processBatchItem(itemNumber: Int, total: Int, uri: Uri)
         return false
     }
 
-    // The latest item is mirrored in the UI so batch processing remains inspectable instead of opaque.
+    // 최신 항목을 UI에 비춰 주어 일괄 처리가 블랙박스처럼 느껴지지 않게 합니다.
     runOnUiThread {
         prepareLoadedImage(loaded)
         setBusy(true, getString(R.string.result_batch_item_processing, itemNumber, total))

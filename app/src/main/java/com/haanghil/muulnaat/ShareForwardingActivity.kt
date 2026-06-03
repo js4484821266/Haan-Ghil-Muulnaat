@@ -7,12 +7,11 @@ import android.os.Bundle
 import android.widget.Toast
 
 /**
- * Thin share-entry activity.
+ * 얇은 공유 진입 Activity입니다.
  *
- * Android share targets must be activities, but the real work belongs either to
- * MainActivity (single image, user-visible) or AutoSaveProtectionService
- * (batch/background). This class only decides which path should receive the
- * shared URI list.
+ * Android 공유 대상은 Activity여야 하지만, 실제 작업은 MainActivity(단일 이미지,
+ * 화면 표시) 또는 AutoSaveProtectionService(일괄/백그라운드)가 맡습니다.
+ * 이 클래스는 공유 URI 목록을 어느 경로로 보낼지만 결정합니다.
  */
 abstract class ShareForwardingActivity : Activity() {
     internal abstract val shareMode: String

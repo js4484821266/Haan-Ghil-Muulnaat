@@ -14,9 +14,9 @@ object NoiseSearcher {
     )
 
     /**
-     * Binary-searches the default candidate strengths in [lo, hi] (inclusive) for
-     * the minimum value where [test] returns true.
-     * Returns null if no candidate in the range achieves a passing result.
+     * [lo, hi] 범위의 기본 후보 강도 중 [test]가 true를 반환하는 최솟값을
+     * 이진 탐색으로 찾습니다.
+     * 범위 안에서 통과하는 후보가 없으면 null을 반환합니다.
      */
     fun findMinimumStrength(
         lo: Int = 0,
@@ -29,8 +29,8 @@ object NoiseSearcher {
         val candidates = DEFAULT_CANDIDATE_STRENGTHS.filter { it in lo..hi }
         if (candidates.isEmpty()) return null
 
-        // Probe the strongest candidate first. If even that fails, binary search
-        // would only spend more expensive ML Kit evaluations to reach null.
+        // 가장 강한 후보를 먼저 검사합니다. 이것도 실패하면 이진 탐색은 비싼 ML Kit
+        // 평가만 더 수행한 뒤 결국 null에 도달하게 됩니다.
         if (!test(candidates.last())) return null
 
         var low = 0
@@ -53,8 +53,8 @@ object NoiseSearcher {
                 )
             )
             if (passed) {
-                // Passing means this strength is viable; keep searching left for
-                // the smallest viable candidate.
+                // 통과했다는 것은 이 강도가 유효하다는 뜻입니다. 더 작은 유효 후보를
+                // 찾기 위해 왼쪽 범위를 계속 탐색합니다.
                 result = strength
                 high = mid - 1
             } else {
@@ -86,8 +86,8 @@ object NoiseSearcher {
         )
 
     /**
-     * Convenience overload that builds the test using [NoiseEngine] and [ModelProbe].
-     * Runs on the calling thread; call from a background thread in the UI.
+     * [NoiseEngine]과 [ModelProbe]로 테스트를 구성하는 편의 오버로드입니다.
+     * 호출한 스레드에서 실행되므로 UI에서는 백그라운드 스레드에서 호출해야 합니다.
      */
     fun findMinimumStrength(
         original: Bitmap,

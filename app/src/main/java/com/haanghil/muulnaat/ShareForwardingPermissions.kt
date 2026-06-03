@@ -6,10 +6,10 @@ import android.os.Build
 import androidx.core.content.ContextCompat
 
 /**
- * Runtime permission gate for background auto-save.
+ * 백그라운드 자동 저장을 위한 런타임 권한 관문입니다.
  *
- * Notifications are required on Android 13+, and gallery writes need legacy
- * storage permission on Android 9 and older.
+ * Android 13 이상에서는 알림 권한이 필요하고, Android 9 이하에서는 갤러리 쓰기에
+ * 레거시 저장소 권한이 필요합니다.
  */
 internal fun ShareForwardingActivity.requestMissingPermissionsOrStart(sharedUris: List<android.net.Uri>) {
     val missingPermissions = missingAutoSavePermissions()

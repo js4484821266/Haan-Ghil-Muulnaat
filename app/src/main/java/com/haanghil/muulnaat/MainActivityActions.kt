@@ -6,10 +6,10 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 
 /**
- * Wires UI controls to MainActivity flows.
+ * UI 컨트롤을 MainActivity 흐름에 연결합니다.
  *
- * The heavier work lives in flow files; this file answers "what does each
- * button do?" without mixing in image processing details.
+ * 무거운 작업은 흐름 파일에 두고, 이 파일은 이미지 처리 세부사항을 섞지 않은 채
+ * "각 버튼이 무엇을 하는가?"만 보여 줍니다.
  */
 internal fun MainActivity.configureUiActions() {
     binding.helpButton.setOnClickListener { showManualDialog() }
@@ -70,8 +70,8 @@ private fun MainActivity.runManualDefenseEvaluation() {
 
     binding.resultText.text = getString(R.string.result_running_recovery)
     setBusy(true, getString(R.string.result_running_recovery))
-    // Defense evaluation calls ML Kit through ModelProbe, so keep it off the UI
-    // thread and only render the final report on the main thread.
+    // 방어 평가는 ModelProbe를 통해 ML Kit을 호출하므로 UI 스레드 밖에서 실행하고,
+    // 최종 리포트만 메인 스레드에서 그립니다.
     kotlin.concurrent.thread {
         val defenseReport = defenseEvaluator.evaluateAfterAttack(original, source)
         runOnUiThread {
@@ -99,8 +99,8 @@ private fun MainActivity.applyRememberedOptimalStrength() {
 
     binding.strengthSeekBar.progress = rememberedStrength
     binding.strengthLabel.text = getString(R.string.noise_strength_value, rememberedStrength)
-    // Reusing the remembered strength makes the scan result actionable after a
-    // user has changed the slider manually.
+    // 기억해 둔 강도를 다시 적용하면 사용자가 슬라이더를 손으로 바꾼 뒤에도
+    // 탐색 결과를 바로 실행 가능한 값으로 되돌릴 수 있습니다.
     val msg = if (binding.autoRecoverySwitch.isChecked) {
         getString(R.string.result_reset_optimal_auto, rememberedStrength)
     } else {

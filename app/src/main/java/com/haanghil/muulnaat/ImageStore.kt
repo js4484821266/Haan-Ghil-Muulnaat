@@ -1,11 +1,11 @@
 package com.haanghil.muulnaat
 
 /**
- * Namespace for Android image I/O helpers.
+ * Android 이미지 입출력 헬퍼를 모아 두는 네임스페이스입니다.
  *
- * Kotlin extension functions in the neighboring ImageStore* files keep the
- * public call shape (`ImageStore.loadBitmapFromUri(...)`) while each operation
- * stays small enough to read alone.
+ * 주변 ImageStore* 파일의 Kotlin 확장 함수들은 공개 호출 형태
+ * (`ImageStore.loadBitmapFromUri(...)`)를 유지하면서 각 작업을 혼자 읽기
+ * 충분히 작은 단위로 나눕니다.
  */
 object ImageStore
 

@@ -7,10 +7,10 @@ import android.net.Uri
 import android.os.Build
 
 /**
- * Public start helper for the auto-save foreground service.
+ * 자동 저장 포그라운드 서비스를 시작하는 공개 헬퍼입니다.
  *
- * Keeping this as a companion extension preserves the existing call shape:
- * `AutoSaveProtectionService.start(context, uris)`.
+ * companion 확장으로 두면 기존 호출 형태인
+ * `AutoSaveProtectionService.start(context, uris)`를 유지할 수 있습니다.
  */
 fun AutoSaveProtectionService.Companion.start(context: Context, uris: List<Uri>) {
     val intent = Intent(context, AutoSaveProtectionService::class.java).apply {

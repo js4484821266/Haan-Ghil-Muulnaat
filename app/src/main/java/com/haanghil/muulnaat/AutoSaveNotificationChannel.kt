@@ -5,7 +5,7 @@ import android.app.NotificationManager
 import android.os.Build
 
 /**
- * Notification channel setup for Android O+.
+ * Android O 이상에서 사용할 알림 채널을 준비합니다.
  */
 internal fun AutoSaveProtectionService.createNotificationChannel() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return

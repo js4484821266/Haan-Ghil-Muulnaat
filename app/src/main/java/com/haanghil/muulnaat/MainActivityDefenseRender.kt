@@ -1,7 +1,7 @@
 package com.haanghil.muulnaat
 
 /**
- * Writes defense metrics into the technical detail panel.
+ * 방어 메트릭을 기술 세부 패널에 씁니다.
  */
 internal fun MainActivity.renderDefenseResult(
     status: ProtectionStatus,

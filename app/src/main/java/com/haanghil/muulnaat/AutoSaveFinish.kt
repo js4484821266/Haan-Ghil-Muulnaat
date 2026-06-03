@@ -4,10 +4,10 @@ import android.app.NotificationManager
 import android.os.Build
 
 /**
- * Finalizes the foreground service worker.
+ * 포그라운드 서비스 작업자를 마무리합니다.
  *
- * Cancelled work clears the remaining queue and reports those items as skipped;
- * normal completion leaves the final saved/skipped counts intact.
+ * 취소된 작업은 남은 큐를 비우고 해당 항목을 건너뜀으로 집계합니다.
+ * 정상 완료 시에는 최종 저장/건너뜀 개수를 그대로 유지합니다.
  */
 internal fun AutoSaveProtectionService.finishWorker() {
     val wasCanceled = cancelRequested
