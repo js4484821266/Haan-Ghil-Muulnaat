@@ -1,5 +1,7 @@
 # 한 길 물낯 / Haan Ghil Muulnaat
 
+<img src="./icon.png" width=333px>
+
 **한 길 물낯**은 로컬 인물 사진 perturbation 실험과 방어 평가를 위한 Android 앱입니다. 선택한 이미지에 보호용 변형을 적용하고, 복원 시도 이후에도 얼굴 감지 방해 효과가 유지되는지 기기 안에서 점검합니다.
 
 다른 언어의 표시명은 **Haan Ghil Muulnaat**입니다.
