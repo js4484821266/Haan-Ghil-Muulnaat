@@ -110,4 +110,4 @@ app/build/outputs/apk/release/app-release.apk
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+[GNU LGPL v3.0](LICENSE).
