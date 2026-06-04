@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Rect
 
 object NoiseSearcher {
-    private val DEFAULT_CANDIDATE_STRENGTHS = listOf(0, 20, 40, 60, 80, 100)
+    private val DEFAULT_CANDIDATE_STRENGTHS = listOf(0, 20, 40, 60, 80)
 
     data class SearchStep(
         val iteration: Int,

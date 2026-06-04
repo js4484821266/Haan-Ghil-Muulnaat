@@ -21,7 +21,7 @@
     <string name="result_load_failed">Failed to load image.</string>
     <string name="result_image_loaded_scanning">Image loaded. Scanning for optimal strength via defense evaluation...</string>
     <string name="result_scanning_optimal">Scanning optimal strength...</string>
-    <string name="result_scan_none">Scan complete: no HELD point in defense evaluation across 0, 20, ..., 100. Increase strength and try again.</string>
+    <string name="result_scan_none">Scan complete: no HELD point in defense evaluation across 0, 20, ..., 80. Increase strength and try again.</string>
     <string name="result_scan_found">Scan complete: optimal strength is %1$d. Apply protection to continue.</string>
     <string name="result_auto_applying_optimal">Scan complete: optimal strength %1$d found. Applying protection and running defense evaluation...</string>
     <string name="result_applying_protection">Applying protection...</string>
@@ -93,7 +93,7 @@
     <string name="perturbation_magnitude_format">Perturbation magnitude: %1$.2f / 255 (%2$.2f%%)</string>
     <string name="simulate_ai_attack">Run Defense Evaluation</string>
     <string name="recommended_strength_default">Optimal Strength: run scan after selecting an image.</string>
-    <string name="recommended_strength_none">Optimal Strength: no HELD point in defense evaluation across 0, 20, ..., 100. Increase strength and retry.</string>
+    <string name="recommended_strength_none">Optimal Strength: no HELD point in defense evaluation across 0, 20, ..., 80. Increase strength and retry.</string>
     <string name="recommended_strength_found">Optimal Strength: %1$d</string>
     <string name="search_progress_idle">Strength search status appears here after selecting an image.</string>
     <string name="search_progress_step">Step %1$d - range %2$d..%4$d, check %3$d -&gt; %5$s</string>
