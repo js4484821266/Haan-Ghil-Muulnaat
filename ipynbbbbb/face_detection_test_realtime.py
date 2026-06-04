@@ -3,13 +3,13 @@ face_detection_test_realtime.py
 
 목적
 ----
-original-set/faces/ 안의 원본 이미지들을 기준으로,
-test-set/ 안에 같은 이름의 노이즈 판본이 있는지 찾고,
-여러 얼굴 감지 방법으로 노이즈 판본의 얼굴 검출 성공/실패를 CSV로 기록한다.
+test-set/ 안의 노이즈 이미지들을 하위 폴더까지 모두 찾고,
+여러 얼굴 감지 방법으로 얼굴 검출 성공/실패를 CSV로 기록한다.
 
 Windows + Anaconda 환경에서 최대한 안정적으로 실행하기 위해,
 기본 실행에서는 모든 detector를 시도하되 초기화 또는 smoke test에 실패한
 detector는 CSV 열에서 제외한다.
+명령어 인자 없이 IDE에서 바로 실행해도 기본 경로와 기본 detector로 동작한다.
 
 기본 detector (--detectors all)
 -------------------------------
@@ -32,10 +32,14 @@ detector는 CSV 열에서 제외한다.
 
 CSV 결과값
 ----------
-N/A  = 노이즈 판본 없음 또는 노이즈 판본을 읽을 수 없음
-null = 원본에서 해당 detector가 얼굴을 못 잡음
-1    = 원본에서는 얼굴을 잡고, 노이즈 판본에서는 얼굴을 못 잡음
-0    = 원본에서도 얼굴을 잡고, 노이즈 판본에서도 얼굴을 잡음
+1 = 노이즈 이미지에서 얼굴을 못 잡음
+0 = 노이즈 이미지에서 얼굴을 잡음
+
+이미지 읽기 실패 또는 detect 중 예외가 나면 CSV 값 규칙을 유지하기 위해
+해당 detector 값은 0으로 기록하고 콘솔에 [WARN]만 남긴다.
+
+실제 처리 완료 이미지 수가 target-count보다 작으면 CSV에
+random_missing_<uuid>.png 이름과 모든 detector 값 0으로 구성된 padding 행을 추가한다.
 
 실시간 기록
 -----------
@@ -45,8 +49,7 @@ Ctrl+C로 중간 종료해도 이미 처리한 행은 CSV에 남도록 한다.
 터미널 성공률
 -------------
 터미널에는 detector별 누적 성공률을 함께 출력한다.
-성공률 계산에서는 1만 성공으로 세고, 0과 N/A는 실패로 분모에 포함한다.
-null은 원본부터 detector가 얼굴을 못 잡은 경우라 분모에서 제외한다.
+성공률 계산에서는 1만 성공으로 세고, 0은 실패로 분모에 포함한다.
 """
 
 # ============================================================
@@ -74,6 +77,7 @@ import csv
 import logging
 import math
 import traceback
+import uuid
 import warnings
 
 import cv2
@@ -95,6 +99,7 @@ logging.getLogger("absl").setLevel(logging.ERROR)
 DEFAULT_ORIGINAL_DIR = Path("original-set") / "faces"
 DEFAULT_TEST_DIR = Path("test-set")
 DEFAULT_OUTPUT_CSV = Path("face_detection_result.csv")
+DEFAULT_TARGET_COUNT = 13233 + 188 + 1
 ALL_DETECTOR_NAMES = [
     "opencv_haar",
     "insightface",
@@ -131,9 +136,6 @@ IMAGE_EXTENSIONS = {
     ".tif",
     ".tiff",
 }
-
-VALUE_NO_NOISY_IMAGE = "N/A"
-VALUE_ORIGINAL_FACE_NOT_FOUND = "null"
 
 
 # ============================================================
@@ -172,7 +174,10 @@ def parse_args():
         "--original-dir",
         type=Path,
         default=DEFAULT_ORIGINAL_DIR,
-        help=f"original image directory (default: {DEFAULT_ORIGINAL_DIR})",
+        help=(
+            "ignored compatibility option. This script now evaluates "
+            f"--test-dir only. Previous default was {DEFAULT_ORIGINAL_DIR}"
+        ),
     )
     parser.add_argument(
         "--test-dir",
@@ -193,6 +198,12 @@ def parse_args():
             "comma-separated detector names or 'all' "
             f"(default: {DEFAULT_DETECTORS})"
         ),
+    )
+    parser.add_argument(
+        "--target-count",
+        type=int,
+        default=DEFAULT_TARGET_COUNT,
+        help=f"pad CSV rows up to this count (default: {DEFAULT_TARGET_COUNT})",
     )
     parser.add_argument(
         "--yolo-model",
@@ -248,12 +259,22 @@ def parse_args():
     parser.add_argument(
         "--no-traceback",
         action="store_true",
-        help="do not print traceback when detect fails",
+        help="compatibility option. Tracebacks are hidden by default.",
     )
     parser.add_argument(
         "--quiet",
         action="store_true",
-        help="reduce third-party library logs as much as possible",
+        help="compatibility option. Quiet logging is enabled by default.",
+    )
+    parser.add_argument(
+        "--traceback",
+        action="store_true",
+        help="print a short traceback when detect fails",
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="allow more third-party library logs",
     )
 
     return parser.parse_args()
@@ -312,26 +333,19 @@ def read_image_bgr(path: Path):
         return None
 
 
-def collect_images_by_stem(folder: Path) -> dict[str, Path]:
-    result = {}
-
+def collect_test_images(folder: Path) -> list[Path]:
     if not folder.exists():
-        return result
+        raise FileNotFoundError(f"테스트 폴더가 없습니다: {folder}")
 
-    image_paths = sorted(path for path in folder.iterdir() if is_image_file(path))
-
-    for path in image_paths:
-        if path.stem not in result:
-            result[path.stem] = path
-
-    return result
+    return sorted(path for path in folder.rglob("*") if is_image_file(path))
 
 
-def collect_original_images(folder: Path) -> list[Path]:
-    if not folder.exists():
-        raise FileNotFoundError(f"원본 폴더가 없습니다: {folder}")
+def relative_image_name(path: Path, root: Path) -> str:
+    try:
+        return path.relative_to(root).as_posix()
 
-    return sorted(path for path in folder.iterdir() if is_image_file(path))
+    except ValueError:
+        return path.name
 
 
 def format_console_value(value) -> str:
@@ -946,65 +960,42 @@ def close_detectors(detectors: list[BaseDetector]):
 # 14. 얼굴 감지 실행
 # ============================================================
 
-def original_has_face(
+def image_has_face(
     detector: BaseDetector,
-    original_path: Path,
-    no_traceback: bool,
+    image_path: Path,
+    show_traceback: bool,
 ) -> bool | None:
-    image_bgr = read_image_bgr(original_path)
+    image_bgr = read_image_bgr(image_path)
 
     if image_bgr is None:
+        print(f"[WARN] image read failed: {image_path}", flush=True)
         return None
 
     try:
         return detector.detect(image_bgr)
 
     except Exception as error:
-        print_detect_error(detector.name, original_path, error, no_traceback)
-        return None
-
-
-def noisy_has_face(
-    detector: BaseDetector,
-    noisy_path: Path,
-    no_traceback: bool,
-) -> bool | None:
-    image_bgr = read_image_bgr(noisy_path)
-
-    if image_bgr is None:
-        return None
-
-    try:
-        return detector.detect(image_bgr)
-
-    except Exception as error:
-        print_detect_error(detector.name, noisy_path, error, no_traceback)
+        print_detect_error(
+            detector_name=detector.name,
+            image_path=image_path,
+            error=error,
+            no_traceback=not show_traceback,
+        )
         return None
 
 
 def calculate_result_value(
     detector: BaseDetector,
-    original_path: Path,
-    noisy_path: Path | None,
-    no_traceback: bool,
-) -> str | int:
-    if noisy_path is None:
-        return VALUE_NO_NOISY_IMAGE
+    image_path: Path,
+    show_traceback: bool,
+) -> int:
+    detection_result = image_has_face(detector, image_path, show_traceback)
 
-    original_result = original_has_face(detector, original_path, no_traceback)
-
-    if original_result is not True:
-        return VALUE_ORIGINAL_FACE_NOT_FOUND
-
-    noisy_result = noisy_has_face(detector, noisy_path, no_traceback)
-
-    if noisy_result is None:
-        return VALUE_NO_NOISY_IMAGE
-
-    if noisy_result is False:
+    if detection_result is False:
         return 1
 
     return 0
+
 
 
 def create_rate_stats(detector_names: list[str]) -> dict[str, dict[str, int]]:
@@ -1021,16 +1012,11 @@ def update_rate_stats(rate_stats: dict[str, dict[str, int]], row: dict, detector
     """
     터미널 성공률용 누적치를 갱신한다.
 
-    1은 성공, 0과 N/A는 실패로 분모에 포함한다.
-    null은 원본부터 얼굴을 못 잡은 경우라 분모에서 제외한다.
-    CSV 값은 그대로 유지한다.
+    1은 성공, 0은 실패로 분모에 포함한다. CSV 값은 그대로 유지한다.
     """
 
     for name in detector_names:
         value = row[name]
-
-        if value == VALUE_ORIGINAL_FACE_NOT_FOUND:
-            continue
 
         rate_stats[name]["eligible_count"] += 1
 
@@ -1046,7 +1032,7 @@ def format_rate_stats(rate_stats: dict[str, dict[str, int]], detector_names: lis
         eligible_count = rate_stats[name]["eligible_count"]
 
         if eligible_count == 0:
-            rate_parts.append(f"{name}=N/A (0/0)")
+            rate_parts.append(f"{name}=no-data (0/0)")
             continue
 
         success_rate = success_count / eligible_count * 100
@@ -1061,7 +1047,7 @@ def print_rate_result(rate_stats: dict[str, dict[str, int]], detector_names: lis
 
 def print_final_rate_summary(rate_stats: dict[str, dict[str, int]], detector_names: list[str]):
     print()
-    print("[RATE] 최종 성공률 (N/A는 0으로 간주, null은 제외)", flush=True)
+    print("[RATE] 최종 성공률 (1=얼굴 미검출 성공, 0=얼굴 검출 실패)", flush=True)
     print(format_rate_stats(rate_stats, detector_names), flush=True)
 
 
@@ -1072,16 +1058,10 @@ def print_final_rate_summary(rate_stats: dict[str, dict[str, int]], detector_nam
 def print_row_result(
     index: int,
     total: int,
-    original_path: Path,
-    noisy_path: Path | None,
+    image_name: str,
     row: dict,
     detector_names: list[str],
 ):
-    if noisy_path is None:
-        noisy_text = "노이즈 없음"
-    else:
-        noisy_text = noisy_path.name
-
     result_parts = []
 
     for name in detector_names:
@@ -1089,7 +1069,7 @@ def print_row_result(
 
     result_text = ", ".join(result_parts)
 
-    print(f"[{index}/{total}] {original_path.name} -> {noisy_text}", flush=True)
+    print(f"[{index}/{total}] {image_name}", flush=True)
     print(f"  {result_text}", flush=True)
 
 
@@ -1104,14 +1084,70 @@ def print_skip_summary(title: str, errors: dict[str, str]):
         print(f"- {name}: {message}", flush=True)
 
 
+def first_readable_image(image_paths: list[Path]):
+    for image_path in image_paths:
+        image_bgr = read_image_bgr(image_path)
+
+        if image_bgr is not None:
+            return image_path, image_bgr
+
+    return None, None
+
+
+def create_padding_row(detector_names: list[str]) -> dict:
+    row = {
+        "image_filename": f"random_missing_{uuid.uuid4().hex}.png",
+    }
+
+    for detector_name in detector_names:
+        row[detector_name] = 0
+
+    return row
+
+
+def write_padding_rows(
+    writer,
+    file,
+    rate_stats: dict[str, dict[str, int]],
+    detector_names: list[str],
+    processed_count: int,
+    target_count: int,
+) -> int:
+    missing_count = max(0, target_count - processed_count)
+
+    if missing_count == 0:
+        return 0
+
+    print(
+        f"[INFO] padding rows 추가: {missing_count} "
+        f"(processed={processed_count}, target={target_count})",
+        flush=True,
+    )
+
+    for index in range(1, missing_count + 1):
+        row = create_padding_row(detector_names)
+        update_rate_stats(rate_stats, row, detector_names)
+        writer.writerow(row)
+        file.flush()
+
+        if index == 1 or index == missing_count or index % 100 == 0:
+            print(
+                f"[PAD] {index}/{missing_count} {row['image_filename']}",
+                flush=True,
+            )
+
+    return missing_count
+
+
 # ============================================================
 # 16. 메인 실행 함수
 # ============================================================
 
 def main() -> int:
     args = parse_args()
+    show_traceback = args.traceback and not args.no_traceback
 
-    if args.quiet:
+    if not args.verbose:
         configure_quiet_logging()
 
     selected_names = parse_detector_names(args.detectors)
@@ -1121,34 +1157,33 @@ def main() -> int:
         return 1
 
     try:
-        original_paths = collect_original_images(args.original_dir)
+        test_image_paths = collect_test_images(args.test_dir)
 
     except FileNotFoundError as error:
         print(f"[ERROR] {error}", flush=True)
         return 1
 
-    if not original_paths:
-        print(f"[ERROR] 원본 이미지가 없습니다: {args.original_dir}", flush=True)
+    if not test_image_paths:
+        print(f"[ERROR] 테스트 이미지가 없습니다: {args.test_dir}", flush=True)
         return 1
 
-    print(f"[INFO] 원본 이미지 수: {len(original_paths)}", flush=True)
-
-    noisy_images_by_stem = collect_images_by_stem(args.test_dir)
-
-    print(f"[INFO] 노이즈 이미지 수: {len(noisy_images_by_stem)}", flush=True)
+    print(f"[INFO] 테스트 이미지 수: {len(test_image_paths)}", flush=True)
+    print(f"[INFO] target-count: {args.target_count}", flush=True)
     print(f"[INFO] 요청 detector: {', '.join(selected_names)}", flush=True)
 
     detectors, init_errors = initialize_detectors(selected_names, args)
 
-    sample_image_bgr = read_image_bgr(original_paths[0])
+    sample_image_path, sample_image_bgr = first_readable_image(test_image_paths)
 
     if sample_image_bgr is None:
         close_detectors(detectors)
         print(
-            f"[ERROR] smoke test용 원본 이미지를 읽을 수 없습니다: {original_paths[0]}",
+            f"[ERROR] smoke test용 테스트 이미지를 읽을 수 없습니다: {args.test_dir}",
             flush=True,
         )
         return 1
+
+    print(f"[INFO] smoke test 이미지: {relative_image_name(sample_image_path, args.test_dir)}", flush=True)
 
     detectors, smoke_errors = smoke_test_detectors(detectors, sample_image_bgr)
 
@@ -1167,7 +1202,7 @@ def main() -> int:
     detector_names = [detector.name for detector in detectors]
     rate_stats = create_rate_stats(detector_names)
 
-    fieldnames = ["original_filename"]
+    fieldnames = ["image_filename"]
     fieldnames.extend(detector_names)
 
     interrupted = False
@@ -1180,21 +1215,19 @@ def main() -> int:
             writer.writeheader()
             file.flush()
 
-            total = len(original_paths)
+            total = len(test_image_paths)
 
-            for index, original_path in enumerate(original_paths, start=1):
+            for index, image_path in enumerate(test_image_paths, start=1):
+                image_name = relative_image_name(image_path, args.test_dir)
                 row = {
-                    "original_filename": original_path.name,
+                    "image_filename": image_name,
                 }
-
-                noisy_path = noisy_images_by_stem.get(original_path.stem)
 
                 for detector in detectors:
                     value = calculate_result_value(
                         detector=detector,
-                        original_path=original_path,
-                        noisy_path=noisy_path,
-                        no_traceback=args.no_traceback,
+                        image_path=image_path,
+                        show_traceback=show_traceback,
                     )
 
                     row[detector.name] = value
@@ -1202,8 +1235,7 @@ def main() -> int:
                 print_row_result(
                     index=index,
                     total=total,
-                    original_path=original_path,
-                    noisy_path=noisy_path,
+                    image_name=image_name,
                     row=row,
                     detector_names=detector_names,
                 )
@@ -1215,12 +1247,21 @@ def main() -> int:
                 file.flush()
                 processed_count = index
 
+            write_padding_rows(
+                writer=writer,
+                file=file,
+                rate_stats=rate_stats,
+                detector_names=detector_names,
+                processed_count=processed_count,
+                target_count=args.target_count,
+            )
+
     except KeyboardInterrupt:
         interrupted = True
         print()
         print("[STOP] Ctrl+C 입력으로 중간 종료합니다.", flush=True)
         print(
-            f"[STOP] 처리 완료된 이미지 수: {processed_count}/{len(original_paths)}",
+            f"[STOP] 처리 완료된 이미지 수: {processed_count}/{len(test_image_paths)}",
             flush=True,
         )
         print(f"[STOP] 현재까지 저장된 CSV: {args.output_csv.resolve()}", flush=True)

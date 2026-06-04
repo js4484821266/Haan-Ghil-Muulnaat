@@ -195,13 +195,13 @@ flowchart TD
 
 ### 로컬 실험 CSV 생성 스크립트
 
-* 목적: 원본 이미지와 perturbation 적용 이미지 쌍을 여러 얼굴 감지기로 비교해 CSV를 생성한다.
+* 목적: `test-set` 안의 perturbation 적용 이미지를 여러 얼굴 감지기로 검사해 CSV를 생성한다.
 * 관련 파일: [`ipynbbbbb/face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py)
 * 주요 함수 또는 클래스: [`initialize_detectors`](ipynbbbbb/face_detection_test_realtime.py), [`calculate_result_value`](ipynbbbbb/face_detection_test_realtime.py), `main`, 각 detector class
-* 입력: `original-set/faces`, `test-set`
-* 처리: stem 기준으로 원본/노이즈 이미지를 매칭하고, 사용 가능한 감지기를 초기화한 뒤 이미지별 결과를 즉시 CSV에 flush한다.
+* 입력: `test-set`
+* 처리: `test-set`을 하위 폴더까지 재귀 탐색하고, 사용 가능한 감지기를 초기화한 뒤 이미지별 결과를 즉시 CSV에 flush한다.
 * 출력: `face_detection_result.csv`
-* 예외 또는 주의점: 입력 디렉터리와 결과 CSV는 `.gitignore` 대상 또는 로컬 산출물 범위라 현재 내용은 확인하지 않았다. 실행 가능 여부와 실제 결과값은 확인 필요다.
+* 예외 또는 주의점: 값은 얼굴 미검출 `1`, 얼굴 검출 `0`만 쓴다. 실제 처리 수가 기본 target count 13422보다 작으면 랜덤 이름과 모든 detector 값 0인 padding 행을 추가한다.
 * 내가 면접에서 설명해야 할 핵심: “앱 외부 검증용 스크립트는 감지기 초기화 실패를 전체 실패로 만들지 않고, 사용 가능한 감지기만 CSV 열로 기록하도록 설계했다.”
 
 ## 6. 데이터 흐름
@@ -244,14 +244,13 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    OriginalDir[original-set/faces] --> Match[stem 기준 매칭]
-    TestDir[test-set] --> Match
-    Match --> Detectors[사용 가능한 얼굴 감지기]
-    Detectors --> Values[1 0 N/A null 값 계산]
-    Values --> Csv[face_detection_result.csv]
+    TestDir[test-set 재귀 탐색] --> Detectors[사용 가능한 얼굴 감지기]
+    Detectors --> Values[1 또는 0 값 계산]
+    Values --> Padding[13422 미만이면 0 padding 행 추가]
+    Padding --> Csv[face_detection_result.csv]
 ```
 
-입력 디렉터리와 생성 CSV의 현재 내용은 `.gitignore` 대상이므로 확인하지 않았다. 위 흐름은 추적 대상 Python 코드에서 확인한 동작이다.
+입력 디렉터리와 생성 CSV의 현재 내용은 `.gitignore` 대상이다. 위 흐름은 추적 대상 Python 코드에서 확인한 동작이다.
 
 ## 7. 모듈 의존 관계
 
@@ -366,8 +365,8 @@ graph TD
 | `POST_NOTIFICATIONS` | [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml), [`ShareForwardingActivity.kt`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt) | Android 13+ 알림 권한 | 런타임 요청 | 자동 저장 알림 표시 가능 여부 |
 | `WRITE_EXTERNAL_STORAGE` | [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml), [`MainActivityStorage.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityStorage.kt) | Android P 이하 저장 권한 | maxSdk 28 | 구버전 저장 가능 여부 |
 | `ML Kit dependencies` | [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml) | 설치 시 모델 의존성 힌트 | `face,ica` | Play Services 모델 준비 방식 영향 |
-| [`ORIGINAL_DIR`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 실험 원본 이미지 경로 | `original-set/faces` | 해당 디렉터리는 `.gitignore` 대상이라 현재 내용 확인하지 않음 |
-| [`TEST_DIR`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 실험 보호 이미지 경로 | `test-set` | 해당 디렉터리는 `.gitignore` 대상이라 현재 내용 확인하지 않음 |
+| [`DEFAULT_TEST_DIR`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 실험 보호 이미지 경로 | `test-set` | 하위 폴더까지 재귀 탐색 |
+| [`DEFAULT_TARGET_COUNT`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | CSV 목표 행 수 | `13422` | 부족분은 랜덤 이름과 0 값으로 padding |
 | [`OUTPUT_CSV`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 실험 결과 CSV | `face_detection_result.csv` | 생성 결과 파일 내용은 확인 필요 |
 
 ## 10. 실행 방법
@@ -412,7 +411,7 @@ graph TD
 python ipynbbbbb\face_detection_test_realtime.py
 ```
 
-스크립트 파일은 추적 대상이지만, 필요한 Python 패키지 설치 상태와 입력 데이터 디렉터리 내용은 확인 필요다. `original-set/`, `test-set/`, 생성 CSV는 `.gitignore` 대상이라 현재 내용은 보지 않았다.
+스크립트 파일은 추적 대상이지만, 필요한 Python 패키지 설치 상태와 입력 데이터 디렉터리 내용은 확인 필요다. `test-set/`과 생성 CSV는 `.gitignore` 대상이라 현재 내용은 보지 않았다.
 
 ## 11. 테스트와 검증 방법
 
@@ -439,7 +438,7 @@ python ipynbbbbb\face_detection_test_realtime.py
 ### CSV, 로그, 성공률, 처리 시간
 
 - [`ipynbbbbb/face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py)는 `face_detection_result.csv`를 생성하도록 작성되어 있다.
-- 이 스크립트는 각 원본 파일명과 사용 가능한 얼굴 감지기별 결과를 CSV에 즉시 기록하고 flush한다.
+- 이 스크립트는 `test-set`의 각 이미지 상대 경로와 사용 가능한 얼굴 감지기별 1/0 결과를 CSV에 즉시 기록하고 flush한다.
 - 현재 저장소의 `.gitignore`에 로컬 데이터셋과 일부 CSV 결과물이 포함되어 있으므로, 기존 CSV/로그/성공률/처리 시간 산출물의 현재 내용은 확인하지 않았다.
 - 따라서 면접에서 수치를 말하려면, 무시 대상 로컬 산출물을 별도로 재확인하거나 추적 가능한 문서/스크립트 산출물로 재생성해야 한다.
 
