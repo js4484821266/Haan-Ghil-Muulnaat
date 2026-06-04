@@ -84,7 +84,7 @@ class NoiseSearcherTest {
     }
 
     @Test
-    fun `reports progress for each ascending candidate step`() {
+    fun `reports progress for each binary search step`() {
         val steps = mutableListOf<NoiseSearcher.SearchStep>()
 
         val result = NoiseSearcher.findMinimumStrength(
@@ -95,7 +95,7 @@ class NoiseSearcherTest {
         )
 
         assertEquals(40, result)
-        assertEquals(listOf(0, 20, 40), steps.map { it.mid })
+        assertEquals(listOf(40, 0, 20), steps.map { it.mid })
         assertTrue(steps.isNotEmpty())
         for (step in steps) {
             assertTrue(step.iteration >= 1)
@@ -103,5 +103,20 @@ class NoiseSearcherTest {
             assertTrue(step.mid in step.low..step.high)
             assertEquals(0, step.mid % 20)
         }
+    }
+
+    @Test
+    fun `returns remembered upper candidate when bracket is within one step`() {
+        val steps = mutableListOf<NoiseSearcher.SearchStep>()
+
+        val result = NoiseSearcher.findMinimumStrength(
+            lo = 0,
+            hi = 100,
+            test = thresholdTest(90),
+            onStep = { steps.add(it) },
+        )
+
+        assertEquals(100, result)
+        assertEquals(listOf(40, 80, 100), steps.map { it.mid })
     }
 }

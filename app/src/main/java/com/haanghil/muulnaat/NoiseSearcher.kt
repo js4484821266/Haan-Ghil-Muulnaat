@@ -16,7 +16,7 @@ object NoiseSearcher {
 
     /**
      * [lo, hi] 범위의 기본 후보 강도 중 [test]가 true를 반환하는 최솟값을
-     * 낮은 후보부터 차례대로 검사해 찾습니다.
+     * 이분 탐색으로 찾습니다.
      * 범위 안에서 통과하는 후보가 없으면 null을 반환합니다.
      */
     fun findMinimumStrength(
@@ -31,23 +31,43 @@ object NoiseSearcher {
         if (candidates.isEmpty()) return null
 
         var iteration = 1
-        val highest = candidates.last()
-        for (strength in candidates) {
+        var low = 0
+        var high = candidates.lastIndex
+        var lowerFailed: Int? = null
+        var upperPassed: Int? = null
+
+        while (low <= high) {
             if (shouldCancel()) return null
+            val mid = low + (high - low) / 2
+            val strength = candidates[mid]
             val passed = test(strength)
             onStep?.invoke(
                 SearchStep(
                     iteration = iteration,
-                    low = strength,
+                    low = candidates[low],
                     mid = strength,
-                    high = highest,
+                    high = candidates[high],
                     passed = passed,
                 )
             )
-            if (passed) return strength
+            if (passed) {
+                upperPassed = strength
+                high = mid - 1
+            } else {
+                lowerFailed = strength
+                low = mid + 1
+            }
+            val bracketResult = boundedCandidate(candidates, lowerFailed, upperPassed)
+            if (bracketResult != null) return bracketResult
             iteration += 1
         }
-        return null
+        return upperPassed
+    }
+
+    private fun boundedCandidate(candidates: List<Int>, lowerFailed: Int?, upperPassed: Int?): Int? {
+        if (lowerFailed == null || upperPassed == null) return null
+        if (upperPassed - lowerFailed > 20) return null
+        return candidates.firstOrNull { it >= upperPassed }
     }
 
     fun findMinimumStrength(
