@@ -39,25 +39,45 @@ internal fun AutoSaveProtectionService.buildProgressNotification(
     title: String,
     message: String,
     showCancel: Boolean,
-) = NotificationCompat.Builder(this, AUTO_SAVE_CHANNEL_ID)
-    .setSmallIcon(android.R.drawable.stat_sys_upload_done)
-    .setContentTitle(title)
-    .setContentText(message)
-    .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-    .setContentIntent(openAppPendingIntent(title, message))
-    .setOngoing(showCancel)
-    .setOnlyAlertOnce(true)
-    .setProgress(total, progress.coerceIn(0, total), false)
-    .apply {
-        if (showCancel) {
-            addAction(
-                android.R.drawable.ic_menu_close_clear_cancel,
-                getString(R.string.notification_autosave_cancel_action),
-                cancelPendingIntent()
-            )
+): android.app.Notification {
+    publishAutoSaveStatus(progress, total, title, message)
+    return NotificationCompat.Builder(this, AUTO_SAVE_CHANNEL_ID)
+        .setSmallIcon(android.R.drawable.stat_sys_upload_done)
+        .setContentTitle(title)
+        .setContentText(message)
+        .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+        .setContentIntent(openAppPendingIntent(title, message))
+        .setOngoing(showCancel)
+        .setOnlyAlertOnce(true)
+        .setProgress(total, progress.coerceIn(0, total), false)
+        .apply {
+            if (showCancel) {
+                addAction(
+                    android.R.drawable.ic_menu_close_clear_cancel,
+                    getString(R.string.notification_autosave_cancel_action),
+                    cancelPendingIntent()
+                )
+            }
         }
-    }
-    .build()
+        .build()
+}
+
+private fun AutoSaveProtectionService.publishAutoSaveStatus(
+    progress: Int,
+    total: Int,
+    title: String,
+    message: String,
+) {
+    AutoSaveStatusStore.publish(
+        AutoSaveStatusStore.Status(
+            title = title,
+            message = message,
+            progress = progress,
+            total = total,
+            running = workerRunning,
+        )
+    )
+}
 
 private fun AutoSaveProtectionService.openAppPendingIntent(title: String, message: String): PendingIntent {
     val intent = Intent(this, MainActivity::class.java).apply {

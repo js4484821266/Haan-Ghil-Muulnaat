@@ -25,31 +25,31 @@ class NoiseSearcherTest {
     @Test
     fun `returns highest candidate when only it passes`() {
         val result = NoiseSearcher.findMinimumStrength(lo = 0, hi = 100, test = thresholdTest(90))
-        assertEquals(90, result)
+        assertEquals(100, result)
     }
 
     @Test
     fun `returns null when threshold is above highest candidate`() {
-        val result = NoiseSearcher.findMinimumStrength(lo = 0, hi = 100, test = thresholdTest(100))
+        val result = NoiseSearcher.findMinimumStrength(lo = 0, hi = 100, test = thresholdTest(101))
         assertNull(result)
     }
 
     @Test
     fun `finds exact midpoint threshold`() {
         val result = NoiseSearcher.findMinimumStrength(lo = 0, hi = 100, test = thresholdTest(50))
-        assertEquals(50, result)
+        assertEquals(60, result)
     }
 
     @Test
     fun `finds threshold at 1`() {
         val result = NoiseSearcher.findMinimumStrength(lo = 0, hi = 100, test = thresholdTest(1))
-        assertEquals(10, result)
+        assertEquals(20, result)
     }
 
     @Test
-    fun `returns null for threshold at 99`() {
+    fun `returns highest candidate for threshold at 99`() {
         val result = NoiseSearcher.findMinimumStrength(lo = 0, hi = 100, test = thresholdTest(99))
-        assertNull(result)
+        assertEquals(100, result)
     }
 
     @Test
@@ -68,7 +68,7 @@ class NoiseSearcherTest {
     @Test
     fun `returns correct minimum not just any passing value`() {
         val result = NoiseSearcher.findMinimumStrength(lo = 0, hi = 100, test = thresholdTest(30))
-        assertEquals(30, result)
+        assertEquals(40, result)
     }
 
     @Test
@@ -94,13 +94,13 @@ class NoiseSearcherTest {
             onStep = { steps.add(it) },
         )
 
-        assertEquals(30, result)
+        assertEquals(40, result)
         assertTrue(steps.isNotEmpty())
         for (step in steps) {
             assertTrue(step.iteration >= 1)
             assertTrue(step.low <= step.high)
             assertTrue(step.mid in step.low..step.high)
-            assertEquals(0, step.mid % 10)
+            assertEquals(0, step.mid % 20)
         }
     }
 }

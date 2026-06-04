@@ -21,7 +21,7 @@
     <string name="result_load_failed">이미지를 불러오지 못했습니다.</string>
     <string name="result_image_loaded_scanning">이미지를 불러왔습니다. 방어 성능 평가 기준으로 최적 강도를 탐색 중입니다...</string>
     <string name="result_scanning_optimal">최적 강도 탐색 중...</string>
-    <string name="result_scan_none">탐색 완료: 0, 10, ..., 90 후보의 방어 성능 평가에서 HELD 지점을 찾지 못했습니다. 강도를 높여 다시 시도하세요.</string>
+    <string name="result_scan_none">탐색 완료: 0, 20, ..., 100 후보의 방어 성능 평가에서 HELD 지점을 찾지 못했습니다. 강도를 높여 다시 시도하세요.</string>
     <string name="result_scan_found">탐색 완료: 최적 강도는 %1$d입니다. 계속하려면 보호를 적용하세요.</string>
     <string name="result_auto_applying_optimal">탐색 완료: 최적 강도 %1$d를 찾았습니다. 보호 적용과 방어 성능 평가를 자동으로 실행합니다...</string>
     <string name="result_applying_protection">보호 적용 중...</string>
@@ -93,7 +93,7 @@
     <string name="perturbation_magnitude_format">교란 크기: %1$.2f / 255 (%2$.2f%%)</string>
     <string name="simulate_ai_attack">방어 성능 평가 실행</string>
     <string name="recommended_strength_default">최적 강도: 이미지 선택 후 탐색을 실행하세요.</string>
-    <string name="recommended_strength_none">최적 강도: 0, 10, ..., 90 후보의 방어 성능 평가에서 HELD 지점을 찾지 못했습니다. 강도를 높여 다시 시도하세요.</string>
+    <string name="recommended_strength_none">최적 강도: 0, 20, ..., 100 후보의 방어 성능 평가에서 HELD 지점을 찾지 못했습니다. 강도를 높여 다시 시도하세요.</string>
     <string name="recommended_strength_found">최적 강도: %1$d</string>
     <string name="search_progress_idle">이미지를 선택하면 이진 탐색 진행 상태가 여기에 표시됩니다.</string>
     <string name="search_progress_step">%1$d단계 - 범위 %2$d..%4$d, 검사 %3$d -&gt; %5$s</string>

@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.app.AppCompatActivity
 import com.haanghil.muulnaat.databinding.ActivityMainBinding
+import java.io.Closeable
 
 class MainActivity : AppCompatActivity() {
 
@@ -50,6 +51,16 @@ class MainActivity : AppCompatActivity() {
         handleBackgroundStatusIntent(intent)
     }
 
+    override fun onStart() {
+        super.onStart()
+        startAutoSaveStatusUpdates()
+    }
+
+    override fun onStop() {
+        stopAutoSaveStatusUpdates()
+        super.onStop()
+    }
+
     override fun onNewIntent(intent: android.content.Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
@@ -65,4 +76,5 @@ internal class MainActivityState {
     var lastAppliedStrength: Int? = null
     var lastEvaluationStrength: Int? = null
     var pendingStoragePermissionAction: (() -> Unit)? = null
+    var autoSaveStatusSubscription: Closeable? = null
 }
