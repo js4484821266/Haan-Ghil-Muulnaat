@@ -201,7 +201,7 @@ flowchart TD
 * 입력: `test-set`
 * 처리: `test-set`을 하위 폴더까지 재귀 탐색하고, 사용 가능한 감지기를 초기화한 뒤 이미지별 결과를 즉시 CSV에 flush한다.
 * 출력: `face_detection_result.csv`
-* 예외 또는 주의점: 값은 얼굴 미검출 `1`, 얼굴 검출 `0`만 쓴다. 실제 처리 수가 기본 target count 13422보다 작으면 랜덤 이름과 모든 detector 값 0인 padding 행을 추가한다.
+* 예외 또는 주의점: 값은 얼굴 미검출 `1`, 얼굴 검출 또는 보수적 실패 처리 `0`만 쓴다. 테스트 규모 때문에 원본 이미지의 얼굴 탐지 여부는 비교하지 않는다. 실제 처리 수가 기본 target count 13422보다 작으면 랜덤 이름과 모든 detector 값 0인 padding 행을 추가한다.
 * 내가 면접에서 설명해야 할 핵심: “앱 외부 검증용 스크립트는 감지기 초기화 실패를 전체 실패로 만들지 않고, 사용 가능한 감지기만 CSV 열로 기록하도록 설계했다.”
 
 ## 6. 데이터 흐름
@@ -250,7 +250,7 @@ flowchart LR
     Padding --> Csv[face_detection_result.csv]
 ```
 
-입력 디렉터리와 생성 CSV의 현재 내용은 `.gitignore` 대상이다. 위 흐름은 추적 대상 Python 코드에서 확인한 동작이다.
+입력 디렉터리와 생성 CSV는 `.gitignore` 대상이지만, 현재 `face_detection_result.csv`의 헤더와 집계값은 로컬에서 확인했다. 위 흐름은 추적 대상 Python 코드와 현재 CSV 결과를 함께 반영한 동작이다.
 
 ## 7. 모듈 의존 관계
 
@@ -367,7 +367,7 @@ graph TD
 | `ML Kit dependencies` | [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml) | 설치 시 모델 의존성 힌트 | `face,ica` | Play Services 모델 준비 방식 영향 |
 | [`DEFAULT_TEST_DIR`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 실험 보호 이미지 경로 | `test-set` | 하위 폴더까지 재귀 탐색 |
 | [`DEFAULT_TARGET_COUNT`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | CSV 목표 행 수 | `13422` | 부족분은 랜덤 이름과 0 값으로 padding |
-| [`OUTPUT_CSV`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 실험 결과 CSV | `face_detection_result.csv` | 생성 결과 파일 내용은 확인 필요 |
+| [`OUTPUT_CSV`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 실험 결과 CSV | `face_detection_result.csv` | 현재 로컬 CSV는 13,422행 집계 확인 |
 
 ## 10. 실행 방법
 
@@ -411,7 +411,7 @@ graph TD
 python ipynbbbbb\face_detection_test_realtime.py
 ```
 
-스크립트 파일은 추적 대상이지만, 필요한 Python 패키지 설치 상태와 입력 데이터 디렉터리 내용은 확인 필요다. `test-set/`과 생성 CSV는 `.gitignore` 대상이라 현재 내용은 보지 않았다.
+스크립트 파일은 추적 대상이다. 필요한 Python 패키지 설치 상태와 `test-set/` 전체 내용은 환경마다 확인이 필요하지만, 현재 로컬 `face_detection_result.csv`는 13,178개 실제 이미지 행과 244개 padding 행으로 구성된 13,422행 결과로 확인했다.
 
 ## 11. 테스트와 검증 방법
 
@@ -439,8 +439,9 @@ python ipynbbbbb\face_detection_test_realtime.py
 
 - [`ipynbbbbb/face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py)는 `face_detection_result.csv`를 생성하도록 작성되어 있다.
 - 이 스크립트는 `test-set`의 각 이미지 상대 경로와 사용 가능한 얼굴 감지기별 1/0 결과를 CSV에 즉시 기록하고 flush한다.
-- 현재 저장소의 `.gitignore`에 로컬 데이터셋과 일부 CSV 결과물이 포함되어 있으므로, 기존 CSV/로그/성공률/처리 시간 산출물의 현재 내용은 확인하지 않았다.
-- 따라서 면접에서 수치를 말하려면, 무시 대상 로컬 산출물을 별도로 재확인하거나 추적 가능한 문서/스크립트 산출물로 재생성해야 한다.
+- CSV 값은 얼굴 미검출 `1`, 얼굴 검출 또는 보수적 실패 처리 `0`이다. 테스트 규모 때문에 원본 이미지에서 얼굴이 먼저 잡히는지 여부는 비교하지 않았다.
+- 현재 CSV 집계는 총 13,422행이며, 실제 이미지 13,178장과 padding 244장으로 구성된다.
+- detector별 얼굴 미검출률은 OpenCV Haar 19.81%, InsightFace 84.70%, MTCNN 82.45%, YOLO Face 87.99%, face_detection 25.87%, face_detection_tflite 54.37%다.
 
 ## 12. 면접 대비 설명 스크립트
 
