@@ -95,7 +95,7 @@
     <string name="recommended_strength_default">최적 강도: 이미지 선택 후 탐색을 실행하세요.</string>
     <string name="recommended_strength_none">최적 강도: 0, 20, ..., 100 후보의 방어 성능 평가에서 HELD 지점을 찾지 못했습니다. 강도를 높여 다시 시도하세요.</string>
     <string name="recommended_strength_found">최적 강도: %1$d</string>
-    <string name="search_progress_idle">이미지를 선택하면 이진 탐색 진행 상태가 여기에 표시됩니다.</string>
+    <string name="search_progress_idle">이미지를 선택하면 강도 탐색 진행 상태가 여기에 표시됩니다.</string>
     <string name="search_progress_step">%1$d단계 - 범위 %2$d..%4$d, 검사 %3$d -&gt; %5$s</string>
     <string name="technical_details_hidden">기술 세부사항: 숨김</string>
     <string name="technical_details_shown">기술 세부사항: 표시</string>

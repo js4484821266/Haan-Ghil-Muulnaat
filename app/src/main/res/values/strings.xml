@@ -95,7 +95,7 @@
     <string name="recommended_strength_default">Optimal Strength: run scan after selecting an image.</string>
     <string name="recommended_strength_none">Optimal Strength: no HELD point in defense evaluation across 0, 20, ..., 100. Increase strength and retry.</string>
     <string name="recommended_strength_found">Optimal Strength: %1$d</string>
-    <string name="search_progress_idle">Binary search status appears here after selecting an image.</string>
+    <string name="search_progress_idle">Strength search status appears here after selecting an image.</string>
     <string name="search_progress_step">Step %1$d - range %2$d..%4$d, check %3$d -&gt; %5$s</string>
     <string name="technical_details_hidden">Technical Details: Hidden</string>
     <string name="technical_details_shown">Technical Details: Shown</string>
