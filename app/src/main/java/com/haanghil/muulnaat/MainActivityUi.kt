@@ -11,6 +11,7 @@ import android.view.View
 internal fun MainActivity.clearResultCards() {
     binding.protectionStatusValue.text = getString(R.string.status_na)
     binding.modelFaceCountValue.text = getString(R.string.metric_face_count_placeholder)
+    binding.modelFacialFeatureValue.text = getString(R.string.metric_facial_features_placeholder)
     binding.modelLabelShiftValue.text = getString(R.string.metric_label_shift_placeholder)
     binding.modelScoreValue.text = getString(R.string.metric_score_placeholder)
     binding.qualityPsnrValue.text = getString(R.string.metric_psnr_placeholder)

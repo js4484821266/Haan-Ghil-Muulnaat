@@ -12,6 +12,9 @@ enum class ProtectionStatus {
 data class EvaluationMetrics(
     val faceCountOriginal: Int,
     val faceCountAfterAttack: Int,
+    val facialFeatureCountOriginal: Int,
+    val facialFeatureCountAfterAttack: Int,
+    val facialFeatureSuppressionScore: Double,
     val labelShift: Double,
     val antiDetectionScore: Double,
     val decisionReason: String

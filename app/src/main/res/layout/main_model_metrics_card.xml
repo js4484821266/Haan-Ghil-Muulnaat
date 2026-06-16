@@ -39,6 +39,22 @@
             android:textColor="@color/navy_text_muted" />
 
         <TextView
+            android:id="@+id/modelFacialFeatureValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/metric_facial_features_placeholder"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textColor="@color/navy_text" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/metric_facial_features_help"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="@color/navy_text_muted" />
+
+        <TextView
             android:id="@+id/modelLabelShiftValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

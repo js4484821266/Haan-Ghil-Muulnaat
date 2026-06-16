@@ -14,6 +14,12 @@ internal fun MainActivity.renderDefenseResult(
         evaluationMetrics.faceCountOriginal,
         evaluationMetrics.faceCountAfterAttack,
     )
+    binding.modelFacialFeatureValue.text = getString(
+        R.string.metric_facial_features_format,
+        evaluationMetrics.facialFeatureCountOriginal,
+        evaluationMetrics.facialFeatureCountAfterAttack,
+        evaluationMetrics.facialFeatureSuppressionScore,
+    )
     binding.modelLabelShiftValue.text = getString(R.string.metric_label_shift_format, evaluationMetrics.labelShift)
     binding.modelScoreValue.text = getString(R.string.metric_score_format, evaluationMetrics.antiDetectionScore)
     binding.qualityPsnrValue.text = getString(

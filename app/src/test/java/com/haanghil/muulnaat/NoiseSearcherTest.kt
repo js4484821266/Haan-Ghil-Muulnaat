@@ -24,13 +24,13 @@ class NoiseSearcherTest {
 
     @Test
     fun `returns highest candidate when only it passes`() {
-        val result = NoiseSearcher.findMinimumStrength(lo = 0, hi = 100, test = thresholdTest(80))
-        assertEquals(80, result)
+        val result = NoiseSearcher.findMinimumStrength(lo = 0, hi = 100, test = thresholdTest(100))
+        assertEquals(100, result)
     }
 
     @Test
     fun `returns null when threshold is above highest candidate`() {
-        val result = NoiseSearcher.findMinimumStrength(lo = 0, hi = 100, test = thresholdTest(81))
+        val result = NoiseSearcher.findMinimumStrength(lo = 0, hi = 100, test = thresholdTest(101))
         assertNull(result)
     }
 
@@ -47,9 +47,15 @@ class NoiseSearcherTest {
     }
 
     @Test
-    fun `returns null when threshold is above automatic candidates`() {
+    fun `finds integer threshold above 80`() {
         val result = NoiseSearcher.findMinimumStrength(lo = 0, hi = 100, test = thresholdTest(99))
-        assertNull(result)
+        assertEquals(99, result)
+    }
+
+    @Test
+    fun `finds first integer threshold above 80`() {
+        val result = NoiseSearcher.findMinimumStrength(lo = 0, hi = 100, test = thresholdTest(81))
+        assertEquals(81, result)
     }
 
     @Test
@@ -101,7 +107,7 @@ class NoiseSearcherTest {
             assertTrue(step.iteration >= 1)
             assertTrue(step.low <= step.high)
             assertTrue(step.mid in step.low..step.high)
-            assertEquals(0, step.mid % 20)
+            assertTrue(step.mid in NoiseSearcher.candidateStrengths(0, 100))
         }
     }
 
@@ -118,5 +124,13 @@ class NoiseSearcherTest {
 
         assertEquals(80, result)
         assertEquals(listOf(40, 60, 80), steps.map { it.mid })
+    }
+
+    @Test
+    fun `candidate strengths keep coarse scan below 80 and dense scan from 80`() {
+        assertEquals(
+            listOf(0, 20, 40, 60, 80, 81, 82, 83),
+            NoiseSearcher.candidateStrengths(0, 83),
+        )
     }
 }

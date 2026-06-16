@@ -2,7 +2,7 @@
 
 ## 1. 프로젝트 한 문장 요약
 
-Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 얼굴 사각형 영역에 edge-aware perturbation을 적용하고, 로컬 복원 시뮬레이션 뒤에도 얼굴 감지 억제가 유지되는지 확인한 다음 보호 이미지를 갤러리에 저장하는 앱이다.
+Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 얼굴 사각형 영역에 edge-aware perturbation을 적용하고, 로컬 denoising + 2x upscaling 복원 시뮬레이션 뒤에도 얼굴 특징 억제가 유지되는지 확인한 다음 보호 이미지를 갤러리에 저장하는 앱이다.
 
 ## 2. 프로젝트가 해결하려는 문제
 
@@ -12,8 +12,8 @@ Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 얼굴 사각형 
 
 - [`FaceRegionDetector`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt)는 기기 안에서 ML Kit로 얼굴 bounding box를 찾는다.
 - [`NoiseEngine`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)은 얼굴 사각형 영역에 보호 농도 기반 노이즈를 적용한다.
-- [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)은 보호 이미지에 denoising과 sharpening 성격의 복원 시뮬레이션을 적용한다.
-- [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)는 ML Kit face detection과 image labeling 결과를 이용해 얼굴 억제와 라벨 변화량을 점수화한다.
+- [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)은 보호 이미지에 denoising, 2x upscaling, sharpening 성격의 복원 시뮬레이션을 적용한다.
+- [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)는 ML Kit face detection landmark/contour와 image labeling 결과를 이용해 얼굴 특징 억제와 라벨 변화량을 점수화한다.
 - [`RestorationAttackProbe`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)는 복원 시뮬레이션 뒤 평가 결과를 [`HELD`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt) 또는 [`BROKEN`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)으로 변환한다.
 
 보안 보증이나 모든 모델에 대한 방어를 증명하는 코드는 확인되지 않았다. 그런 주장은 확인 필요다.
@@ -27,11 +27,11 @@ Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 얼굴 사각형 
 | [`MainBindingAliases.kt`](app/src/main/java/com/haanghil/muulnaat/MainBindingAliases.kt), [`HeaderBindingAliases.kt`](app/src/main/java/com/haanghil/muulnaat/HeaderBindingAliases.kt), [`TechnicalBindingAliases.kt`](app/src/main/java/com/haanghil/muulnaat/TechnicalBindingAliases.kt) | 분리된 include layout의 ViewBinding 별칭 | Medium | Kotlin 호출부가 기존 `binding.*` 이름을 유지하도록 연결 |
 | [`AutoSaveProtectionService.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt), [`AutoSaveStart.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveStart.kt), [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt), [`AutoSaveWorkerProgress.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorkerProgress.kt), [`AutoSaveNotifications.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveNotifications.kt), [`AutoSaveFinish.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveFinish.kt), [`AutoSaveNotificationChannel.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveNotificationChannel.kt), [`AutoSaveIntentParsing.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveIntentParsing.kt), [`AutoSaveStatusStore.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveStatusStore.kt) | 공유 시트 기반 백그라운드 자동 보호/저장 처리 | High | service shell, start helper, worker, progress, notification, finish, 상태 전달을 분리 |
 | [`app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt), [`NoiseRegionMask.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseRegionMask.kt), [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | 얼굴 영역 감지와 edge-aware perturbation 생성 | High | ML Kit face bbox를 마스크로 바꾼 뒤 얼굴 사각형 안에만 적용 |
-| [`app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt) | 보호 농도 후보에서 최소 통과 농도 탐색 | High | 후보 범위 안에서 이분 탐색 |
+| [`app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt) | 보호 농도 후보에서 최소 통과 농도 탐색 | High | `0,20,40,60,80` coarse 탐색 후 `81..100` dense 탐색 |
 | [`app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt) | 권장 보호 농도 탐색 래퍼와 UI 문구 생성 | Medium | [`NoiseSearcher`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)를 감싼 얇은 계층 |
-| [`app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | ML Kit 얼굴 감지/라벨링 결과를 점수화 | High | face suppression, label shift, anti-detection score |
+| [`ModelProbe.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt), [`ModelProbeEvaluator.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeEvaluator.kt), [`ModelProbeFeatures.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeFeatures.kt), [`ModelProbeScoring.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeScoring.kt), [`ModelProbeReportText.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeReportText.kt), [`ModelProbeResultFactory.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeResultFactory.kt) | ML Kit 얼굴 특징/라벨링 결과를 점수화 | High | face suppression, facial feature suppression, label shift, anti-detection score |
 | [`app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt) | 복원 시뮬레이션 후 평가 리포트 생성 | High | [`DefenseEvaluator`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt) 구현 |
-| [`app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt) | denoising + sharpening 방식의 복원 시뮬레이션 | High | TFLite 모델 호출은 확인되지 않고 직접 필터 구현 |
+| [`RedTeamEngine.kt`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt), [`RedTeamDenoise.kt`](app/src/main/java/com/haanghil/muulnaat/RedTeamDenoise.kt), [`RedTeamUpscale.kt`](app/src/main/java/com/haanghil/muulnaat/RedTeamUpscale.kt), [`RedTeamSharpen.kt`](app/src/main/java/com/haanghil/muulnaat/RedTeamSharpen.kt) | denoising + 2x upscaling + sharpening 복원 시뮬레이션 | High | 외부 모델 없이 필터와 Android scaled bitmap으로 공격 근사 |
 | [`ImageStore.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt), [`ImageStoreLoad.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStoreLoad.kt), [`ImageStoreOrientation.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStoreOrientation.kt), [`ImageStoreSave.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStoreSave.kt) | URI 이미지 로드, EXIF 회전 보정, PNG 갤러리 저장 | High | API 모양은 유지하고 load/orientation/save 구현을 분리 |
 | [`app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt) | 상태, 메트릭, 리포트, 인터페이스 정의 | High | 모듈 간 계약 |
 | [`ShareForwardingActivity.kt`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt), [`ShareEntrypoints.kt`](app/src/main/java/com/haanghil/muulnaat/ShareEntrypoints.kt), [`ShareIntentUris.kt`](app/src/main/java/com/haanghil/muulnaat/ShareIntentUris.kt), [`ShareForwardingPermissions.kt`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingPermissions.kt), [`ShareForwardingIntents.kt`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingIntents.kt) | Android share intent를 메인 화면 또는 자동 저장 서비스로 전달 | High | entrypoint, URI 정규화, 권한, handoff intent를 분리 |
@@ -44,7 +44,8 @@ Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 얼굴 사각형 
 | [`app/build.gradle.kts`](app/build.gradle.kts) | Android 모듈 빌드 설정과 의존성 | High | ML Kit, TensorFlow Lite 의존성 포함 |
 | [`build-android.ps1`](build-android.ps1) | Windows release APK 빌드 helper | Medium | signing env var 없으면 debug signing release |
 | [`install-apk.ps1`](install-apk.ps1) | release APK를 연결 기기에 설치하는 helper | Medium | `local.properties`의 `sdk.dir` 필요 |
-| [`ipynbbbbb/face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 로컬 얼굴 감지 실험 CSV 생성 스크립트 | Medium | 입력 데이터와 결과 CSV는 `.gitignore` 대상이라 내용 확인하지 않음 |
+| [`ipynbbbbb/face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 로컬 얼굴 감지 실험 CSV 생성 스크립트 | Medium | 기존 얼굴 미검출률 실험 |
+| [`ipynbbbbb/face_feature_test_realtime.py`](ipynbbbbb/face_feature_test_realtime.py) | 복원 공격 후 얼굴 특징 실험 CSV 생성 스크립트 | Medium | `face_feature_result.csv`, 기존 얼굴 감지 CSV와 분리 |
 | [`docs/site/index.html`](docs/site/index.html), [`script.js`](docs/site/script.js), [`styles.css`](docs/site/styles.css), [`translations.js`](docs/site/translations.js) | 보존용 정적 사이트 | Low | 앱 실행에는 직접 관여하지 않음 |
 | [`README.md`](README.md), [`PRIVACY.md`](PRIVACY.md), [`LICENSE`](LICENSE) | 공개 문서와 라이선스 | Medium | 구조 이해의 보조 자료 |
 
@@ -59,7 +60,7 @@ Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 얼굴 사각형 
 5. [`startOptimalStrengthFlow()`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt)가 백그라운드 thread에서 [`StrengthAdvisor.findRecommendedStrength()`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt)를 호출한다.
 6. [`FaceRegionDetector.detectRegions()`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt)가 원본에서 얼굴 사각형을 찾는다.
 7. [`NoiseSearcher.findMinimumStrength()`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)가 보호 농도 후보를 검사한다.
-8. 각 후보마다 [`NoiseEngine.applyProtection()`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)으로 얼굴 사각형 안에만 보호 이미지를 만들고 [`RestorationAttackProbe.evaluateAfterAttack()`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)으로 복원 후 평가한다.
+8. 각 후보마다 [`NoiseEngine.applyProtection()`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)으로 얼굴 사각형 안에만 보호 이미지를 만들고 [`RestorationAttackProbe.evaluateAfterAttack()`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)으로 denoising + 2x upscaling 후 얼굴 특징 억제를 평가한다.
 9. 최소 [`HELD`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt) 보호 농도가 있으면 UI에 추천값을 표시하고, auto recovery 설정에 따라 보호 적용과 평가를 이어서 실행한다.
 10. 사용자가 저장 버튼을 누르면 [`ImageStore.saveImageToGallery()`](app/src/main/java/com/haanghil/muulnaat/ImageStoreSave.kt)가 PNG를 MediaStore에 저장한다.
 
@@ -144,25 +145,25 @@ flowchart TD
 * 관련 파일: [`NoiseSearcher.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt), [`StrengthAdvisor.kt`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt), [`MainActivityImageFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt), [`MainActivityBatchSearch.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityBatchSearch.kt), [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt)
 * 주요 함수 또는 클래스: [`NoiseSearcher.findMinimumStrength`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt), [`StrengthAdvisor.findRecommendedStrength`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt), [`NoiseSearcher.SearchStep`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)
 * 입력: 원본 bitmap, perturbation module, defense evaluator, optional `onStep`, optional `shouldCancel`
-* 처리: 정해진 후보 범위 안에서 이분 탐색한다. 실패 후보와 통과 후보가 충분히 가까워지면 통과 쪽 후보를 최적 농도로 반환한다.
+* 처리: `0, 20, 40, 60, 80` 후보를 먼저 이분 탐색하고, 여기서 통과 후보가 없으면 `81..100` 모든 정수를 이분 탐색한다. 실패 후보와 통과 후보가 후보 집합에서 인접하면 통과 쪽 후보를 최적 농도로 반환한다.
 * 출력: 최소 통과 농도 또는 `null`
 * 예외 또는 주의점: 후보 기반 탐색이므로 실제 연속값 최소가 아니라 후보 집합 안의 최소값이다.
-* 내가 면접에서 설명해야 할 핵심: “모든 농도를 무작정 훑지 않고 후보 기반 탐색으로 비용을 줄이며, 통과 쪽 후보를 보수적으로 선택한다.”
+* 내가 면접에서 설명해야 할 핵심: “낮은 농도는 20단위로 빠르게 확인하고, 방어가 어려운 80 이상 구간은 모든 정수 후보를 확인해 최대 강도 근처의 빈틈을 줄였다.”
 
 ### 복원 후 방어 평가
 
-* 목적: 보호 이미지가 denoising/sharpening 성격의 복원 시뮬레이션 뒤에도 얼굴 감지 억제를 유지하는지 판단한다.
-* 관련 파일: [`RestorationAttackProbe.kt`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt), [`RedTeamEngine.kt`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt), [`ModelProbe.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt), [`ImageMetrics.kt`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt), [`PipelineContracts.kt`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)
+* 목적: 보호 이미지가 denoising + 2x upscaling + sharpening 복원 시뮬레이션 뒤에도 눈, 눈썹, 코, 입 얼굴 특징 억제를 유지하는지 판단한다.
+* 관련 파일: [`RestorationAttackProbe.kt`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt), [`RedTeamEngine.kt`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt), [`ModelProbe.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) 계열 파일, [`ImageMetrics.kt`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt), [`PipelineContracts.kt`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)
 * 주요 함수 또는 클래스: [`RestorationAttackProbe.evaluateAfterAttack`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt), [`RedTeamEngine.simulateAttack`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt), [`ModelProbe.evaluate`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt), [`ImageMetrics.evaluate`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt)
 * 입력: 원본 bitmap, 보호 bitmap
-* 처리: [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)으로 복원 시뮬레이션 bitmap을 만들고, [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)로 ML Kit 얼굴/라벨 결과를 점수화하며, [`ImageMetrics`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt)로 PSNR/MAD/edge delta를 계산한다.
+* 처리: [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)으로 복원 시뮬레이션 bitmap을 만들고, [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)로 ML Kit 얼굴 landmark/contour와 라벨 결과를 점수화하며, [`ImageMetrics`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt)로 PSNR/MAD/edge delta를 계산한다.
 * 출력: [`DefenseEvaluationReport`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)와 [`ProtectionStatus.HELD`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt) 또는 [`ProtectionStatus.BROKEN`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)
 * 예외 또는 주의점: [`ModelProbe.evaluate()`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)는 `Tasks.await()`를 사용하므로 UI thread에서 직접 호출하면 안 된다. [`MainActivityImageFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt), [`MainActivityProtectionFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivityProtectionFlow.kt), [`AutoSaveWorker`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt)는 thread 안에서 호출한다.
-* 내가 면접에서 설명해야 할 핵심: “방어 평가는 보호 직후가 아니라 복원 시뮬레이션 이후의 얼굴/라벨 신호를 기준으로 한다.”
+* 내가 면접에서 설명해야 할 핵심: “방어 평가는 보호 직후가 아니라 복원 시뮬레이션 이후의 얼굴 특징/라벨 신호를 기준으로 한다.”
 
 ### 결과 표시와 기술 세부 지표
 
-* 목적: 보호 상태, 얼굴 수 변화, 라벨 변화량, anti-detection score, 품질 지표를 UI에 표시한다.
+* 목적: 보호 상태, 얼굴 수 변화, 얼굴 특징 수 변화, 라벨 변화량, anti-detection score, 품질 지표를 UI에 표시한다.
 * 관련 파일: [`MainActivityUi.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityUi.kt), [`MainActivityDefenseRender.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityDefenseRender.kt), [`MainActivityImageRender.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageRender.kt), [`MainActivityMetricMath.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityMetricMath.kt), [`main_image_panels.xml`](app/src/main/res/layout/main_image_panels.xml), [`main_status_card.xml`](app/src/main/res/layout/main_status_card.xml), [`main_model_metrics_card.xml`](app/src/main/res/layout/main_model_metrics_card.xml), [`main_quality_metrics_card.xml`](app/src/main/res/layout/main_quality_metrics_card.xml)
 * 주요 함수 또는 클래스: [`renderDefenseResult`](app/src/main/java/com/haanghil/muulnaat/MainActivityDefenseRender.kt), [`renderProtectedImage`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageRender.kt), [`renderRecoveredImage`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageRender.kt), [`setTechnicalDetailsVisible`](app/src/main/java/com/haanghil/muulnaat/MainActivityUi.kt)
 * 입력: [`DefenseEvaluationReport`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt), 원본/보호/복원 bitmap
@@ -195,14 +196,14 @@ flowchart TD
 
 ### 로컬 실험 CSV 생성 스크립트
 
-* 목적: `test-set` 안의 perturbation 적용 이미지를 여러 얼굴 감지기로 검사해 CSV를 생성한다.
-* 관련 파일: [`ipynbbbbb/face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py)
-* 주요 함수 또는 클래스: [`initialize_detectors`](ipynbbbbb/face_detection_test_realtime.py), [`calculate_result_value`](ipynbbbbb/face_detection_test_realtime.py), `main`, 각 detector class
+* 목적: `test-set` 안의 perturbation 적용 이미지를 얼굴 감지 기준과 얼굴 특징 기준으로 나눠 검사한다.
+* 관련 파일: [`ipynbbbbb/face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py), [`ipynbbbbb/face_feature_test_realtime.py`](ipynbbbbb/face_feature_test_realtime.py)
+* 주요 함수 또는 클래스: [`initialize_detectors`](ipynbbbbb/face_detection_test_realtime.py), [`calculate_result_value`](ipynbbbbb/face_detection_test_realtime.py), [`simulate_restoration_attack`](ipynbbbbb/face_feature_test_realtime.py), [`initialize_probes`](ipynbbbbb/face_feature_test_realtime.py), `main`, 각 detector/probe class
 * 입력: `test-set`
-* 처리: `test-set`을 하위 폴더까지 재귀 탐색하고, 사용 가능한 감지기를 초기화한 뒤 이미지별 결과를 즉시 CSV에 flush한다.
-* 출력: `face_detection_result.csv`
-* 예외 또는 주의점: 값은 얼굴 미검출 `1`, 얼굴 검출 또는 보수적 실패 처리 `0`만 쓴다. 이번 CSV는 원본 이미지와의 쌍 비교 없이 노이즈 적용 이미지 자체를 기준으로 집계한다. 실제 처리 수가 기본 target count 13422보다 작으면 랜덤 이름과 모든 detector 값 0인 padding 행을 추가한다.
-* 내가 면접에서 설명해야 할 핵심: “앱 외부 검증용 스크립트는 감지기 초기화 실패를 전체 실패로 만들지 않고, 사용 가능한 감지기만 CSV 열로 기록하도록 설계했다.”
+* 처리: `face_detection_test_realtime.py`는 노이즈 이미지를 여러 얼굴 감지기로 검사하고, `face_feature_test_realtime.py`는 denoise + 2x upscale + sharpen 이후 MediaPipe FaceMesh/InsightFace keypoints가 얼굴 특징을 잡는지 검사한다.
+* 출력: `face_detection_result.csv`, `face_feature_result.csv`
+* 예외 또는 주의점: 기존 얼굴 감지 CSV 값은 얼굴 미검출 `1`, 얼굴 검출 또는 보수적 실패 `0`이다. 얼굴 특징 CSV 값은 복원 공격 후 특징 미검출 `1`, 특징 검출 또는 보수적 실패 `0`이다. 두 CSV의 목적과 컬럼은 섞지 않는다.
+* 내가 면접에서 설명해야 할 핵심: “앱 외부 검증은 얼굴 감지만 보는 기존 KPI와 복원 공격 후 얼굴 특징이 남는지 보는 강화 KPI를 분리했다.”
 
 ## 6. 데이터 흐름
 
@@ -227,12 +228,12 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    Original[원본 Bitmap] --> ML1[ML Kit face와 label]
-    Protected[복원 후 Bitmap] --> ML2[ML Kit face와 label]
-    ML1 --> Score[faceSuppression와 labelShift 계산]
+    Original[원본 Bitmap] --> ML1[ML Kit face/feature와 label]
+    Protected[복원 후 Bitmap] --> ML2[ML Kit face/feature와 label]
+    ML1 --> Score[faceSuppression, featureSuppression, labelShift 계산]
     ML2 --> Score
     Score --> Anti[antiDetectionScore]
-    Anti --> Decision{threshold와 face reduction}
+    Anti --> Decision{threshold와 특징 0개 조건}
     Decision -- 통과 --> Held[HELD]
     Decision -- 실패 --> Broken[BROKEN]
     Original --> Quality[ImageMetrics]
@@ -248,9 +249,13 @@ flowchart LR
     Detectors --> Values[1 또는 0 값 계산]
     Values --> Padding[13422 미만이면 0 padding 행 추가]
     Padding --> Csv[face_detection_result.csv]
+    TestDir --> Attack[denoise + 2x upscale + sharpen]
+    Attack --> Probes[사용 가능한 얼굴 특징 probe]
+    Probes --> FeatureValues[특징 기준 1 또는 0 값 계산]
+    FeatureValues --> FeatureCsv[face_feature_result.csv]
 ```
 
-입력 디렉터리와 생성 CSV는 `.gitignore` 대상이지만, 현재 `face_detection_result.csv`의 헤더와 집계값은 로컬에서 확인했다. 위 흐름은 추적 대상 Python 코드와 현재 CSV 결과를 함께 반영한 동작이다.
+입력 디렉터리와 생성 CSV는 `.gitignore` 대상이지만, 현재 `face_detection_result.csv`의 헤더와 집계값은 로컬에서 확인했다. `face_feature_result.csv`는 새 얼굴 특징 실험 산출물이며 기존 CSV를 덮어쓰지 않는다.
 
 ## 7. 모듈 의존 관계
 
@@ -304,19 +309,19 @@ graph TD
 
 ### 복원 시뮬레이션
 
-* 무엇을 하는가: [`RedTeamEngine.simulateAttack()`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)이 3x3 median/mean 혼합 필터로 denoising하고, 두 번째 pass에서 unsharp mask 성격의 sharpening을 적용한다.
+* 무엇을 하는가: [`RedTeamEngine.simulateAttack()`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)이 3x3 median/mean 혼합 필터로 denoising하고, Android filtered scaling으로 2배 확대한 뒤 unsharp mask 성격의 sharpening을 적용한다.
 * 왜 필요한가: 보호 이미지가 단순 노이즈 제거/복원 이후에도 유지되는지 확인하기 위한 로컬 공격 가정이다.
 * 어떤 입력을 받는가: 보호 bitmap
 * 어떤 출력을 만드는가: 복원 시도 후 bitmap
-* 시간 또는 성능상 주의할 점: 3x3 window 정렬과 sharpening pass가 있어 O(width * height)지만 객체 리스트 생성이 많아 비용이 있다.
-* 개선 가능성: 주석에는 TFLite 모델 예시가 언급되지만 실제 TFLite 모델 호출은 확인되지 않는다. 실제 모델 기반 복원 평가를 붙일지는 확인 필요다.
+* 시간 또는 성능상 주의할 점: denoise는 원본 크기, sharpening은 2배 확대 후 크기에서 수행되므로 큰 이미지에서 메모리와 CPU 비용이 증가한다.
+* 개선 가능성: 실제 모델 기반 복원 평가를 붙일지는 별도 확인이 필요하다.
 
 ### ML Kit 기반 점수화
 
-* 무엇을 하는가: [`ModelProbe.evaluate()`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)가 원본/테스트 bitmap에 대해 얼굴 수와 image label set을 얻고, face suppression과 label shift를 계산한다.
-* 왜 필요한가: 단순 픽셀 변화가 아니라 모델 관점에서 얼굴 감지와 의미 라벨 변화가 생겼는지 판단하기 위해서다.
+* 무엇을 하는가: [`ModelProbe.evaluate()`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)가 원본/테스트 bitmap에 대해 얼굴 수, 눈/눈썹/코/입 landmark/contour 수, image label set을 얻고 face suppression, facial feature suppression, label shift를 계산한다. 실제 ML Kit 호출은 [`ModelProbeEvaluator.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeEvaluator.kt), 특징 카운트는 [`ModelProbeFeatures.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeFeatures.kt), 점수 계산은 [`ModelProbeScoring.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeScoring.kt)가 맡는다.
+* 왜 필요한가: 단순 얼굴 박스 미검출이 아니라 딥페이크 정렬/복원에 쓸 얼굴 특징 신호가 남았는지 판단하기 위해서다.
 * 어떤 입력을 받는가: 원본 bitmap, 보호 또는 복원 후 bitmap
-* 어떤 출력을 만드는가: [`ModelProbeResult`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)
+* 어떤 출력을 만드는가: [`ModelProbeResult`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt). 원본에서 얼굴/특징 기준선이 있고, 복원 공격 후 특징 수가 0이며, weighted score가 threshold 이상일 때만 통과한다.
 * 시간 또는 성능상 주의할 점: `Tasks.await()`로 ML Kit 비동기 작업을 동기 대기한다. 호출자는 background thread여야 한다.
 * 개선 가능성: coroutine suspend wrapper로 바꾸면 취소/에러 처리와 UI 생명주기 대응이 더 좋아진다.
 
@@ -354,10 +359,11 @@ graph TD
 | [`NOISE_BASE`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | 기본 노이즈 amplitude | `2f` | 전체 perturbation 최소 농도 변화 |
 | [`NOISE_STRENGTH_MULTIPLIER`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | 농도당 amplitude 증가량 | `2.5f` | 농도 변화 민감도 증가/감소 |
 | [`safeStrength`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) range | [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | 보호 농도 제한 범위 | `0..100` | UI/탐색 범위와 맞춰야 함 |
-| [`DEFAULT_CANDIDATE_STRENGTHS`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt) | [`NoiseSearcher.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt) | 자동 탐색 후보 | 내부 후보 목록 | 탐색 정확도/시간 trade-off |
-| [`FACE_SUPPRESSION_WEIGHT`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | [`ModelProbe.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | 얼굴 억제 점수 가중치 | `0.35` | face count 변화의 영향도 변경 |
-| [`LABEL_SHIFT_WEIGHT`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | [`ModelProbe.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | 라벨 변화량 가중치 | `0.65` | image label 변화 영향도 변경 |
-| [`PASS_THRESHOLD`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | [`ModelProbe.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | 통과 점수 threshold | `0.35` | HELD/BROKEN 판정 민감도 변경 |
+| [`candidateStrengths`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt) | [`NoiseSearcher.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt) | 자동 탐색 후보 | `0,20,40,60,80..100` | 탐색 정확도/시간 trade-off |
+| [`FACE_SUPPRESSION_WEIGHT`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | [`ModelProbe.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | 얼굴 수 억제 점수 가중치 | `0.20` | face count 변화의 영향도 변경 |
+| [`FACIAL_FEATURE_SUPPRESSION_WEIGHT`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | [`ModelProbe.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | 얼굴 특징 억제 점수 가중치 | `0.50` | 얼굴 특징 잔존 여부 영향도 변경 |
+| [`LABEL_SHIFT_WEIGHT`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | [`ModelProbe.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | 라벨 변화량 가중치 | `0.30` | image label 변화 영향도 변경 |
+| [`PASS_THRESHOLD`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | [`ModelProbe.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | 통과 점수 threshold | `0.50` | HELD/BROKEN 판정 민감도 변경 |
 | [`targetMaxSide`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt) | [`ImageStore.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt) | 로드 시 최대 변 기준 | `1280` | 품질/성능/메모리 사용량 영향 |
 | PNG filename prefix | [`ImageStore.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt) | 저장 파일명 접두사 | `haan_ghil_muulnaat_` | 갤러리 파일 식별 방식 변화 |
 | 저장 폴더 | [`ImageStore.kt`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt) | Android Q 이상 상대 경로 | `Pictures/Haan Ghil Muulnaat` | 갤러리 내 저장 위치 변경 |
@@ -368,6 +374,7 @@ graph TD
 | [`DEFAULT_TEST_DIR`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 실험 보호 이미지 경로 | `test-set` | 하위 폴더까지 재귀 탐색 |
 | [`DEFAULT_TARGET_COUNT`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | CSV 목표 행 수 | `13422` | 부족분은 랜덤 이름과 0 값으로 padding |
 | [`OUTPUT_CSV`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 실험 결과 CSV | `face_detection_result.csv` | 현재 로컬 CSV는 13,422행 집계 확인 |
+| [`DEFAULT_OUTPUT_CSV`](ipynbbbbb/face_feature_test_realtime.py) | [`face_feature_test_realtime.py`](ipynbbbbb/face_feature_test_realtime.py) | 얼굴 특징 실험 결과 CSV | `face_feature_result.csv` | 기존 얼굴 감지 CSV와 분리 |
 
 ## 10. 실행 방법
 
@@ -413,14 +420,22 @@ python ipynbbbbb\face_detection_test_realtime.py
 
 스크립트 파일은 추적 대상이다. 필요한 Python 패키지 설치 상태와 `test-set/` 전체 내용은 환경마다 확인이 필요하지만, 현재 로컬 `face_detection_result.csv`는 13,178개 실제 이미지 행과 244개 padding 행으로 구성된 13,422행 결과로 확인했다.
 
+얼굴 특징 기준 실험은 별도 파일과 별도 CSV를 사용한다.
+
+```powershell
+python ipynbbbbb\face_feature_test_realtime.py --test-dir test-set
+```
+
+`face_feature_test_realtime.py`는 `face_feature_result.csv`가 이미 있으면 `--overwrite` 없이는 덮어쓰지 않는다. 이 스크립트는 MediaPipe FaceMesh 또는 InsightFace keypoints 중 현재 환경에서 초기화 가능한 probe만 CSV 열로 사용한다.
+
 ## 11. 테스트와 검증 방법
 
 ### 코드에서 확인 가능한 자동 테스트
 
 | 테스트 파일 | 검증 대상 | 확인 내용 |
 | --- | --- | --- |
-| [`NoiseSearcherTest.kt`](app/src/test/java/com/haanghil/muulnaat/NoiseSearcherTest.kt) | [`NoiseSearcher.findMinimumStrength`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt) | 통과 후보 없음, lo 통과, 최고 후보 통과, 20단위 후보 보정, narrow range, progress step |
-| [`ModelProbeTest.kt`](app/src/test/java/com/haanghil/muulnaat/ModelProbeTest.kt) | [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) 보조 계산 | face suppression, label shift, weighted score, face reduction 조건 |
+| [`NoiseSearcherTest.kt`](app/src/test/java/com/haanghil/muulnaat/NoiseSearcherTest.kt) | [`NoiseSearcher.findMinimumStrength`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt) | 통과 후보 없음, lo 통과, 최고 후보 통과, 20단위 후보 보정, `81..100` 정수 후보, progress step |
+| [`ModelProbeTest.kt`](app/src/test/java/com/haanghil/muulnaat/ModelProbeTest.kt) | [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) 보조 계산 | face suppression, feature suppression, label shift, weighted score, feature-zero 통과 조건 |
 
 자동 테스트에서 실제 ML Kit 호출, Android UI, MediaStore 저장, foreground service 동작은 검증하지 않는다.
 
@@ -442,20 +457,21 @@ python ipynbbbbb\face_detection_test_realtime.py
 - CSV 값은 얼굴 미검출 `1`, 얼굴 검출 또는 보수적 실패 처리 `0`이다. 이번 CSV는 원본 이미지와의 쌍 비교 없이 노이즈 적용 이미지 자체를 기준으로 집계했다.
 - 현재 CSV 집계는 총 13,422행이며, 실제 이미지 13,178장과 padding 244장으로 구성된다.
 - detector별 얼굴 미검출률은 OpenCV Haar 19.81%, InsightFace 84.70%, MTCNN 82.45%, YOLO Face 87.99%, face_detection 25.87%, face_detection_tflite 54.37%다.
+- [`ipynbbbbb/face_feature_test_realtime.py`](ipynbbbbb/face_feature_test_realtime.py)는 `face_feature_result.csv`를 생성한다. 값은 복원 공격 후 얼굴 특징 미검출 `1`, 특징 검출 또는 보수적 실패 `0`이다.
 
 ## 12. 면접 대비 설명 스크립트
 
 ### 30초 요약
 
-이 프로젝트는 Android에서 인물 사진에 로컬 perturbation을 적용하고, 복원 시뮬레이션 뒤에도 얼굴 감지 억제가 유지되는지 확인하는 앱입니다. 핵심 구조는 [`NoiseEngine`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)의 edge-aware perturbation, [`NoiseSearcher`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)의 최소 보호 농도 탐색, [`RestorationAttackProbe`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)의 복원 후 평가, 그리고 [`ImageStore`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt)의 Android MediaStore 저장입니다. 공유 시트에서 여러 이미지를 받아 백그라운드로 자동 보호/저장하는 foreground service도 구현했습니다.
+이 프로젝트는 Android에서 인물 사진에 로컬 perturbation을 적용하고, denoising + 2x upscaling 복원 시뮬레이션 뒤에도 눈/눈썹/코/입 얼굴 특징이 남지 않는지 확인하는 앱입니다. 핵심 구조는 [`NoiseEngine`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)의 edge-aware perturbation, [`NoiseSearcher`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)의 최소 보호 농도 탐색, [`RestorationAttackProbe`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)의 복원 후 평가, 그리고 [`ImageStore`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt)의 Android MediaStore 저장입니다. 공유 시트에서 여러 이미지를 받아 백그라운드로 자동 보호/저장하는 foreground service도 구현했습니다.
 
 ### 1분 설명
 
-Haan Ghil Muulnaat는 인물 사진을 기기 안에서 처리하는 Android 앱입니다. 사용자가 갤러리나 공유 시트로 이미지를 넣으면 [`ImageStore`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt)가 bitmap으로 로드하고 EXIF 회전을 보정합니다. 이후 [`NoiseSearcher`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)가 후보 범위 안에서 최소 통과 농도를 찾습니다. 각 후보는 [`NoiseEngine`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)으로 보호 이미지를 만들고, [`RestorationAttackProbe`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)가 denoising과 sharpening 기반 복원 시뮬레이션을 거친 뒤 ML Kit 얼굴 감지와 이미지 라벨링 결과를 점수화합니다. 통과하면 [`HELD`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt), 실패하면 [`BROKEN`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)으로 보여주고, 결과 이미지는 MediaStore를 통해 갤러리에 PNG로 저장합니다. 단일 수동 처리뿐 아니라 공유 시트 기반 자동 저장 서비스도 같은 핵심 파이프라인을 재사용합니다.
+Haan Ghil Muulnaat는 인물 사진을 기기 안에서 처리하는 Android 앱입니다. 사용자가 갤러리나 공유 시트로 이미지를 넣으면 [`ImageStore`](app/src/main/java/com/haanghil/muulnaat/ImageStore.kt)가 bitmap으로 로드하고 EXIF 회전을 보정합니다. 이후 [`NoiseSearcher`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)가 후보 범위 안에서 최소 통과 농도를 찾습니다. 각 후보는 [`NoiseEngine`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)으로 보호 이미지를 만들고, [`RestorationAttackProbe`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)가 denoising + 2x upscaling + sharpening 복원 시뮬레이션을 거친 뒤 ML Kit 얼굴 landmark/contour와 이미지 라벨링 결과를 점수화합니다. 복원 후 얼굴 특징이 하나도 남지 않으면 [`HELD`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt), 하나라도 남으면 [`BROKEN`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)으로 보여주고, 결과 이미지는 MediaStore를 통해 갤러리에 PNG로 저장합니다. 단일 수동 처리뿐 아니라 공유 시트 기반 자동 저장 서비스도 같은 핵심 파이프라인을 재사용합니다.
 
 ### 기술 질문 대응용 설명
 
-핵심 로직은 세 부분입니다. 첫째, [`NoiseEngine`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)은 luma gradient로 edge map을 만들고 edge가 강한 영역에 더 큰 amplitude를 주는 방식으로 perturbation을 적용합니다. 둘째, [`NoiseSearcher`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)는 후보 기반 탐색으로 최소 통과 농도를 찾고, 통과 쪽 후보를 보수적으로 선택합니다. 셋째, [`RestorationAttackProbe`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)는 [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)의 복원 시뮬레이션 결과를 [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)와 [`ImageMetrics`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt)로 평가합니다. [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)는 ML Kit face detection과 image labeling을 호출하고, face suppression 0.35, label shift 0.65 가중치로 anti-detection score를 계산합니다. 이 점수가 threshold 이상이고 원본에서 얼굴이 감지된 경우 얼굴 수가 줄어야 통과합니다. UI thread를 막지 않도록 [`MainActivityImageFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt), [`MainActivityProtectionFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivityProtectionFlow.kt), [`AutoSaveWorker`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt)는 무거운 처리를 background thread에서 실행합니다.
+핵심 로직은 세 부분입니다. 첫째, [`NoiseEngine`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)은 luma gradient로 edge map을 만들고 edge가 강한 영역에 더 큰 amplitude를 주는 방식으로 perturbation을 적용합니다. 둘째, [`NoiseSearcher`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)는 `0,20,40,60,80`을 먼저 보고 실패하면 `81..100` 모든 정수 후보를 탐색합니다. 셋째, [`RestorationAttackProbe`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)는 [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)의 denoising + 2x upscaling + sharpening 결과를 [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)와 [`ImageMetrics`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt)로 평가합니다. [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)는 ML Kit accurate face detection에 landmark/contour를 켜고, face suppression 0.20, facial feature suppression 0.50, label shift 0.30 가중치로 anti-detection score를 계산합니다. 원본에서 얼굴/특징 기준선이 있고 복원 후 얼굴 특징이 0개일 때만 통과합니다. UI thread를 막지 않도록 [`MainActivityImageFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt), [`MainActivityProtectionFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivityProtectionFlow.kt), [`AutoSaveWorker`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt)는 무거운 처리를 background thread에서 실행합니다.
 
 ### AI 코딩 도구 사용 질문 대응
 
@@ -469,23 +485,24 @@ GitHub Copilot과 Codex를 활용해 구현 속도를 높였고, 구조 이해, 
 | 2 | [`NoiseEngine.applyProtection`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | 실제 perturbation 생성 로직 | edge map, strength clamp, xorshift seed, channel clamp |
 | 3 | [`NoiseSearcher.findMinimumStrength`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt) | 최소 보호 농도 탐색 알고리즘 | 후보 범위, 이분 탐색, 경계 반환, `null` 조건 |
 | 4 | [`RestorationAttackProbe.evaluateAfterAttack`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt) | 복원 후 평가를 앱 상태로 변환 | [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt), [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt), [`ImageMetrics`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt), HELD/BROKEN 매핑 |
-| 5 | [`ModelProbe.evaluate`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | 얼굴/라벨 기반 점수 계산 핵심 | ML Kit 호출, `Tasks.await`, score threshold, face reduction 조건 |
-| 6 | [`RedTeamEngine.simulateAttack`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt) | 복원 시뮬레이션 가정 | median/mean denoising, sharpening pass, TFLite 미사용 사실 |
+| 5 | [`ModelProbe.evaluate`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) | 얼굴 특징/라벨 기반 점수 계산 핵심 | ML Kit 호출, landmark/contour count, feature-zero 조건 |
+| 6 | [`RedTeamEngine.simulateAttack`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt) | 복원 시뮬레이션 가정 | denoising, 2x upscaling, sharpening pass |
 | 7 | [`ImageStore.loadBitmapFromUri`](app/src/main/java/com/haanghil/muulnaat/ImageStoreLoad.kt) | Android URI 입력 처리 | downsample, EXIF orientation, 실패 시 null |
 | 8 | [`ImageStore.saveImageToGallery`](app/src/main/java/com/haanghil/muulnaat/ImageStoreSave.kt) | 출력 저장 처리 | MediaStore, PNG compress, `IS_PENDING`, 실패 타입 |
 | 9 | [`startWorker`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt) | 백그라운드 일괄 처리 | queue, cancel, notification, 저장/skip count |
 | 10 | [`ShareForwardingActivity`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt)와 [`sharedImageUris`](app/src/main/java/com/haanghil/muulnaat/ShareIntentUris.kt) | 공유 시트 입력 분기 | `ACTION_SEND_MULTIPLE`, permission request, mode 선택 |
 | 11 | [`PipelineContracts.kt`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt) | 모듈 간 데이터 계약 | status enum, metrics data class, interfaces |
 | 12 | [`NoiseSearcherTest.kt`](app/src/test/java/com/haanghil/muulnaat/NoiseSearcherTest.kt) | 탐색 로직 기대 동작 | 후보 범위와 edge case |
-| 13 | [`ModelProbeTest.kt`](app/src/test/java/com/haanghil/muulnaat/ModelProbeTest.kt) | 점수 계산 기대 동작 | face suppression, label shift, threshold logic |
-| 14 | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 앱 외부 실험 CSV 생성 방식 | detector 초기화 실패 처리, result value 규칙 |
+| 13 | [`ModelProbeTest.kt`](app/src/test/java/com/haanghil/muulnaat/ModelProbeTest.kt) | 점수 계산 기대 동작 | face/feature suppression, label shift, threshold logic |
+| 14 | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 앱 외부 얼굴 감지 CSV 생성 방식 | detector 초기화 실패 처리, result value 규칙 |
+| 15 | [`face_feature_test_realtime.py`](ipynbbbbb/face_feature_test_realtime.py) | 앱 외부 얼굴 특징 CSV 생성 방식 | 복원 공격, probe 초기화 실패 처리, overwrite 방지 |
 
 ## 14. 현재 구조의 약점
 
 - 메인 화면 로직은 역할별 파일로 쪼갰지만, 여전히 [`MainActivity`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt)의 extension 함수들이 화면 상태를 직접 공유한다.
 - `thread {}`를 직접 사용해 Android lifecycle 취소, configuration change, structured concurrency 대응이 약하다.
 - [`ModelProbe.evaluate()`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)가 `Tasks.await()`를 사용하므로 호출자가 background thread를 지켜야 한다.
-- [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt) 주석에는 TFLite 모델이 언급되지만 실제 코드는 직접 구현한 필터 기반 시뮬레이션이다. 주석과 구현의 기대치를 정리할 필요가 있다.
+- [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)는 실제 생성형 복원 모델이 아니라 직접 구현한 필터 기반 시뮬레이션이다.
 - [`ImageMetrics.evaluate()`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt)의 [`ComparisonResult.passed`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt)는 현재 최종 `ProtectionStatus` 결정에 쓰이지 않는다.
 - 자동 저장 서비스가 bitmap recycle이나 메모리 압박 대응을 적극적으로 하지 않는다.
 - ML Kit 모델 다운로드/업데이트는 Google Play Services 동작에 의존한다. 오프라인 최초 실행 상태는 확인 필요다.

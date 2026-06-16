@@ -4,7 +4,10 @@ import android.graphics.Bitmap
 import android.graphics.Rect
 
 object NoiseSearcher {
-    private val DEFAULT_CANDIDATE_STRENGTHS = listOf(0, 20, 40, 60, 80)
+    internal fun candidateStrengths(lo: Int, hi: Int): List<Int> {
+        if (lo > hi) return emptyList()
+        return (listOf(0, 20, 40, 60) + (80..100)).filter { it in lo..hi }
+    }
 
     data class SearchStep(
         val iteration: Int,
@@ -27,47 +30,56 @@ object NoiseSearcher {
         shouldCancel: () -> Boolean = { false },
     ): Int? {
         if (shouldCancel()) return null
-        val candidates = DEFAULT_CANDIDATE_STRENGTHS.filter { it in lo..hi }
-        if (candidates.isEmpty()) return null
-
         var iteration = 1
-        var low = 0
-        var high = candidates.lastIndex
-        var lowerFailed: Int? = null
-        var upperPassed: Int? = null
 
-        while (low <= high) {
-            if (shouldCancel()) return null
-            val mid = low + (high - low) / 2
-            val strength = candidates[mid]
-            val passed = test(strength)
-            onStep?.invoke(
-                SearchStep(
-                    iteration = iteration,
-                    low = candidates[low],
-                    mid = strength,
-                    high = candidates[high],
-                    passed = passed,
+        fun search(candidates: List<Int>): Int? {
+            if (candidates.isEmpty()) return null
+
+            var low = 0
+            var high = candidates.lastIndex
+            var lowerFailed: Int? = null
+            var upperPassed: Int? = null
+
+            while (low <= high) {
+                if (shouldCancel()) return null
+                val mid = low + (high - low) / 2
+                val strength = candidates[mid]
+                val passed = test(strength)
+                onStep?.invoke(
+                    SearchStep(
+                        iteration = iteration,
+                        low = candidates[low],
+                        mid = strength,
+                        high = candidates[high],
+                        passed = passed,
+                    )
                 )
-            )
-            if (passed) {
-                upperPassed = strength
-                high = mid - 1
-            } else {
-                lowerFailed = strength
-                low = mid + 1
+                if (passed) {
+                    upperPassed = strength
+                    high = mid - 1
+                } else {
+                    lowerFailed = strength
+                    low = mid + 1
+                }
+                val bracketResult = boundedCandidate(candidates, lowerFailed, upperPassed)
+                if (bracketResult != null) return bracketResult
+                iteration += 1
             }
-            val bracketResult = boundedCandidate(candidates, lowerFailed, upperPassed)
-            if (bracketResult != null) return bracketResult
-            iteration += 1
+            return upperPassed
         }
-        return upperPassed
+
+        val coarseResult = search(candidateStrengths(lo, minOf(hi, 80)))
+        if (coarseResult != null || shouldCancel()) return coarseResult
+        return search(candidateStrengths(maxOf(lo, 81), hi))
     }
 
     private fun boundedCandidate(candidates: List<Int>, lowerFailed: Int?, upperPassed: Int?): Int? {
         if (lowerFailed == null || upperPassed == null) return null
-        if (upperPassed - lowerFailed > 20) return null
-        return candidates.firstOrNull { it >= upperPassed }
+        val lowerIndex = candidates.indexOf(lowerFailed)
+        val upperIndex = candidates.indexOf(upperPassed)
+        if (lowerIndex < 0 || upperIndex < 0) return null
+        if (upperIndex - lowerIndex > 1) return null
+        return upperPassed
     }
 
     fun findMinimumStrength(

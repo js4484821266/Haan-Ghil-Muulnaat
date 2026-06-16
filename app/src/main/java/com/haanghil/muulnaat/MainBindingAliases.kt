@@ -25,6 +25,7 @@ internal val ActivityMainBinding.protectionStatusValue get() = statusCard.protec
 internal val ActivityMainBinding.technicalDetailsToggle get() = technicalDetails.technicalDetailsToggle
 internal val ActivityMainBinding.technicalDetailsContainer get() = technicalDetails.technicalDetailsContainer
 internal val ActivityMainBinding.modelFaceCountValue get() = technicalDetails.modelFaceCountValue
+internal val ActivityMainBinding.modelFacialFeatureValue get() = technicalDetails.modelFacialFeatureValue
 internal val ActivityMainBinding.modelLabelShiftValue get() = technicalDetails.modelLabelShiftValue
 internal val ActivityMainBinding.modelScoreValue get() = technicalDetails.modelScoreValue
 internal val ActivityMainBinding.qualityPsnrValue get() = technicalDetails.qualityMetrics.qualityPsnrValue

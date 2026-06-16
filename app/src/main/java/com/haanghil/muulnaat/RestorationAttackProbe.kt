@@ -21,6 +21,9 @@ class RestorationAttackProbe : DefenseEvaluator {
             evaluationMetrics = EvaluationMetrics(
                 faceCountOriginal = modelResult.faceCountOriginal,
                 faceCountAfterAttack = modelResult.faceCountProtected,
+                facialFeatureCountOriginal = modelResult.facialFeatureCountOriginal,
+                facialFeatureCountAfterAttack = modelResult.facialFeatureCountProtected,
+                facialFeatureSuppressionScore = modelResult.facialFeatureSuppressionScore,
                 labelShift = modelResult.labelShift,
                 antiDetectionScore = modelResult.antiDetectionScore,
                 decisionReason = modelResult.decisionReason
@@ -35,6 +38,10 @@ class RestorationAttackProbe : DefenseEvaluator {
                 append(if (status == ProtectionStatus.HELD) "HELD" else "BROKEN")
                 append(" | Score=")
                 append(String.format(Locale.US, "%.2f", modelResult.antiDetectionScore))
+                append(" | Features=")
+                append(modelResult.facialFeatureCountOriginal)
+                append("->")
+                append(modelResult.facialFeatureCountProtected)
                 append(" | ")
                 append(modelResult.decisionReason)
             }

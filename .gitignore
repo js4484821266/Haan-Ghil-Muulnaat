@@ -80,6 +80,7 @@ lint/tmp/
 # Project-local artifacts and datasets
 ipynbbbbb/*
 !ipynbbbbb/face_detection_test_realtime.py
+!ipynbbbbb/face_feature_test_realtime.py
 .vscode/
 .venv/
 test-set/
@@ -87,3 +88,4 @@ original-set/*
 #!original-set/faces/*.csv
 #!original-set/faces/*.txt
 models/*
+.prompts.md
