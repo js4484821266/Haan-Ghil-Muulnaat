@@ -89,3 +89,4 @@ original-set/*
 #!original-set/faces/*.txt
 models/*
 .prompts.md
+face_feature_result.csv

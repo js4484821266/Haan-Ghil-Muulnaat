@@ -54,7 +54,29 @@
 
 이 수치는 "원본에서 확실히 얼굴이 잡힌 이미지에 대한 방어율"이 아니라, 대규모 노이즈 결과물에 대한 detector별 얼굴 미검출률입니다. detector별 성능 차이는 모델 민감도와 구현 특성의 영향을 크게 받으므로, 단일 보안 보증이 아니라 앱의 방어 경향을 이해하기 위한 참고 지표로만 사용해야 합니다.
 
-딥페이크 방지 관점의 더 엄격한 검증은 별도 얼굴 특징 실험으로 분리합니다. [`ipynbbbbb/face_feature_test_realtime.py`](ipynbbbbb/face_feature_test_realtime.py)는 보호 이미지에 denoising + 2x upscaling + sharpening을 적용한 뒤 MediaPipe FaceMesh 또는 InsightFace keypoints가 얼굴 특징을 다시 잡는지 확인하고, 기본 출력 `face_feature_result.csv`에 `1=특징 미검출`, `0=특징 검출 또는 보수적 실패`로 기록합니다. 이 파일은 기존 `face_detection_result.csv`와 컬럼/의미를 섞지 않습니다.
+얼굴 감지만으로는 딥페이크 방지 목적을 충분히 검증하기 어렵습니다. 얼굴 전체 박스가 사라져도 denoising + 2x upscaling + sharpening 이후 눈, 눈썹, 코, 입 같은 특징점이 하나라도 복구되면 합성 파이프라인의 단서가 남을 수 있기 때문입니다. 그래서 기존 `face_detection_result.csv`는 얼굴 미검출 참고 지표로 유지하고, 더 엄격한 검증은 별도 얼굴 특징 실험으로 분리했습니다.
+
+[`ipynbbbbb/face_feature_test_realtime.py`](ipynbbbbb/face_feature_test_realtime.py)는 보호 이미지에 Python 기준 denoising + 2x upscaling + sharpening을 적용한 뒤 MediaPipe FaceMesh 또는 InsightFace keypoints가 얼굴 특징을 다시 잡는지 확인합니다. 기본 출력 `face_feature_result.csv`는 `1=특징 미검출`, `0=특징 검출 또는 보수적 실패`로 기록하며, 기본 목표 행 수 1000장에 맞추기 위해 실제 이미지가 부족하면 `random_missing_...png` padding 행을 `0`으로 추가합니다.
+
+현재 `face_feature_result.csv` 집계는 다음과 같습니다.
+
+| 항목 | 결과 |
+| --- | ---: |
+| CSV 평가 대상 | 실제 보호 이미지 994장 + 보수적 padding 6장 |
+| CSV 목표 총량 | 1,000장 |
+| 엄격 통과 기준 | MediaPipe와 InsightFace 모두 특징 미검출 |
+| 엄격 통과 | 910 / 1,000 |
+| 엄격 통과율 | 91.00% |
+| 엄격 실패 | 90 / 1,000 |
+
+probe별 결과는 다음과 같습니다. 단일 probe 성공률은 참고용이며, 실제 성공 판정은 한쪽이라도 특징을 잡으면 실패로 보는 엄격 기준을 우선합니다.
+
+| 얼굴 특징 probe | 특징 미검출 | 특징 미검출률 |
+| --- | ---: | ---: |
+| MediaPipe FaceMesh / FaceLandmarker | 965 / 1,000 | 96.50% |
+| InsightFace keypoints | 925 / 1,000 | 92.50% |
+
+MediaPipe가 `mp.solutions`를 제공하지 않는 환경에서는 로컬 `ipynbbbbb/face_landmarker.task` 또는 `--mediapipe-landmarker-model` 경로가 필요합니다. 이 얼굴 특징 실험은 기존 `face_detection_result.csv`와 컬럼/의미를 섞지 않습니다.
 
 ## 개인정보 모델
 

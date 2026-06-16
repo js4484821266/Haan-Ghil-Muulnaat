@@ -202,7 +202,7 @@ flowchart TD
 * 입력: `test-set`
 * 처리: `face_detection_test_realtime.py`는 노이즈 이미지를 여러 얼굴 감지기로 검사하고, `face_feature_test_realtime.py`는 denoise + 2x upscale + sharpen 이후 MediaPipe FaceMesh/InsightFace keypoints가 얼굴 특징을 잡는지 검사한다.
 * 출력: `face_detection_result.csv`, `face_feature_result.csv`
-* 예외 또는 주의점: 기존 얼굴 감지 CSV 값은 얼굴 미검출 `1`, 얼굴 검출 또는 보수적 실패 `0`이다. 얼굴 특징 CSV 값은 복원 공격 후 특징 미검출 `1`, 특징 검출 또는 보수적 실패 `0`이다. 두 CSV의 목적과 컬럼은 섞지 않는다.
+* 예외 또는 주의점: 기존 얼굴 감지 CSV 값은 얼굴 미검출 `1`, 얼굴 검출 또는 보수적 실패 `0`이다. 얼굴 특징 CSV 값은 복원 공격 후 특징 미검출 `1`, 특징 검출 또는 보수적 실패 `0`이다. 얼굴 특징 CSV는 기본 target count 1000을 기준으로 부족분을 `random_missing_<uuid>.png`와 모든 probe 값 `0`인 padding 행으로 채운다. MediaPipe가 `mp.solutions`를 제공하지 않는 환경에서는 로컬 `ipynbbbbb/face_landmarker.task` 또는 `--mediapipe-landmarker-model` 경로가 필요하며, 스크립트는 모델을 자동 다운로드하지 않는다. 두 CSV의 목적과 컬럼은 섞지 않는다.
 * 내가 면접에서 설명해야 할 핵심: “앱 외부 검증은 얼굴 감지만 보는 기존 KPI와 복원 공격 후 얼굴 특징이 남는지 보는 강화 KPI를 분리했다.”
 
 ## 6. 데이터 흐름
@@ -375,6 +375,8 @@ graph TD
 | [`DEFAULT_TARGET_COUNT`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | CSV 목표 행 수 | `13422` | 부족분은 랜덤 이름과 0 값으로 padding |
 | [`OUTPUT_CSV`](ipynbbbbb/face_detection_test_realtime.py) | [`face_detection_test_realtime.py`](ipynbbbbb/face_detection_test_realtime.py) | 실험 결과 CSV | `face_detection_result.csv` | 현재 로컬 CSV는 13,422행 집계 확인 |
 | [`DEFAULT_OUTPUT_CSV`](ipynbbbbb/face_feature_test_realtime.py) | [`face_feature_test_realtime.py`](ipynbbbbb/face_feature_test_realtime.py) | 얼굴 특징 실험 결과 CSV | `face_feature_result.csv` | 기존 얼굴 감지 CSV와 분리 |
+| [`DEFAULT_TARGET_COUNT`](ipynbbbbb/face_feature_test_realtime.py) | [`face_feature_test_realtime.py`](ipynbbbbb/face_feature_test_realtime.py) | 얼굴 특징 실험 목표 행 수 | `1000` | 부족분은 보수적 실패 `0` padding |
+| [`DEFAULT_MEDIAPIPE_LANDMARKER_MODEL`](ipynbbbbb/face_feature_test_realtime.py) | [`face_feature_test_realtime.py`](ipynbbbbb/face_feature_test_realtime.py) | MediaPipe Tasks FaceLandmarker 모델 경로 | `ipynbbbbb/face_landmarker.task` | `mp.solutions` 없는 MediaPipe 환경에서 필요 |
 
 ## 10. 실행 방법
 
@@ -426,7 +428,7 @@ python ipynbbbbb\face_detection_test_realtime.py
 python ipynbbbbb\face_feature_test_realtime.py --test-dir test-set
 ```
 
-`face_feature_test_realtime.py`는 `face_feature_result.csv`가 이미 있으면 `--overwrite` 없이는 덮어쓰지 않는다. 이 스크립트는 MediaPipe FaceMesh 또는 InsightFace keypoints 중 현재 환경에서 초기화 가능한 probe만 CSV 열로 사용한다.
+`face_feature_test_realtime.py`는 `face_feature_result.csv`가 이미 있으면 `--overwrite` 없이는 덮어쓰지 않는다. 이 스크립트는 MediaPipe FaceMesh 또는 InsightFace keypoints 중 현재 환경에서 초기화 가능한 probe만 CSV 열로 사용한다. MediaPipe `mp.solutions.face_mesh`가 없으면 Tasks API의 FaceLandmarker를 시도하고, 이때 `ipynbbbbb/face_landmarker.task` 또는 `--mediapipe-landmarker-model`로 지정한 로컬 모델이 필요하다. 실제 이미지 수가 기본 1000장보다 적으면 부족분은 보수적 실패 `0` padding 행으로 채운다.
 
 ## 11. 테스트와 검증 방법
 
@@ -457,7 +459,7 @@ python ipynbbbbb\face_feature_test_realtime.py --test-dir test-set
 - CSV 값은 얼굴 미검출 `1`, 얼굴 검출 또는 보수적 실패 처리 `0`이다. 이번 CSV는 원본 이미지와의 쌍 비교 없이 노이즈 적용 이미지 자체를 기준으로 집계했다.
 - 현재 CSV 집계는 총 13,422행이며, 실제 이미지 13,178장과 padding 244장으로 구성된다.
 - detector별 얼굴 미검출률은 OpenCV Haar 19.81%, InsightFace 84.70%, MTCNN 82.45%, YOLO Face 87.99%, face_detection 25.87%, face_detection_tflite 54.37%다.
-- [`ipynbbbbb/face_feature_test_realtime.py`](ipynbbbbb/face_feature_test_realtime.py)는 `face_feature_result.csv`를 생성한다. 값은 복원 공격 후 얼굴 특징 미검출 `1`, 특징 검출 또는 보수적 실패 `0`이다.
+- [`ipynbbbbb/face_feature_test_realtime.py`](ipynbbbbb/face_feature_test_realtime.py)는 `face_feature_result.csv`를 생성한다. 값은 복원 공격 후 얼굴 특징 미검출 `1`, 특징 검출 또는 보수적 실패 `0`이다. 기본 목표 행 수는 1000이고 부족분은 padding 행으로 추가한다.
 
 ## 12. 면접 대비 설명 스크립트
 

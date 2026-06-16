@@ -12,6 +12,9 @@ CSV 결과값
 1 = 복원 공격 후 얼굴 특징을 못 잡음
 0 = 얼굴 특징을 잡았거나, 이미지 읽기/probe 실행에 실패해 보수적으로 실패 처리
 
+실제 이미지 수가 기본 target-count 1000보다 작으면 random_missing_<uuid>.png
+이름과 모든 probe 값 0으로 padding 행을 추가한다.
+
 기존 face_detection_result.csv와 값 규칙을 섞지 않기 위해 기본 출력은
 face_feature_result.csv로 분리한다.
 """
@@ -21,15 +24,19 @@ import argparse
 import csv
 import os
 import traceback
+import uuid
 
 os.environ.setdefault("NO_ALBUMENTATIONS_UPDATE", "1")
 os.environ.setdefault("TF_ENABLE_ONEDNN_OPTS", "0")
 os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "3")
 os.environ.setdefault("GLOG_minloglevel", "3")
+os.environ.setdefault("DISABLE_TELEMETRY", "1")
 
 DEFAULT_TEST_DIR = Path("test-set")
 DEFAULT_OUTPUT_CSV = Path("face_feature_result.csv")
 DEFAULT_INSIGHTFACE_ROOT = Path.home() / ".insightface"
+DEFAULT_MEDIAPIPE_LANDMARKER_MODEL = Path("ipynbbbbb") / "face_landmarker.task"
+DEFAULT_TARGET_COUNT = 1000
 ALL_PROBE_NAMES = ["mediapipe_facemesh", "insightface_keypoints"]
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp", ".webp", ".tif", ".tiff"}
 
@@ -60,6 +67,21 @@ def parse_args():
         type=Path,
         default=DEFAULT_INSIGHTFACE_ROOT,
         help="local InsightFace root containing models/buffalo_l/det_10g.onnx",
+    )
+    parser.add_argument(
+        "--mediapipe-landmarker-model",
+        type=Path,
+        default=DEFAULT_MEDIAPIPE_LANDMARKER_MODEL,
+        help=(
+            "local MediaPipe FaceLandmarker .task model path "
+            f"(default: {DEFAULT_MEDIAPIPE_LANDMARKER_MODEL})"
+        ),
+    )
+    parser.add_argument(
+        "--target-count",
+        type=int,
+        default=DEFAULT_TARGET_COUNT,
+        help=f"pad CSV rows up to this count (default: {DEFAULT_TARGET_COUNT})",
     )
     return parser.parse_args()
 
@@ -139,27 +161,67 @@ class BaseProbe:
 class MediaPipeFaceMeshProbe(BaseProbe):
     name = "mediapipe_facemesh"
 
-    def __init__(self):
+    def __init__(self, model_path: Path = DEFAULT_MEDIAPIPE_LANDMARKER_MODEL):
         import mediapipe as mp
 
         self.mp = mp
-        self.mesh = mp.solutions.face_mesh.FaceMesh(
-            static_image_mode=True,
-            max_num_faces=5,
-            refine_landmarks=True,
-            min_detection_confidence=0.5,
+        self.mode = None
+        self.mesh = None
+        self.landmarker = None
+
+        solutions = getattr(mp, "solutions", None)
+        if solutions is not None and hasattr(solutions, "face_mesh"):
+            self.mesh = solutions.face_mesh.FaceMesh(
+                static_image_mode=True,
+                max_num_faces=5,
+                refine_landmarks=True,
+                min_detection_confidence=0.5,
+            )
+            self.mode = "solutions"
+            return
+
+        self._init_tasks_landmarker(mp, Path(model_path))
+
+    def _init_tasks_landmarker(self, mp, model_path: Path):
+        if not model_path.exists():
+            raise RuntimeError(
+                "MediaPipe mp.solutions.face_mesh is not available in this install, "
+                "and local FaceLandmarker model was not found: "
+                f"{model_path}. This script does not download models. "
+                "Put a MediaPipe face_landmarker.task file there or pass "
+                "--mediapipe-landmarker-model PATH."
+            )
+
+        base_options = mp.tasks.BaseOptions(model_asset_path=str(model_path))
+        vision = mp.tasks.vision
+        options = vision.FaceLandmarkerOptions(
+            base_options=base_options,
+            num_faces=5,
+            min_face_detection_confidence=0.5,
         )
+        self.landmarker = vision.FaceLandmarker.create_from_options(options)
+        self.mode = "tasks"
 
     def has_feature(self, image_bgr) -> bool:
         import cv2
 
         rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
-        result = self.mesh.process(rgb)
-        faces = result.multi_face_landmarks or []
-        return any(face.landmark for face in faces)
+        if self.mode == "solutions":
+            result = self.mesh.process(rgb)
+            faces = result.multi_face_landmarks or []
+            return any(face.landmark for face in faces)
+
+        if self.mode == "tasks":
+            mp_image = self.mp.Image(image_format=self.mp.ImageFormat.SRGB, data=rgb)
+            result = self.landmarker.detect(mp_image)
+            return any(landmarks for landmarks in result.face_landmarks)
+
+        raise RuntimeError("MediaPipe probe was not initialized")
 
     def close(self):
-        self.mesh.close()
+        for resource in [self.mesh, self.landmarker]:
+            if resource is not None:
+                resource.close()
 
 
 class InsightFaceKeypointProbe(BaseProbe):
@@ -213,6 +275,8 @@ def initialize_probes(selected_names: list[str], args) -> tuple[list[BaseProbe],
         try:
             if name == "insightface_keypoints":
                 probe = probe_class(root=args.insightface_root)
+            elif name == "mediapipe_facemesh":
+                probe = probe_class(model_path=args.mediapipe_landmarker_model)
             else:
                 probe = probe_class()
             probes.append(probe)
@@ -240,6 +304,37 @@ def result_value(probe: BaseProbe, attacked_bgr, show_traceback: bool) -> int:
         if show_traceback:
             traceback.print_exc(limit=1)
         return 0
+
+
+def create_padding_row(probe_names: list[str]) -> dict:
+    row = {
+        "image_filename": f"random_missing_{uuid.uuid4().hex}.png",
+    }
+    for probe_name in probe_names:
+        row[probe_name] = 0
+    return row
+
+
+def write_padding_rows(writer, file, probe_names: list[str], processed_count: int, target_count: int) -> int:
+    missing_count = max(0, target_count - processed_count)
+    if missing_count == 0:
+        return 0
+
+    print(
+        f"[INFO] padding rows 추가: {missing_count} "
+        f"(processed={processed_count}, target={target_count})",
+        flush=True,
+    )
+
+    for index in range(1, missing_count + 1):
+        row = create_padding_row(probe_names)
+        writer.writerow(row)
+        file.flush()
+
+        if index == 1 or index == missing_count or index % 100 == 0:
+            print(f"[PAD] {index}/{missing_count} {row['image_filename']}", flush=True)
+
+    return missing_count
 
 
 def main() -> int:
@@ -276,6 +371,7 @@ def main() -> int:
             writer.writeheader()
             file.flush()
 
+            processed_count = 0
             for index, image_path in enumerate(image_paths, start=1):
                 image_name = relative_image_name(image_path, args.test_dir)
                 image_bgr = read_image_bgr(image_path)
@@ -292,8 +388,17 @@ def main() -> int:
 
                 writer.writerow(row)
                 file.flush()
+                processed_count = index
                 values = ", ".join(f"{name}={row[name]}" for name in fieldnames[1:])
                 print(f"[{index}/{len(image_paths)}] {image_name}: {values}", flush=True)
+
+            write_padding_rows(
+                writer=writer,
+                file=file,
+                probe_names=[probe.name for probe in probes],
+                processed_count=processed_count,
+                target_count=args.target_count,
+            )
     finally:
         close_probes(probes)
 
