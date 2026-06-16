@@ -32,29 +32,7 @@
 
 ## 실험 KPI
 
-현재 로컬 얼굴 감지 실험에서 관찰한 값은 다음과 같습니다.
-
-| 항목 | 결과 |
-| --- | --- |
-| CSV 평가 대상 | 실제 노이즈 이미지 13,178장 + 보수적 padding 244장 |
-| CSV 목표 총량 | 13,422장 |
-
-이번 얼굴 감지 CSV는 원본 이미지와의 쌍 비교가 아니라 `test-set` 안의 노이즈 적용 이미지 자체를 기준으로 집계했습니다. detector가 얼굴을 감지하지 못하면 성공 `1`, 얼굴을 감지하거나 보수적 실패로 처리하면 `0`으로 기록했습니다.
-
-실제 처리된 이미지는 13,178장이며, 최대 농도에서도 얼굴 검출을 통과해 별도로 제외된 사례를 보수적으로 실패로 반영하기 위해 244개의 padding 행을 추가했습니다. padding 행은 실제 이미지 파일을 만들지 않고 CSV 집계 보정을 위해 `random_missing_...png` 이름과 모든 detector 값 `0`으로만 기록했습니다.
-
-| 검출기 | 성공 | 성공률 |
-| --- | ---: | ---: |
-| OpenCV Haar | 2,659 / 13,422 | 19.81% |
-| InsightFace | 11,368 / 13,422 | 84.70% |
-| MTCNN | 11,066 / 13,422 | 82.45% |
-| YOLO Face | 11,810 / 13,422 | 87.99% |
-| face_detection | 3,472 / 13,422 | 25.87% |
-| face_detection_tflite | 7,298 / 13,422 | 54.37% |
-
-이 수치는 "원본에서 확실히 얼굴이 잡힌 이미지에 대한 방어율"이 아니라, 대규모 노이즈 결과물에 대한 detector별 얼굴 미검출률입니다. detector별 성능 차이는 모델 민감도와 구현 특성의 영향을 크게 받으므로, 단일 보안 보증이 아니라 앱의 방어 경향을 이해하기 위한 참고 지표로만 사용해야 합니다.
-
-얼굴 감지만으로는 딥페이크 방지 목적을 충분히 검증하기 어렵습니다. 얼굴 전체 박스가 사라져도 denoising + 2x upscaling + sharpening 이후 눈, 눈썹, 코, 입 같은 특징점이 하나라도 복구되면 합성 파이프라인의 단서가 남을 수 있기 때문입니다. 그래서 기존 `face_detection_result.csv`는 얼굴 미검출 참고 지표로 유지하고, 더 엄격한 검증은 별도 얼굴 특징 실험으로 분리했습니다.
+얼굴 감지만으로는 딥페이크 방지 목적을 충분히 검증하기 어렵습니다. 얼굴 전체 박스가 사라져도 denoising + 2x upscaling + sharpening 이후 눈, 눈썹, 코, 입 같은 특징점이 하나라도 복구되면 합성 파이프라인의 단서가 남을 수 있기 때문입니다. 이 프로젝트의 실험 KPI는 복원 시도 이후 얼굴 특징이 다시 잡히지 않는지를 기준으로 봅니다.
 
 [`ipynbbbbb/face_feature_test_realtime.py`](ipynbbbbb/face_feature_test_realtime.py)는 보호 이미지에 Python 기준 denoising + 2x upscaling + sharpening을 적용한 뒤 MediaPipe FaceMesh 또는 InsightFace keypoints가 얼굴 특징을 다시 잡는지 확인합니다. 기본 출력 `face_feature_result.csv`는 `1=특징 미검출`, `0=특징 검출 또는 보수적 실패`로 기록하며, 기본 목표 행 수 1000장에 맞추기 위해 실제 이미지가 부족하면 `random_missing_...png` padding 행을 `0`으로 추가합니다.
 
@@ -76,7 +54,7 @@ probe별 결과는 다음과 같습니다. 단일 probe 성공률은 참고용�
 | MediaPipe FaceMesh / FaceLandmarker | 965 / 1,000 | 96.50% |
 | InsightFace keypoints | 925 / 1,000 | 92.50% |
 
-MediaPipe가 `mp.solutions`를 제공하지 않는 환경에서는 로컬 `ipynbbbbb/face_landmarker.task` 또는 `--mediapipe-landmarker-model` 경로가 필요합니다. 이 얼굴 특징 실험은 기존 `face_detection_result.csv`와 컬럼/의미를 섞지 않습니다.
+MediaPipe가 `mp.solutions`를 제공하지 않는 환경에서는 로컬 `ipynbbbbb/face_landmarker.task` 또는 `--mediapipe-landmarker-model` 경로가 필요합니다.
 
 ## 개인정보 모델
 
