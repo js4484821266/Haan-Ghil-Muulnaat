@@ -36,6 +36,8 @@
 
 [`ipynbbbbb/face_feature_test_realtime.py`](ipynbbbbb/face_feature_test_realtime.py)는 보호 이미지에 Python 기준 denoising + 2x upscaling + sharpening을 적용한 뒤 MediaPipe FaceMesh 또는 InsightFace keypoints가 얼굴 특징을 다시 잡는지 확인합니다. 기본 출력 `face_feature_result.csv`는 `1=특징 미검출`, `0=특징 검출 또는 보수적 실패`로 기록하며, 기본 목표 행 수 1000장에 맞추기 위해 실제 이미지가 부족하면 `random_missing_...png` padding 행을 `0`으로 추가합니다.
 
+이번 `face_feature_result.csv`는 Kaggle의 [LFW People 데이터셋](https://www.kaggle.com/datasets/atulanandjha/lfwpeople/)에서 받은 얼굴 사진 중 무작위 1000장을 대상으로 만든 테스트셋을 기준으로 집계했습니다. 그중 실제 처리 가능한 보호 이미지는 994장이었고, 부족한 6장은 보수적 실패 padding 행으로 반영했습니다.
+
 현재 `face_feature_result.csv` 집계는 다음과 같습니다.
 
 | 항목 | 결과 |
