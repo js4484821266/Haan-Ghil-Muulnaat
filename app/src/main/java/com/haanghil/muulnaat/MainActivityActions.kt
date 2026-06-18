@@ -82,7 +82,7 @@ private fun MainActivity.runManualDefenseEvaluation() {
 
     binding.resultText.text = getString(R.string.result_running_recovery_for_method, methodLabel(config.method))
     setBusy(true, getString(R.string.result_running_recovery_for_method, methodLabel(config.method)))
-    // 평가는 방법별로 다릅니다. Noising은 복원 공격까지, Blurring은 보호 이미지의 얼굴 특징만 봅니다.
+    // 평가는 방법별로 다릅니다. 노이즈는 복원 공격까지, 흐리게는 보호 이미지의 얼굴 특징만 봅니다.
     kotlin.concurrent.thread {
         val defenseReport = HidingEvaluation.evaluate(original, source, config, defenseEvaluator)
         runOnUiThread {

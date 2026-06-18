@@ -18,6 +18,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:minWidth="48dp"
+        android:minWidth="96dp"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
         android:text="@string/help_button_label" />
 </LinearLayout>

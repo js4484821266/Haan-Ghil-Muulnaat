@@ -56,13 +56,13 @@ object HidingEvaluation {
                 edgeDelta = imageResult.edgeDelta,
             ),
             summary = buildString {
-                append("Feature Evaluation: ")
-                append(if (status == ProtectionStatus.HELD) "HELD" else "BROKEN")
-                append(" | Features=")
+                append("얼굴 특징 평가: ")
+                append(if (status == ProtectionStatus.HELD) "지킴" else "뚫림")
+                append(" | 얼굴 특징=")
                 append(modelResult.facialFeatureCountOriginal)
                 append("->")
                 append(modelResult.facialFeatureCountProtected)
-                append(" | Score=")
+                append(" | 점수=")
                 append(String.format(Locale.US, "%.2f", modelResult.antiDetectionScore))
                 append(" | ")
                 append(reason)
@@ -76,11 +76,11 @@ object HidingEvaluation {
 
     private fun blurDecisionReason(result: ModelProbeResult, passed: Boolean): String {
         return if (passed) {
-            "PASS: protected image has no detected facial features"
+            "성공: 보호 이미지에서 얼굴 특징이 감지되지 않았습니다"
         } else if (result.facialFeatureCountOriginal <= 0) {
-            "FAIL: original facial feature baseline missing"
+            "실패: 원본 얼굴 특징 기준값을 찾지 못했습니다"
         } else {
-            "FAIL: facial features still detected on protected image"
+            "실패: 보호 이미지에서 얼굴 특징이 아직 감지됩니다"
         }
     }
 }

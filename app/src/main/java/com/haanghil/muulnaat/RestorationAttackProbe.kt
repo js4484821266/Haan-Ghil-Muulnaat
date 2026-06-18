@@ -34,11 +34,11 @@ class RestorationAttackProbe : DefenseEvaluator {
                 edgeDelta = imageResult.edgeDelta
             ),
             summary = buildString {
-                append("Defense Evaluation: ")
-                append(if (status == ProtectionStatus.HELD) "HELD" else "BROKEN")
-                append(" | Score=")
+                append("방어 성능 평가: ")
+                append(if (status == ProtectionStatus.HELD) "지킴" else "뚫림")
+                append(" | 점수=")
                 append(String.format(Locale.US, "%.2f", modelResult.antiDetectionScore))
-                append(" | Features=")
+                append(" | 얼굴 특징=")
                 append(modelResult.facialFeatureCountOriginal)
                 append("->")
                 append(modelResult.facialFeatureCountProtected)

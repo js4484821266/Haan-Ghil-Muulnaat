@@ -10,17 +10,17 @@ internal fun modelProbeDecisionReason(
     antiDetectionScore: Double,
 ): String {
     return when {
-        pass -> "PASS: facial features suppressed after restoration attack " +
-            "(score=${formatProbeNumber(antiDetectionScore)})"
+        pass -> "성공: 복원 공격 후 얼굴 특징이 억제됐습니다 " +
+            "(점수=${formatProbeNumber(antiDetectionScore)})"
         !hasFeatureBaseline(originalFaceCount, originalFeatureCount) ->
-            "FAIL: original face/feature baseline missing " +
-                "(faces=$originalFaceCount, features=$originalFeatureCount)"
+            "실패: 원본 얼굴/특징 기준값을 찾지 못했습니다 " +
+                "(얼굴=$originalFaceCount, 특징=$originalFeatureCount)"
         protectedFeatureCount > 0 ->
-            "FAIL: facial features still detected after attack " +
-                "(features: $originalFeatureCount -> $protectedFeatureCount)"
-        else -> "FAIL: insufficient feature disruption " +
-            "(score=${formatProbeNumber(antiDetectionScore)}, " +
-            "need>=${formatProbeNumber(ModelProbe.PASS_THRESHOLD)})"
+            "실패: 공격 후에도 얼굴 특징이 감지됩니다 " +
+                "(특징: $originalFeatureCount -> $protectedFeatureCount)"
+        else -> "실패: 얼굴 특징 억제 점수가 부족합니다 " +
+            "(점수=${formatProbeNumber(antiDetectionScore)}, " +
+            "필요>=${formatProbeNumber(ModelProbe.PASS_THRESHOLD)})"
     }
 }
 
@@ -35,15 +35,15 @@ internal fun modelProbeDetails(
     antiDetectionScore: Double,
     reason: String,
 ): String = buildString {
-    append("Original faces: $originalFaceCount; ")
-    append("Protected faces: $protectedFaceCount; ")
-    append("Original features: $originalFeatureCount; ")
-    append("Protected features: $protectedFeatureCount; ")
-    append("FaceSuppression: ${formatProbeNumber(faceSuppression)}; ")
-    append("FeatureSuppression: ${formatProbeNumber(featureSuppression)}; ")
-    append("LabelShift: ${formatProbeNumber(labelShift)}; ")
-    append("AntiDetectionScore: ${formatProbeNumber(antiDetectionScore)}\n")
-    append("Decision: $reason")
+    append("원본 얼굴 수: $originalFaceCount; ")
+    append("테스트 얼굴 수: $protectedFaceCount; ")
+    append("원본 얼굴 특징: $originalFeatureCount; ")
+    append("테스트 얼굴 특징: $protectedFeatureCount; ")
+    append("얼굴 억제: ${formatProbeNumber(faceSuppression)}; ")
+    append("특징 억제: ${formatProbeNumber(featureSuppression)}; ")
+    append("라벨 변화량: ${formatProbeNumber(labelShift)}; ")
+    append("방어 점수: ${formatProbeNumber(antiDetectionScore)}\n")
+    append("판정 사유: $reason")
 }
 
 private fun formatProbeNumber(value: Double): String {

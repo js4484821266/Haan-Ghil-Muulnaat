@@ -2,7 +2,7 @@
     <string name="app_name">한 길 물낯</string>
     <string name="header_title">한 길 물낯</string>
     <string name="header_subtitle">로컬 이미지 perturbation 및 복원 후 확인</string>
-    <string name="help_button_label">?</string>
+    <string name="help_button_label">매뉴얼</string>
 
     <string name="share_ready_to_save_label">한 길 물낯: 사진 불러오기</string>
     <string name="share_auto_save_label">한 길 물낯: 최적 강도 찾고 저장</string>
@@ -21,7 +21,7 @@
     <string name="result_load_failed">이미지를 불러오지 못했습니다.</string>
     <string name="result_image_loaded_scanning">이미지를 불러왔습니다. 방어 성능 평가 기준으로 최적 강도를 탐색 중입니다...</string>
     <string name="result_scanning_optimal">최적 강도 탐색 중...</string>
-    <string name="result_scan_none">탐색 완료: 0, 20, 40, 60, 80..100 후보의 방어 성능 평가에서 HELD 지점을 찾지 못했습니다. 강도를 높여 다시 시도하세요.</string>
+    <string name="result_scan_none">탐색 완료: 방어 성능 평가에서 지킴 지점을 찾지 못했습니다. 강도를 높여 다시 시도하세요.</string>
     <string name="result_scan_found">탐색 완료: 최적 강도는 %1$d입니다. 계속하려면 보호를 적용하세요.</string>
     <string name="result_auto_applying_optimal">탐색 완료: 최적 강도 %1$d를 찾았습니다. 보호 적용과 방어 성능 평가를 자동으로 실행합니다...</string>
     <string name="result_applying_protection">보호 적용 중...</string>
@@ -60,11 +60,11 @@
     <string name="recovered_panel_label">복구 시도 후</string>
 
     <string name="protection_status_title">보호 상태</string>
-    <string name="status_caption">PASS: 기본 상태에서 저항, HELD: 복원 공격 후에도 저항, BROKEN: 취약</string>
-    <string name="status_na">N/A</string>
-    <string name="status_pass">PASS</string>
-    <string name="status_held">HELD</string>
-    <string name="status_broken">BROKEN</string>
+    <string name="status_caption">지킴: 얼굴 특징 억제 유지, 뚫림: 얼굴 특징 신호 남음, 모름: 아직 평가 전</string>
+    <string name="status_na">모름</string>
+    <string name="status_pass">통과</string>
+    <string name="status_held">지킴</string>
+    <string name="status_broken">뚫림</string>
 
     <string name="model_metrics_title">모델 평가 지표</string>
     <string name="metric_face_count_placeholder">얼굴 수: -</string>
@@ -96,7 +96,7 @@
     <string name="perturbation_magnitude_format">교란 크기: %1$.2f / 255 (%2$.2f%%)</string>
     <string name="simulate_ai_attack">방어 성능 평가 실행</string>
     <string name="recommended_strength_default">최적 강도: 이미지 선택 후 탐색을 실행하세요.</string>
-    <string name="recommended_strength_none">최적 강도: 0, 20, 40, 60, 80..100 후보의 방어 성능 평가에서 HELD 지점을 찾지 못했습니다. 강도를 높여 다시 시도하세요.</string>
+    <string name="recommended_strength_none">최적 강도: 방어 성능 평가에서 지킴 지점을 찾지 못했습니다. 강도를 높여 다시 시도하세요.</string>
     <string name="recommended_strength_found">최적 강도: %1$d</string>
     <string name="search_progress_idle">이미지를 선택하면 강도 탐색 진행 상태가 여기에 표시됩니다.</string>
     <string name="search_progress_step">%1$d단계 - 범위 %2$d..%4$d, 검사 %3$d -&gt; %5$s</string>
@@ -104,8 +104,32 @@
     <string name="technical_details_shown">기술 세부사항: 표시</string>
 
     <string name="help_dialog_title">사용 방법</string>
-    <string name="help_dialog_message">1. 이미지 선택 -&gt; 자동 탐색이 방어 성능 평가 결과를 기준으로 최적 강도를 제안합니다.\n2. 보호 적용으로 보호 이미지를 생성합니다.\n3. 방어 성능 평가를 실행해 공격 이후 강건성을 확인합니다.\n\n상태 의미:\nPASS: 복원 공격 전에는 모델 교란이 유지됨.\nHELD: 방어 성능 평가 후에도 저항성이 유지됨.\nBROKEN: 탐지기가 신호를 충분히 복구함; 강도를 높이세요.</string>
+    <string name="help_dialog_message">1. 이미지를 선택합니다.\n2. 은닉 방법에서 노이즈, 흐리게, 단색 중 하나를 고릅니다.\n3. 노이즈와 흐리게는 최적 강도를 찾은 뒤 보호 이미지를 만들고, 단색은 입력한 RGB로 바로 칠합니다.\n4. 방어 성능 평가로 얼굴 특징 억제 상태를 확인합니다.\n\n상태 의미:\n지킴: 선택한 평가 기준에서 얼굴 특징 억제가 유지됨.\n뚫림: 얼굴 특징 신호가 남아 더 강한 조정이나 다른 방법이 필요함.\n모름: 아직 평가하지 않음.</string>
     <string name="help_dialog_positive">확인했습니다</string>
 
+    <string name="share_auto_save_noise_label">한 길 물낯: 노이즈 자동 저장</string>
+    <string name="share_auto_save_blur_label">한 길 물낯: 흐리게 자동 저장</string>
+    <string name="share_auto_save_solid_label">한 길 물낯: 단색 자동 저장</string>
+    <string name="hiding_method_label">은닉 방법</string>
+    <string name="hiding_method_select">은닉 방법 선택</string>
+    <string name="hiding_method_noise">노이즈</string>
+    <string name="hiding_method_blur">흐리게</string>
+    <string name="hiding_method_solid_fill">단색</string>
+    <string name="solid_color_hint">#RRGGBB</string>
+    <string name="solid_color_default">#000000</string>
+    <string name="toast_select_hiding_method">먼저 은닉 방법을 선택하세요</string>
+    <string name="toast_invalid_solid_color">색상은 #RRGGBB 형식으로 입력하세요</string>
+    <string name="toast_solid_fill_no_evaluation">단색은 방어 성능 평가를 실행하지 않습니다</string>
+    <string name="recommended_strength_waiting_for_method">최적 강도: 노이즈 또는 흐리게를 선택하면 강도 탐색을 시작합니다.</string>
+    <string name="recommended_strength_solid_fill">단색: 강도 탐색 없음. RGB를 입력하고 적용하세요.</string>
+    <string name="search_progress_waiting_for_method">노이즈 또는 흐리게를 선택하면 강도 탐색을 시작합니다.</string>
+    <string name="search_progress_solid_fill">단색은 강도 탐색 없이 선택한 RGB를 적용합니다.</string>
+    <string name="result_image_loaded_scanning_for_method">이미지를 불러왔습니다. %1$s 강도를 탐색 중입니다...</string>
+    <string name="result_scanning_optimal_for_method">최적 %1$s 강도 탐색 중...</string>
+    <string name="result_auto_applying_optimal_for_method">탐색 완료: %1$s 강도 %2$d를 찾았습니다. 보호를 적용합니다...</string>
+    <string name="result_running_recovery_for_method">%1$s 평가 실행 중...</string>
+    <string name="result_evaluation_complete_for_method">%1$s 평가 완료. 상태: %2$s</string>
+    <string name="result_auto_evaluation_complete_for_method">%1$s 흐름 완료: 강도 %2$d, 상태: %3$s</string>
+    <string name="result_solid_fill_applied">단색을 적용했습니다. 보호 이미지를 저장하세요.</string>
 </resources>
 

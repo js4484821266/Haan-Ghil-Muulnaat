@@ -3,9 +3,17 @@ package com.haanghil.muulnaat
 import android.graphics.Bitmap
 
 object NoiseSearcher {
-    internal fun candidateStrengths(lo: Int, hi: Int): List<Int> {
+    internal fun candidateStrengths(
+        lo: Int,
+        hi: Int,
+        method: HidingMethod = HidingMethod.NOISE,
+    ): List<Int> {
         if (lo > hi) return emptyList()
-        return (listOf(0, 20, 40, 60) + (80..100)).filter { it in lo..hi }
+        return when (method) {
+            HidingMethod.BLUR -> (lo..hi).toList()
+            HidingMethod.NOISE -> (listOf(0, 20, 40, 60) + (80..100)).filter { it in lo..hi }
+            HidingMethod.SOLID_FILL -> emptyList()
+        }
     }
 
     data class SearchStep(
@@ -17,13 +25,14 @@ object NoiseSearcher {
     )
 
     /**
-     * [lo, hi] 범위의 기본 후보 강도 중 [test]가 true를 반환하는 최솟값을
+     * [lo, hi] 범위의 후보 강도 중 [test]가 true를 반환하는 최솟값을
      * 이분 탐색으로 찾습니다.
      * 범위 안에서 통과하는 후보가 없으면 null을 반환합니다.
      */
     fun findMinimumStrength(
         lo: Int = 0,
         hi: Int = 100,
+        method: HidingMethod = HidingMethod.NOISE,
         test: (strength: Int) -> Boolean,
         onStep: ((SearchStep) -> Unit)? = null,
         shouldCancel: () -> Boolean = { false },
@@ -67,9 +76,13 @@ object NoiseSearcher {
             return upperPassed
         }
 
-        val coarseResult = search(candidateStrengths(lo, minOf(hi, 80)))
+        if (method == HidingMethod.BLUR) {
+            return search(candidateStrengths(lo, hi, method))
+        }
+
+        val coarseResult = search(candidateStrengths(lo, minOf(hi, 80), method))
         if (coarseResult != null || shouldCancel()) return coarseResult
-        return search(candidateStrengths(maxOf(lo, 81), hi))
+        return search(candidateStrengths(maxOf(lo, 81), hi, method))
     }
 
     private fun boundedCandidate(candidates: List<Int>, lowerFailed: Int?, upperPassed: Int?): Int? {
@@ -96,6 +109,7 @@ object NoiseSearcher {
         return findMinimumStrength(
             lo = lo,
             hi = hi,
+            method = config.method,
             test = { strength ->
                 val protected = perturbationModule.applyProtection(original, strength, regions, config)
                 HidingEvaluation.passesSearch(original, protected, config, defenseEvaluator)
@@ -122,6 +136,7 @@ object NoiseSearcher {
         return findMinimumStrength(
             lo = lo,
             hi = hi,
+            method = config.method,
             test = { strength ->
                 val protected = NoiseEngine.protect(original, strength, regions, config)
                 ModelProbe.evaluate(original, protected).passed

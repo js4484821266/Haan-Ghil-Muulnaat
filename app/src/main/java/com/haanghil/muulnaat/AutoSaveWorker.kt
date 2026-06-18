@@ -24,7 +24,7 @@ internal fun AutoSaveProtectionService.startWorker() {
  * 자동 저장 큐에서 URI 하나를 처리합니다.
  *
  * 비트맵 로드, 유지 가능한 강도 탐색, 보호본 생성, MediaStore 저장이 모두 성공해야
- * 저장된 항목으로 집계합니다. Solid Fill은 탐색 없이 기본 검정으로 저장합니다.
+ * 저장된 항목으로 집계합니다. 단색은 탐색 없이 기본 검정으로 저장합니다.
  */
 private fun AutoSaveProtectionService.processQueueItem(item: AutoSaveQueueItem) {
     val itemNumber = completedCount() + 1

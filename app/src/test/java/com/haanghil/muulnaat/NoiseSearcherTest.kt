@@ -47,6 +47,18 @@ class NoiseSearcherTest {
     }
 
     @Test
+    fun `blur searches every integer in range`() {
+        val result = NoiseSearcher.findMinimumStrength(
+            lo = 0,
+            hi = 100,
+            method = HidingMethod.BLUR,
+            test = thresholdTest(57),
+        )
+
+        assertEquals(57, result)
+    }
+
+    @Test
     fun `finds integer threshold above 80`() {
         val result = NoiseSearcher.findMinimumStrength(lo = 0, hi = 100, test = thresholdTest(99))
         assertEquals(99, result)
@@ -131,6 +143,14 @@ class NoiseSearcherTest {
         assertEquals(
             listOf(0, 20, 40, 60, 80, 81, 82, 83),
             NoiseSearcher.candidateStrengths(0, 83),
+        )
+    }
+
+    @Test
+    fun `blur candidate strengths include every integer`() {
+        assertEquals(
+            listOf(10, 11, 12, 13, 14, 15),
+            NoiseSearcher.candidateStrengths(10, 15, HidingMethod.BLUR),
         )
     }
 }
