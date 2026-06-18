@@ -16,9 +16,11 @@ internal fun MainActivity.configureHidingMethodControls() {
     )
     binding.hidingMethodSpinner.adapter = ArrayAdapter(
         this,
-        android.R.layout.simple_spinner_dropdown_item,
+        R.layout.hiding_method_spinner_item,
         labels,
-    )
+    ).also { adapter ->
+        adapter.setDropDownViewResource(R.layout.hiding_method_spinner_dropdown_item)
+    }
     binding.hidingMethodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
             onHidingMethodSelected(methodFromSpinnerPosition(position))
