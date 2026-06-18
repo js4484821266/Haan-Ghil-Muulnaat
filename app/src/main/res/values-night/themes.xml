@@ -3,8 +3,8 @@
         <item name="android:windowBackground">@color/navy_black</item>
         <item name="android:statusBarColor">@color/navy_black</item>
         <item name="android:navigationBarColor">@color/navy_black</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="android:textColorPrimary">@color/navy_text</item>
         <item name="android:textColorSecondary">@color/navy_text_muted</item>
