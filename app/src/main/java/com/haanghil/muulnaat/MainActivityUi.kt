@@ -32,12 +32,14 @@ internal fun MainActivity.statusLabelForSearchStep(step: NoiseSearcher.SearchSte
 internal fun MainActivity.setBusy(isBusy: Boolean, message: String? = null) {
     binding.busyProgressBar.visibility = if (isBusy) View.VISIBLE else View.GONE
     binding.pickButton.isEnabled = !isBusy
+    binding.hidingMethodSpinner.isEnabled = !isBusy
     binding.autoRecoverySwitch.isEnabled = !isBusy
     binding.applyButton.isEnabled = !isBusy
-    binding.attackButton.isEnabled = !isBusy
+    binding.attackButton.isEnabled = !isBusy && state.selectedMethod != HidingMethod.SOLID_FILL
     binding.resetOptimalButton.isEnabled = !isBusy && state.optimalStrength != null
     binding.saveButton.isEnabled = !isBusy
     binding.strengthSeekBar.isEnabled = !isBusy
+    binding.solidColorInput.isEnabled = !isBusy
     if (message != null) binding.resultText.text = message
 }
 

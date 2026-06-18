@@ -18,6 +18,8 @@ internal fun MainActivity.configureUiActions() {
         setTechnicalDetailsVisible(binding.technicalDetailsContainer.visibility != android.view.View.VISIBLE)
     }
 
+    configureHidingMethodControls()
+
     binding.pickButton.setOnClickListener {
         pickImageLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
@@ -31,7 +33,7 @@ internal fun MainActivity.configureUiActions() {
         override fun onStopTrackingTouch(seekBar: SeekBar?) = Unit
     })
 
-    binding.applyButton.setOnClickListener { applyCurrentStrength() }
+    binding.applyButton.setOnClickListener { applyCurrentProtection() }
     binding.attackButton.setOnClickListener { runManualDefenseEvaluation() }
     binding.resetOptimalButton.setOnClickListener { applyRememberedOptimalStrength() }
     binding.saveButton.setOnClickListener {
@@ -43,24 +45,34 @@ internal fun MainActivity.configureUiActions() {
     }
 }
 
-private fun MainActivity.applyCurrentStrength() {
+private fun MainActivity.applyCurrentProtection() {
+    val config = currentHidingConfigOrNull() ?: return
     val source = state.originalBitmap
     if (source == null) {
         Toast.makeText(this, getString(R.string.toast_pick_image_first), Toast.LENGTH_SHORT).show()
         return
     }
 
-    val strength = binding.strengthSeekBar.progress
+    val strength = if (config.method == HidingMethod.SOLID_FILL) 0 else binding.strengthSeekBar.progress
+    val clearResults = state.lastEvaluationStrength != null &&
+        (state.lastEvaluationStrength != strength || state.lastAppliedMethod != config.method)
     runProtectionFlow(
         source = source,
         strength = strength,
-        autoRecovery = binding.autoRecoverySwitch.isChecked,
-        clearResultsBeforeRun = state.lastEvaluationStrength != null && state.lastEvaluationStrength != strength,
+        config = config,
+        autoEvaluate = binding.autoRecoverySwitch.isChecked && config.method != HidingMethod.SOLID_FILL,
+        clearResultsBeforeRun = clearResults,
         startMessage = getString(R.string.result_applying_protection)
     )
 }
 
 private fun MainActivity.runManualDefenseEvaluation() {
+    val config = currentHidingConfigOrNull() ?: return
+    if (config.method == HidingMethod.SOLID_FILL) {
+        Toast.makeText(this, getString(R.string.toast_solid_fill_no_evaluation), Toast.LENGTH_SHORT).show()
+        return
+    }
+
     val source = state.protectedBitmap
     val original = state.originalBitmap
     if (source == null || original == null) {
@@ -68,24 +80,35 @@ private fun MainActivity.runManualDefenseEvaluation() {
         return
     }
 
-    binding.resultText.text = getString(R.string.result_running_recovery)
-    setBusy(true, getString(R.string.result_running_recovery))
-    // 방어 평가는 ModelProbe를 통해 ML Kit을 호출하므로 UI 스레드 밖에서 실행하고,
-    // 최종 리포트만 메인 스레드에서 그립니다.
+    binding.resultText.text = getString(R.string.result_running_recovery_for_method, methodLabel(config.method))
+    setBusy(true, getString(R.string.result_running_recovery_for_method, methodLabel(config.method)))
+    // 평가는 방법별로 다릅니다. Noising은 복원 공격까지, Blurring은 보호 이미지의 얼굴 특징만 봅니다.
     kotlin.concurrent.thread {
-        val defenseReport = defenseEvaluator.evaluateAfterAttack(original, source)
+        val defenseReport = HidingEvaluation.evaluate(original, source, config, defenseEvaluator)
         runOnUiThread {
-            renderRecoveredImage(defenseReport.attackedBitmap)
-            renderDefenseResult(defenseReport.status, defenseReport.evaluationMetrics, defenseReport.qualityMetrics)
-            state.lastEvaluationStrength = state.lastAppliedStrength ?: binding.strengthSeekBar.progress
-            binding.resultText.text = getString(R.string.result_recovery_complete, statusLabel(defenseReport.status))
+            if (defenseReport != null) {
+                renderRecoveredImage(if (config.method == HidingMethod.NOISE) defenseReport.attackedBitmap else null)
+                renderDefenseResult(defenseReport.status, defenseReport.evaluationMetrics, defenseReport.qualityMetrics)
+                state.lastEvaluationStrength = state.lastAppliedStrength ?: binding.strengthSeekBar.progress
+                binding.resultText.text = getString(
+                    R.string.result_evaluation_complete_for_method,
+                    methodLabel(config.method),
+                    statusLabel(defenseReport.status),
+                )
+            }
             setBusy(false)
         }
     }
 }
 
 private fun MainActivity.applyRememberedOptimalStrength() {
-    val rememberedStrength = state.optimalStrength
+    val method = state.selectedMethod
+    if (method == null || !method.supportsStrengthSearch()) {
+        Toast.makeText(this, getString(R.string.toast_no_optimal_strength), Toast.LENGTH_SHORT).show()
+        return
+    }
+
+    val rememberedStrength = rememberedOptimalStrength(method)
     if (rememberedStrength == null) {
         Toast.makeText(this, getString(R.string.toast_no_optimal_strength), Toast.LENGTH_SHORT).show()
         return
@@ -97,6 +120,7 @@ private fun MainActivity.applyRememberedOptimalStrength() {
         return
     }
 
+    val config = configForMethod(method)
     binding.strengthSeekBar.progress = rememberedStrength
     binding.strengthLabel.text = getString(R.string.noise_strength_value, rememberedStrength)
     // 기억해 둔 강도를 다시 적용하면 사용자가 슬라이더를 손으로 바꾼 뒤에도
@@ -106,5 +130,18 @@ private fun MainActivity.applyRememberedOptimalStrength() {
     } else {
         getString(R.string.result_reset_optimal, rememberedStrength)
     }
-    runProtectionFlow(source, rememberedStrength, binding.autoRecoverySwitch.isChecked, true, msg)
+    runProtectionFlow(
+        source = source,
+        strength = rememberedStrength,
+        config = config,
+        autoEvaluate = binding.autoRecoverySwitch.isChecked,
+        clearResultsBeforeRun = true,
+        startMessage = msg,
+    )
+}
+
+internal fun MainActivity.methodLabel(method: HidingMethod): String = when (method) {
+    HidingMethod.NOISE -> getString(R.string.hiding_method_noise)
+    HidingMethod.BLUR -> getString(R.string.hiding_method_blur)
+    HidingMethod.SOLID_FILL -> getString(R.string.hiding_method_solid_fill)
 }

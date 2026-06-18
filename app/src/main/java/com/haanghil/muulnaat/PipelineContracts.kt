@@ -34,7 +34,12 @@ data class DefenseEvaluationReport(
 )
 
 interface PerturbationModule {
-    fun applyProtection(source: Bitmap, strength: Int, regions: List<FaceProtectionRegion>? = null): Bitmap
+    fun applyProtection(
+        source: Bitmap,
+        strength: Int,
+        regions: List<FaceProtectionRegion>? = null,
+        config: HidingConfig = HidingConfig.noise(),
+    ): Bitmap
 }
 
 interface DefenseEvaluator {

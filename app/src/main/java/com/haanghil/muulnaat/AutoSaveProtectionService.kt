@@ -13,7 +13,7 @@ import java.util.ArrayDeque
  * 작업자 실행, 알림, 시작 Intent 구성은 주변의 작은 파일들로 나누어 둡니다.
  */
 class AutoSaveProtectionService : Service() {
-    internal val queue = ArrayDeque<Uri>()
+    internal val queue = ArrayDeque<AutoSaveQueueItem>()
     internal val queueLock = Any()
     internal val perturbationModule: PerturbationModule = NoiseEngine
     internal val defenseEvaluator: DefenseEvaluator = RestorationAttackProbe()
@@ -65,10 +65,11 @@ class AutoSaveProtectionService : Service() {
             stopSelfResult(startId)
             return
         }
+        val config = intent.hidingConfigExtra()
 
         synchronized(queueLock) {
             if (!workerRunning && queue.isEmpty()) resetCounts()
-            queue.addAll(uris)
+            queue.addAll(uris.map { uri -> AutoSaveQueueItem(uri, config) })
             totalCount += uris.size
         }
         cancelRequested = false
@@ -105,3 +106,8 @@ class AutoSaveProtectionService : Service() {
 
     companion object
 }
+
+internal data class AutoSaveQueueItem(
+    val uri: Uri,
+    val config: HidingConfig,
+)

@@ -6,16 +6,33 @@ import kotlin.math.abs
 import kotlin.math.max
 
 /**
- * 엣지를 고려하는 perturbation 모듈입니다.
- *
- * 복원 모델이 의미를 재구성하기 쉬운 고주파 영역 주변에 perturbation을 집중시키고,
- * 매끈한 영역의 불필요한 왜곡은 줄이는 것이 목적입니다.
+ * 선택된 은닉 방법을 실제 Bitmap 변환으로 연결하는 perturbation 모듈입니다.
  */
 object NoiseEngine : PerturbationModule {
     private const val NOISE_BASE = 2f
     private const val NOISE_STRENGTH_MULTIPLIER = 2.5f
 
-    override fun applyProtection(source: Bitmap, strength: Int, regions: List<FaceProtectionRegion>?): Bitmap {
+    override fun applyProtection(
+        source: Bitmap,
+        strength: Int,
+        regions: List<FaceProtectionRegion>?,
+        config: HidingConfig,
+    ): Bitmap {
+        return when (config.method) {
+            HidingMethod.NOISE -> applyNoise(source, strength, regions)
+            HidingMethod.BLUR -> BlurEngine.applyProtection(source, strength, regions)
+            HidingMethod.SOLID_FILL -> SolidFillEngine.applyProtection(source, regions, config.solidColor)
+        }
+    }
+
+    fun protect(
+        source: Bitmap,
+        strength: Int,
+        regions: List<FaceProtectionRegion>? = null,
+        config: HidingConfig = HidingConfig.noise(),
+    ): Bitmap = applyProtection(source, strength, regions, config)
+
+    private fun applyNoise(source: Bitmap, strength: Int, regions: List<FaceProtectionRegion>?): Bitmap {
         val safeStrength = strength.coerceIn(0, 100)
         val width = source.width
         val height = source.height
@@ -66,9 +83,6 @@ object NoiseEngine : PerturbationModule {
             it.setPixels(outPixels, 0, width, 0, 0, width, height)
         }
     }
-
-    fun protect(source: Bitmap, strength: Int, regions: List<FaceProtectionRegion>? = null): Bitmap =
-        applyProtection(source, strength, regions)
 
     private fun buildEdgeMap(pixels: IntArray, width: Int, height: Int): FloatArray {
         val map = FloatArray(pixels.size)

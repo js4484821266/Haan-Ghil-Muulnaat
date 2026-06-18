@@ -35,9 +35,43 @@
         </activity>
 
         <activity
-            android:name=".ShareAutoSaveActivity"
+            android:name=".ShareAutoSaveNoiseActivity"
             android:exported="true"
-            android:label="@string/share_auto_save_label"
+            android:label="@string/share_auto_save_noise_label"
+            android:theme="@style/Theme.HaanGhilMuulnaat.ShareForwarder">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ShareAutoSaveBlurActivity"
+            android:exported="true"
+            android:label="@string/share_auto_save_blur_label"
+            android:theme="@style/Theme.HaanGhilMuulnaat.ShareForwarder">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ShareAutoSaveSolidFillActivity"
+            android:exported="true"
+            android:label="@string/share_auto_save_solid_label"
             android:theme="@style/Theme.HaanGhilMuulnaat.ShareForwarder">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />

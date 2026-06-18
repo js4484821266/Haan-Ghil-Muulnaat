@@ -107,5 +107,29 @@
     <string name="help_dialog_message">1. Pick image -&gt; auto scan suggests optimal strength from defense evaluation outcomes.\n2. Apply Protection to generate protected image.\n3. Run Defense Evaluation for post-attack robustness.\n\nStatus semantics:\nPASS: model is still disrupted before restoration attack.\nHELD: resistance remains after defense evaluation.\nBROKEN: detector recovered enough signal; increase strength.</string>
     <string name="help_dialog_positive">I understand</string>
 
-</resources>
 
+    <string name="share_auto_save_noise_label">Haan Ghil Muulnaat: Auto-save noising</string>
+    <string name="share_auto_save_blur_label">Haan Ghil Muulnaat: Auto-save blurring</string>
+    <string name="share_auto_save_solid_label">Haan Ghil Muulnaat: Auto-save solid fill</string>
+    <string name="hiding_method_label">Hiding method</string>
+    <string name="hiding_method_select">Select hiding method</string>
+    <string name="hiding_method_noise">Noising</string>
+    <string name="hiding_method_blur">Blurring</string>
+    <string name="hiding_method_solid_fill">Solid fill</string>
+    <string name="solid_color_hint">#RRGGBB</string>
+    <string name="solid_color_default">#000000</string>
+    <string name="toast_select_hiding_method">Select a hiding method first</string>
+    <string name="toast_invalid_solid_color">Enter color as #RRGGBB</string>
+    <string name="toast_solid_fill_no_evaluation">Solid fill does not run defense evaluation</string>
+    <string name="recommended_strength_waiting_for_method">Optimal Strength: select Noising or Blurring to scan.</string>
+    <string name="recommended_strength_solid_fill">Solid Fill: no strength scan. Enter RGB and apply.</string>
+    <string name="search_progress_waiting_for_method">Select Noising or Blurring to start strength search.</string>
+    <string name="search_progress_solid_fill">Solid Fill applies the chosen RGB without strength search.</string>
+    <string name="result_image_loaded_scanning_for_method">Image loaded. Scanning %1$s strength...</string>
+    <string name="result_scanning_optimal_for_method">Scanning optimal %1$s strength...</string>
+    <string name="result_auto_applying_optimal_for_method">Scan complete: %1$s strength %2$d found. Applying protection...</string>
+    <string name="result_running_recovery_for_method">Running %1$s evaluation...</string>
+    <string name="result_evaluation_complete_for_method">%1$s evaluation complete. Status: %2$s</string>
+    <string name="result_auto_evaluation_complete_for_method">%1$s flow complete at strength %2$d. Status: %3$s</string>
+    <string name="result_solid_fill_applied">Solid fill applied. Save protected image.</string>
+</resources>

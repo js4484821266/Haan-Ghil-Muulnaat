@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.app.AppCompatActivity
@@ -72,8 +71,12 @@ class MainActivity : AppCompatActivity() {
 internal class MainActivityState {
     var originalBitmap: Bitmap? = null
     var protectedBitmap: Bitmap? = null
+    var selectedMethod: HidingMethod? = null
     var optimalStrength: Int? = null
+    var noiseOptimalStrength: Int? = null
+    var blurOptimalStrength: Int? = null
     var lastAppliedStrength: Int? = null
+    var lastAppliedMethod: HidingMethod? = null
     var lastEvaluationStrength: Int? = null
     var pendingStoragePermissionAction: (() -> Unit)? = null
     var autoSaveStatusSubscription: Closeable? = null

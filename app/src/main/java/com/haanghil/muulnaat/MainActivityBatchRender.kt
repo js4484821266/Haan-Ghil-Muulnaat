@@ -12,6 +12,7 @@ internal fun MainActivity.renderBatchResult(
     loaded: Bitmap,
     protected: Bitmap,
     minStrength: Int,
+    config: HidingConfig,
     defenseReport: DefenseEvaluationReport?,
     saveResult: GallerySaveResult,
     itemNumber: Int,
@@ -19,22 +20,32 @@ internal fun MainActivity.renderBatchResult(
 ) {
     state.originalBitmap = loaded
     state.protectedBitmap = protected
-    state.optimalStrength = minStrength
     state.lastAppliedStrength = minStrength
-    binding.recommendedStrengthText.text = StrengthAdvisor.recommendationText(this, minStrength)
-    binding.strengthSeekBar.progress = minStrength
-    binding.strengthLabel.text = getString(R.string.noise_strength_value, minStrength)
-    showOptimalActionButton()
+    state.lastAppliedMethod = config.method
+    if (config.method.supportsStrengthSearch()) {
+        storeOptimalStrength(config.method, minStrength)
+        binding.recommendedStrengthText.text = StrengthAdvisor.recommendationText(this, minStrength)
+        binding.strengthSeekBar.progress = minStrength
+        binding.strengthLabel.text = getString(R.string.noise_strength_value, minStrength)
+        showOptimalActionButton()
+    } else {
+        binding.recommendedStrengthText.text = getString(R.string.recommended_strength_solid_fill)
+        showSearchProgress(getString(R.string.search_progress_solid_fill))
+    }
     renderProtectedImage(loaded, protected)
-    renderBatchDefense(defenseReport, minStrength)
+    renderBatchDefense(defenseReport, minStrength, config)
     binding.resultText.text = batchSaveMessage(saveResult, itemNumber, total)
 }
 
-private fun MainActivity.renderBatchDefense(defenseReport: DefenseEvaluationReport?, minStrength: Int) {
+private fun MainActivity.renderBatchDefense(
+    defenseReport: DefenseEvaluationReport?,
+    minStrength: Int,
+    config: HidingConfig,
+) {
     if (defenseReport == null) {
         renderRecoveredImage(null)
     } else {
-        renderRecoveredImage(defenseReport.attackedBitmap)
+        renderRecoveredImage(if (config.method == HidingMethod.NOISE) defenseReport.attackedBitmap else null)
         renderDefenseResult(defenseReport.status, defenseReport.evaluationMetrics, defenseReport.qualityMetrics)
         state.lastEvaluationStrength = minStrength
     }

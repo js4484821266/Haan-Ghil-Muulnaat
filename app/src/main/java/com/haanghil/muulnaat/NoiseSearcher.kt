@@ -86,21 +86,24 @@ object NoiseSearcher {
         perturbationModule: PerturbationModule,
         defenseEvaluator: DefenseEvaluator,
         regions: List<FaceProtectionRegion>? = null,
+        config: HidingConfig = HidingConfig.noise(),
         lo: Int = 0,
         hi: Int = 100,
         onStep: ((SearchStep) -> Unit)? = null,
         shouldCancel: () -> Boolean = { false },
-    ): Int? =
-        findMinimumStrength(
+    ): Int? {
+        if (!config.method.supportsStrengthSearch()) return null
+        return findMinimumStrength(
             lo = lo,
             hi = hi,
             test = { strength ->
-                val protected = perturbationModule.applyProtection(original, strength, regions)
-                defenseEvaluator.evaluateAfterAttack(original, protected).status == ProtectionStatus.HELD
+                val protected = perturbationModule.applyProtection(original, strength, regions, config)
+                HidingEvaluation.passesSearch(original, protected, config, defenseEvaluator)
             },
             onStep = onStep,
             shouldCancel = shouldCancel,
         )
+    }
 
     /**
      * [NoiseEngine]과 [ModelProbe]로 테스트를 구성하는 편의 오버로드입니다.
@@ -109,19 +112,22 @@ object NoiseSearcher {
     fun findMinimumStrength(
         original: Bitmap,
         regions: List<FaceProtectionRegion>? = null,
+        config: HidingConfig = HidingConfig.noise(),
         lo: Int = 0,
         hi: Int = 100,
         onStep: ((SearchStep) -> Unit)? = null,
         shouldCancel: () -> Boolean = { false },
-    ): Int? =
-        findMinimumStrength(
+    ): Int? {
+        if (!config.method.supportsStrengthSearch()) return null
+        return findMinimumStrength(
             lo = lo,
             hi = hi,
             test = { strength ->
-                val protected = NoiseEngine.protect(original, strength, regions)
+                val protected = NoiseEngine.protect(original, strength, regions, config)
                 ModelProbe.evaluate(original, protected).passed
             },
             onStep = onStep,
             shouldCancel = shouldCancel,
         )
+    }
 }

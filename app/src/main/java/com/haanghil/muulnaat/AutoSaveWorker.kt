@@ -1,6 +1,5 @@
 package com.haanghil.muulnaat
 
-import android.net.Uri
 import kotlin.concurrent.thread
 
 /**
@@ -25,14 +24,14 @@ internal fun AutoSaveProtectionService.startWorker() {
  * 자동 저장 큐에서 URI 하나를 처리합니다.
  *
  * 비트맵 로드, 유지 가능한 강도 탐색, 보호본 생성, MediaStore 저장이 모두 성공해야
- * 저장된 항목으로 집계합니다.
+ * 저장된 항목으로 집계합니다. Solid Fill은 탐색 없이 기본 검정으로 저장합니다.
  */
-private fun AutoSaveProtectionService.processQueueItem(item: Uri) {
+private fun AutoSaveProtectionService.processQueueItem(item: AutoSaveQueueItem) {
     val itemNumber = completedCount() + 1
     val total = totalCount.coerceAtLeast(itemNumber)
     notifyLoading(itemNumber, total)
 
-    val loaded = ImageStore.loadBitmapFromUri(this, item)
+    val loaded = ImageStore.loadBitmapFromUri(this, item.uri)
     if (loaded == null) {
         skippedCount += 1
         notifySkippedLoad(itemNumber, total)
@@ -43,21 +42,24 @@ private fun AutoSaveProtectionService.processQueueItem(item: Uri) {
         return
     }
 
-    // 최소 강도 탐색과 갤러리 저장이 모두 성공한 뒤에만 저장 성공으로 셉니다.
-    val minStrength = findStrengthForItem(loaded, itemNumber, total)
+    val strength = if (item.config.method.supportsStrengthSearch()) {
+        findStrengthForItem(loaded, itemNumber, total, item.config)
+    } else {
+        0
+    }
     if (cancelRequested) {
         skippedCount += 1
         return
     }
-    if (minStrength == null) {
+    if (strength == null) {
         skippedCount += 1
         notifyNoStrength(itemNumber, total)
         return
     }
 
-    notifySaving(itemNumber, total, minStrength)
+    notifySaving(itemNumber, total, strength)
     val faceRegions = FaceRegionDetector.detectRegions(loaded)
-    val protected = perturbationModule.applyProtection(loaded, minStrength, faceRegions)
+    val protected = perturbationModule.applyProtection(loaded, strength, faceRegions, item.config)
     if (cancelRequested) {
         skippedCount += 1
         return
@@ -75,11 +77,13 @@ private fun AutoSaveProtectionService.findStrengthForItem(
     loaded: android.graphics.Bitmap,
     itemNumber: Int,
     total: Int,
+    config: HidingConfig,
 ): Int? {
     return StrengthAdvisor.findRecommendedStrength(
         original = loaded,
         perturbationModule = perturbationModule,
         defenseEvaluator = defenseEvaluator,
+        config = config,
         onStep = { step ->
             updateProgressNotification(
                 progress = completedCount(),

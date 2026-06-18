@@ -11,7 +11,7 @@ Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 얼굴 윤곽 또
 코드에서 확인되는 문제 정의는 다음과 같다.
 
 - [`FaceRegionDetector`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt)는 기기 안에서 ML Kit로 얼굴 bounding box와 가능한 얼굴 외곽 contour를 찾는다.
-- [`NoiseEngine`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)은 얼굴 contour 또는 bbox 타원 근사 마스크 영역에 보호 농도 기반 노이즈를 적용한다.
+- [`NoiseEngine`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)은 선택된 은닉 방법에 따라 noising, blurring, solid fill을 얼굴 contour 또는 bbox 타원 근사 마스크 영역에 적용한다.
 - [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)은 보호 이미지에 denoising, 2x upscaling, sharpening 성격의 복원 시뮬레이션을 적용한다.
 - [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)는 ML Kit face detection landmark/contour와 image labeling 결과를 이용해 얼굴 특징 억제와 라벨 변화량을 점수화한다.
 - [`RestorationAttackProbe`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)는 복원 시뮬레이션 뒤 평가 결과를 [`HELD`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt) 또는 [`BROKEN`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)으로 변환한다.
@@ -26,7 +26,7 @@ Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 얼굴 윤곽 또
 | [`MainActivityDefenseRender.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityDefenseRender.kt), [`MainActivityImageRender.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageRender.kt), [`MainActivityMetricMath.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityMetricMath.kt), [`MainActivityDialogs.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityDialogs.kt), [`MainActivityIntents.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityIntents.kt) | 메인 화면 보조 렌더링/계산/대화상자/intent 처리 | Medium | UI 파일이 한 덩어리로 비대해지지 않도록 분리 |
 | [`MainBindingAliases.kt`](app/src/main/java/com/haanghil/muulnaat/MainBindingAliases.kt), [`HeaderBindingAliases.kt`](app/src/main/java/com/haanghil/muulnaat/HeaderBindingAliases.kt), [`TechnicalBindingAliases.kt`](app/src/main/java/com/haanghil/muulnaat/TechnicalBindingAliases.kt) | 분리된 include layout의 ViewBinding 별칭 | Medium | Kotlin 호출부가 기존 `binding.*` 이름을 유지하도록 연결 |
 | [`AutoSaveProtectionService.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt), [`AutoSaveStart.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveStart.kt), [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt), [`AutoSaveWorkerProgress.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorkerProgress.kt), [`AutoSaveNotifications.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveNotifications.kt), [`AutoSaveFinish.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveFinish.kt), [`AutoSaveNotificationChannel.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveNotificationChannel.kt), [`AutoSaveIntentParsing.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveIntentParsing.kt), [`AutoSaveStatusStore.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveStatusStore.kt) | 공유 시트 기반 백그라운드 자동 보호/저장 처리 | High | service shell, start helper, worker, progress, notification, finish, 상태 전달을 분리 |
-| [`app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt), [`NoiseRegionMask.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseRegionMask.kt), [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | 얼굴 영역 감지와 edge-aware perturbation 생성 | High | ML Kit face contour를 우선 마스크로 쓰고, 없으면 bbox 타원 근사 마스크로 적용 |
+| [`app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt), [`NoiseRegionMask.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseRegionMask.kt), [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt), [`BlurEngine.kt`](app/src/main/java/com/haanghil/muulnaat/BlurEngine.kt), [`HidingMethod.kt`](app/src/main/java/com/haanghil/muulnaat/HidingMethod.kt) | 얼굴 영역 감지와 은닉 이미지 생성 | High | 같은 얼굴 마스크에 noising, blurring, solid fill 중 선택 적용 |
 | [`app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt) | 보호 농도 후보에서 최소 통과 농도 탐색 | High | `0,20,40,60,80` coarse 탐색 후 `81..100` dense 탐색 |
 | [`app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt) | 권장 보호 농도 탐색 래퍼와 UI 문구 생성 | Medium | [`NoiseSearcher`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)를 감싼 얇은 계층 |
 | [`ModelProbe.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt), [`ModelProbeEvaluator.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeEvaluator.kt), [`ModelProbeFeatures.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeFeatures.kt), [`ModelProbeScoring.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeScoring.kt), [`ModelProbeReportText.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeReportText.kt), [`ModelProbeResultFactory.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeResultFactory.kt) | ML Kit 얼굴 특징/라벨링 결과를 점수화 | High | face suppression, facial feature suppression, label shift, anti-detection score |
@@ -69,11 +69,16 @@ flowchart TD
     A[MainActivity 실행] --> B[갤러리 이미지 선택]
     B --> C[ImageStore.loadBitmapFromUri]
     C --> D[원본 이미지 표시 및 상태 초기화]
-    D --> E[StrengthAdvisor.findRecommendedStrength]
+    D --> S{은닉 방법 선택}
+    S -- Noising/Blurring --> E[StrengthAdvisor.findRecommendedStrength]
+    S -- Solid Fill --> G[NoiseEngine.applyProtection 얼굴 영역만]
     E --> R[FaceRegionDetector 얼굴 윤곽 영역 감지]
     R --> F[NoiseSearcher 보호 농도 후보 탐색]
     F --> G[NoiseEngine.applyProtection 얼굴 영역만]
-    G --> H[RestorationAttackProbe.evaluateAfterAttack]
+    G --> H{평가 방식}
+    H -- Noising --> H1[RestorationAttackProbe.evaluateAfterAttack]
+    H -- Blurring --> H2[ModelProbe 보호 이미지 특징 평가]
+    H -- Solid Fill --> O[보호 적용 완료 표시]
     H --> I{HELD strength 존재?}
     I -- 아니오 --> J[최적 농도 없음 표시]
     I -- 예 --> K[추천 농도 표시]
@@ -88,11 +93,11 @@ flowchart TD
 
 ### 공유 시트 자동 저장 흐름
 
-1. 다른 앱에서 이미지를 공유하면 [`ShareReadyToSaveActivity`](app/src/main/java/com/haanghil/muulnaat/ShareEntrypoints.kt) 또는 [`ShareAutoSaveActivity`](app/src/main/java/com/haanghil/muulnaat/ShareEntrypoints.kt)가 받는다.
+1. 다른 앱에서 이미지를 공유하면 [`ShareReadyToSaveActivity`](app/src/main/java/com/haanghil/muulnaat/ShareEntrypoints.kt) 또는 방법별 자동 저장 entrypoint인 `ShareAutoSaveNoiseActivity`, `ShareAutoSaveBlurActivity`, `ShareAutoSaveSolidFillActivity`가 받는다.
 2. [`ShareForwardingActivity`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt)가 [`sharedImageUris()`](app/src/main/java/com/haanghil/muulnaat/ShareIntentUris.kt)로 URI 목록을 만든다.
 3. 단일 ready-to-save는 [`MainActivity`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt)로 넘긴다.
 4. auto-save 또는 다중 이미지는 권한 확인 후 [`AutoSaveProtectionService.start()`](app/src/main/java/com/haanghil/muulnaat/AutoSaveStart.kt)로 foreground service를 시작한다.
-5. 서비스는 큐에 URI를 넣고 worker thread에서 이미지별로 로드, 최소 보호 농도 탐색, 보호 적용, 저장을 반복한다.
+5. 서비스는 큐에 URI와 `HidingConfig`를 함께 넣고 worker thread에서 이미지별로 로드, 방법별 탐색 또는 즉시 적용, 저장을 반복한다.
 6. 알림으로 진행 상황을 표시하고 cancel action을 처리한다.
 7. 앱이 열려 있으면 [`AutoSaveStatusStore`](app/src/main/java/com/haanghil/muulnaat/AutoSaveStatusStore.kt)가 같은 진행 문구를 [`MainActivity`](app/src/main/java/com/haanghil/muulnaat/MainActivity.kt)에 실시간 전달한다.
 
@@ -130,33 +135,33 @@ flowchart TD
 
 ### 보호 이미지 생성
 
-* 목적: 원본 이미지에서 얼굴 bbox와 가능한 외곽 contour를 찾고, contour 또는 타원 근사 마스크 영역에만 보호 농도 기반 perturbation을 적용해 보호 이미지를 만든다.
-* 관련 파일: [`FaceRegionDetector.kt`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt), [`NoiseRegionMask.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseRegionMask.kt), [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt), [`PipelineContracts.kt`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt), [`MainActivityProtectionFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityProtectionFlow.kt), [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt)
+* 목적: 원본 이미지에서 얼굴 bbox와 가능한 외곽 contour를 찾고, contour 또는 타원 근사 마스크 영역에만 선택한 은닉 방법을 적용해 보호 이미지를 만든다.
+* 관련 파일: [`FaceRegionDetector.kt`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt), [`NoiseRegionMask.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseRegionMask.kt), [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt), [`BlurEngine.kt`](app/src/main/java/com/haanghil/muulnaat/BlurEngine.kt), [`HidingMethod.kt`](app/src/main/java/com/haanghil/muulnaat/HidingMethod.kt), [`PipelineContracts.kt`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt), [`MainActivityProtectionFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityProtectionFlow.kt), [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt)
 * 주요 함수 또는 클래스: [`FaceRegionDetector.detectRegions`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt), [`NoiseRegionMask.build`](app/src/main/java/com/haanghil/muulnaat/NoiseRegionMask.kt), [`NoiseEngine.applyProtection`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt), [`PerturbationModule`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)
 * 입력: `Bitmap source`, `Int strength`, optional 얼굴 `FaceProtectionRegion` 목록
-* 처리: ML Kit face detection으로 bounding box와 가능한 contour를 얻고, contour가 있으면 polygon 마스크를, 없으면 bbox 안의 타원 마스크를 만든 뒤 해당 픽셀에만 edge-aware 채널별 노이즈를 적용한다.
+* 처리: ML Kit face detection으로 bounding box와 가능한 contour를 얻고, contour가 있으면 polygon 마스크를, 없으면 bbox 안의 타원 마스크를 만든다. Noising은 edge-aware 채널별 노이즈를, Blurring은 마스크 내부 box blur를, Solid Fill은 선택 RGB 단색 채우기를 적용한다.
 * 출력: 새 `Bitmap` 보호 이미지
 * 예외 또는 주의점: 모든 픽셀을 순회하므로 이미지 크기에 비례해 비용이 든다. 원본 alpha는 보존하지 않고 출력 alpha를 `0xFF`로 설정한다.
-* 내가 면접에서 설명해야 할 핵심: “사진 전체를 훼손하지 않고, 기기 안에서 감지한 얼굴 윤곽 또는 타원 근사 마스크에만 edge-aware perturbation을 적용하도록 구현했다.”
+* 내가 면접에서 설명해야 할 핵심: “사진 전체를 훼손하지 않고, 기기 안에서 감지한 얼굴 윤곽 또는 타원 근사 마스크에만 선택한 은닉 방법을 적용하도록 구현했다.”
 
-### 최소 보호 농도 탐색
+### 최소 보호 강도 탐색
 
 * 목적: 복원 후에도 방어 상태가 유지되는 최소 perturbation 농도를 찾는다.
 * 관련 파일: [`NoiseSearcher.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt), [`StrengthAdvisor.kt`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt), [`MainActivityImageFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt), [`MainActivityBatchSearch.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityBatchSearch.kt), [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt)
 * 주요 함수 또는 클래스: [`NoiseSearcher.findMinimumStrength`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt), [`StrengthAdvisor.findRecommendedStrength`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt), [`NoiseSearcher.SearchStep`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)
 * 입력: 원본 bitmap, perturbation module, defense evaluator, optional `onStep`, optional `shouldCancel`
-* 처리: `0, 20, 40, 60, 80` 후보를 먼저 이분 탐색하고, 여기서 통과 후보가 없으면 `81..100` 모든 정수를 이분 탐색한다. 실패 후보와 통과 후보가 후보 집합에서 인접하면 통과 쪽 후보를 최적 농도로 반환한다.
+* 처리: Noising과 Blurring은 `0, 20, 40, 60, 80` 후보를 먼저 이분 탐색하고, 여기서 통과 후보가 없으면 `81..100` 모든 정수를 이분 탐색한다. Noising은 복원 공격 후 HELD 기준, Blurring은 보호 이미지의 얼굴 특징 0개 기준이다. Solid Fill은 강도 탐색 대상이 아니다.
 * 출력: 최소 통과 농도 또는 `null`
 * 예외 또는 주의점: 후보 기반 탐색이므로 실제 연속값 최소가 아니라 후보 집합 안의 최소값이다.
 * 내가 면접에서 설명해야 할 핵심: “낮은 농도는 20단위로 빠르게 확인하고, 방어가 어려운 80 이상 구간은 모든 정수 후보를 확인해 최대 강도 근처의 빈틈을 줄였다.”
 
-### 복원 후 방어 평가
+### 방법별 평가
 
-* 목적: 보호 이미지가 denoising + 2x upscaling + sharpening 복원 시뮬레이션 뒤에도 눈, 눈썹, 코, 입 얼굴 특징 억제를 유지하는지 판단한다.
+* 목적: 선택한 은닉 방법에 맞게 얼굴 특징 억제 여부를 판단한다. Noising은 denoising + 2x upscaling + sharpening 복원 시뮬레이션 뒤까지 보고, Blurring은 보호 이미지 자체에서 얼굴 특징이 잡히는지만 보며, Solid Fill은 평가하지 않는다.
 * 관련 파일: [`RestorationAttackProbe.kt`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt), [`RedTeamEngine.kt`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt), [`ModelProbe.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt) 계열 파일, [`ImageMetrics.kt`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt), [`PipelineContracts.kt`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)
 * 주요 함수 또는 클래스: [`RestorationAttackProbe.evaluateAfterAttack`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt), [`RedTeamEngine.simulateAttack`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt), [`ModelProbe.evaluate`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt), [`ImageMetrics.evaluate`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt)
 * 입력: 원본 bitmap, 보호 bitmap
-* 처리: [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)으로 복원 시뮬레이션 bitmap을 만들고, [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)로 ML Kit 얼굴 landmark/contour와 라벨 결과를 점수화하며, [`ImageMetrics`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt)로 PSNR/MAD/edge delta를 계산한다.
+* 처리: Noising은 [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)으로 복원 시뮬레이션 bitmap을 만든 뒤 [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)와 [`ImageMetrics`](app/src/main/java/com/haanghil/muulnaat/ImageMetrics.kt)로 평가한다. Blurring은 복원 시뮬레이션 없이 보호 bitmap을 바로 `ModelProbe`에 넣고 얼굴 특징 수가 0인지 확인한다.
 * 출력: [`DefenseEvaluationReport`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)와 [`ProtectionStatus.HELD`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt) 또는 [`ProtectionStatus.BROKEN`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)
 * 예외 또는 주의점: [`ModelProbe.evaluate()`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)는 `Tasks.await()`를 사용하므로 UI thread에서 직접 호출하면 안 된다. [`MainActivityImageFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt), [`MainActivityProtectionFlow`](app/src/main/java/com/haanghil/muulnaat/MainActivityProtectionFlow.kt), [`AutoSaveWorker`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt)는 thread 안에서 호출한다.
 * 내가 면접에서 설명해야 할 핵심: “방어 평가는 보호 직후가 아니라 복원 시뮬레이션 이후의 얼굴 특징/라벨 신호를 기준으로 한다.”
@@ -187,7 +192,7 @@ flowchart TD
 
 * 목적: 다른 앱에서 보낸 이미지를 앱 화면 진입 없이 자동 보호/저장한다.
 * 관련 파일: [`ShareForwardingActivity.kt`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingActivity.kt), [`ShareEntrypoints.kt`](app/src/main/java/com/haanghil/muulnaat/ShareEntrypoints.kt), [`ShareIntentUris.kt`](app/src/main/java/com/haanghil/muulnaat/ShareIntentUris.kt), [`ShareForwardingPermissions.kt`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingPermissions.kt), [`ShareForwardingIntents.kt`](app/src/main/java/com/haanghil/muulnaat/ShareForwardingIntents.kt), [`ShareContract.kt`](app/src/main/java/com/haanghil/muulnaat/ShareContract.kt), [`AutoSaveProtectionService.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt), [`AutoSaveStart.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveStart.kt), [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt), [`AutoSaveWorkerProgress.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorkerProgress.kt), [`AutoSaveNotifications.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveNotifications.kt), [`AutoSaveStatusStore.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveStatusStore.kt), [`MainActivityAutoSaveStatus.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityAutoSaveStatus.kt), [`AutoSaveFinish.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveFinish.kt), [`AutoSaveIntentParsing.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveIntentParsing.kt), [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml)
-* 주요 함수 또는 클래스: [`ShareReadyToSaveActivity`](app/src/main/java/com/haanghil/muulnaat/ShareEntrypoints.kt), [`ShareAutoSaveActivity`](app/src/main/java/com/haanghil/muulnaat/ShareEntrypoints.kt), [`AutoSaveProtectionService.start`](app/src/main/java/com/haanghil/muulnaat/AutoSaveStart.kt), [`startWorker`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt), [`notifyItemSaved`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorkerProgress.kt), [`updateProgressNotification`](app/src/main/java/com/haanghil/muulnaat/AutoSaveNotifications.kt), [`AutoSaveStatusStore.publish`](app/src/main/java/com/haanghil/muulnaat/AutoSaveStatusStore.kt)
+* 주요 함수 또는 클래스: [`ShareReadyToSaveActivity`](app/src/main/java/com/haanghil/muulnaat/ShareEntrypoints.kt), `ShareAutoSaveNoiseActivity`, `ShareAutoSaveBlurActivity`, `ShareAutoSaveSolidFillActivity`, [`AutoSaveProtectionService.start`](app/src/main/java/com/haanghil/muulnaat/AutoSaveStart.kt), [`startWorker`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt), [`notifyItemSaved`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorkerProgress.kt), [`updateProgressNotification`](app/src/main/java/com/haanghil/muulnaat/AutoSaveNotifications.kt), [`AutoSaveStatusStore.publish`](app/src/main/java/com/haanghil/muulnaat/AutoSaveStatusStore.kt)
 * 입력: `ACTION_SEND`, `ACTION_SEND_MULTIPLE`, `ClipData`, URI list
 * 처리: 공유 URI 수집, 권한 요청, foreground service 시작, 큐 처리, 보호 농도 탐색, 보호 적용, 저장, notification progress 업데이트, 열린 앱 화면 진행 상태 동기화
 * 출력: 저장된 PNG, 진행/완료/취소 알림, MainActivity 진행 문구

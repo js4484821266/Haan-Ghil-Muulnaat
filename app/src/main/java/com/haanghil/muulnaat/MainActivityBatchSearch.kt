@@ -12,16 +12,18 @@ internal fun MainActivity.findBatchStrength(
     loaded: Bitmap,
     itemNumber: Int,
     total: Int,
+    config: HidingConfig,
 ): Int? {
     val minStrength = StrengthAdvisor.findRecommendedStrength(
         original = loaded,
         perturbationModule = perturbationModule,
         defenseEvaluator = defenseEvaluator,
+        config = config,
         onStep = { step -> runOnUiThread { renderBatchSearchStep(step) } },
     )
     if (minStrength == null) {
         runOnUiThread {
-            state.optimalStrength = null
+            storeOptimalStrength(config.method, null)
             binding.recommendedStrengthText.text = StrengthAdvisor.recommendationText(this, null)
             showSearchProgress(getString(R.string.result_scan_none))
             binding.resultText.text = getString(R.string.result_batch_item_scan_failed, itemNumber, total)

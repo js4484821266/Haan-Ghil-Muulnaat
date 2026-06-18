@@ -15,6 +15,7 @@ import android.widget.Toast
  */
 abstract class ShareForwardingActivity : Activity() {
     internal abstract val shareMode: String
+    internal abstract val autoSaveConfig: HidingConfig
     internal var pendingAutoSaveUris: List<Uri> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,7 +64,7 @@ abstract class ShareForwardingActivity : Activity() {
 
     internal fun startAutoSaveService(uris: List<Uri>) {
         if (uris.isNotEmpty()) {
-            AutoSaveProtectionService.start(this, uris)
+            AutoSaveProtectionService.start(this, uris, autoSaveConfig)
         }
         finish()
     }

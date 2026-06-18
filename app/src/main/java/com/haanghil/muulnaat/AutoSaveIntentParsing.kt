@@ -12,3 +12,12 @@ internal fun Intent.sharedUris(): List<Uri> {
         getParcelableArrayListExtra<Uri>(ShareContract.EXTRA_URIS).orEmpty()
     }
 }
+
+internal fun Intent.hidingConfigExtra(): HidingConfig {
+    val color = getIntExtra(ShareContract.EXTRA_SOLID_COLOR, HidingConfig.SOLID_FILL_DEFAULT_COLOR)
+    return when (getStringExtra(ShareContract.EXTRA_HIDING_METHOD)) {
+        ShareContract.METHOD_BLUR -> HidingConfig.blur()
+        ShareContract.METHOD_SOLID_FILL -> HidingConfig.solidFill(color)
+        else -> HidingConfig.noise()
+    }
+}

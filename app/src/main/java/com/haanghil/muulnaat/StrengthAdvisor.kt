@@ -16,9 +16,11 @@ object StrengthAdvisor {
         original: Bitmap,
         perturbationModule: PerturbationModule,
         defenseEvaluator: DefenseEvaluator,
+        config: HidingConfig = HidingConfig.noise(),
         onStep: ((NoiseSearcher.SearchStep) -> Unit)? = null,
         shouldCancel: () -> Boolean = { false },
     ): Int? {
+        if (!config.method.supportsStrengthSearch()) return null
         val faceRegions = FaceRegionDetector.detectRegions(original)
 
         return NoiseSearcher.findMinimumStrength(
@@ -26,6 +28,7 @@ object StrengthAdvisor {
             perturbationModule = perturbationModule,
             defenseEvaluator = defenseEvaluator,
             regions = faceRegions,
+            config = config,
             onStep = onStep,
             shouldCancel = shouldCancel,
         )

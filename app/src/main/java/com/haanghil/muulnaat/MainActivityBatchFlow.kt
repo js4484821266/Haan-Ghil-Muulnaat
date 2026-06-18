@@ -12,6 +12,8 @@ import kotlin.concurrent.thread
 internal fun MainActivity.processImageBatch(uris: List<Uri>) {
     if (uris.isEmpty()) return
 
+    val batchConfig = defaultBatchConfig()
+    val batchAutoEvaluate = binding.autoRecoverySwitch.isChecked
     resetBatchUi(uris.size)
     // 일괄 모드는 같은 보호 파이프라인을 재사용하되 진행 상태를 메인 화면에 보여 줍니다.
     thread {
@@ -19,7 +21,7 @@ internal fun MainActivity.processImageBatch(uris: List<Uri>) {
         var skippedCount = 0
 
         uris.forEachIndexed { index, uri ->
-            val result = processBatchItem(index + 1, uris.size, uri)
+            val result = processBatchItem(index + 1, uris.size, uri, batchConfig, batchAutoEvaluate)
             if (result) savedCount += 1 else skippedCount += 1
         }
 
@@ -41,7 +43,10 @@ private fun MainActivity.resetBatchUi(total: Int) {
     state.originalBitmap = null
     state.protectedBitmap = null
     state.optimalStrength = null
+    state.noiseOptimalStrength = null
+    state.blurOptimalStrength = null
     state.lastAppliedStrength = null
+    state.lastAppliedMethod = null
     state.lastEvaluationStrength = null
     clearResultCards()
     binding.noisyImage.setImageDrawable(null)
@@ -57,7 +62,13 @@ private fun MainActivity.resetBatchUi(total: Int) {
  *
  * 보호 PNG가 실제로 갤러리에 쓰였을 때만 true를 반환합니다.
  */
-private fun MainActivity.processBatchItem(itemNumber: Int, total: Int, uri: Uri): Boolean {
+private fun MainActivity.processBatchItem(
+    itemNumber: Int,
+    total: Int,
+    uri: Uri,
+    config: HidingConfig,
+    autoEvaluate: Boolean,
+): Boolean {
     runOnUiThread {
         binding.resultText.text = getString(R.string.result_batch_item_processing, itemNumber, total)
         showSearchProgress(getString(R.string.result_batch_item_processing, itemNumber, total))
@@ -77,18 +88,22 @@ private fun MainActivity.processBatchItem(itemNumber: Int, total: Int, uri: Uri)
         setBusy(true, getString(R.string.result_batch_item_processing, itemNumber, total))
     }
 
-    val minStrength = findBatchStrength(loaded, itemNumber, total) ?: return false
+    val minStrength = if (config.method.supportsStrengthSearch()) {
+        findBatchStrength(loaded, itemNumber, total, config) ?: return false
+    } else {
+        0
+    }
     val faceRegions = FaceRegionDetector.detectRegions(loaded)
-    val protected = perturbationModule.applyProtection(loaded, minStrength, faceRegions)
-    val defenseReport = if (binding.autoRecoverySwitch.isChecked) {
-        defenseEvaluator.evaluateAfterAttack(loaded, protected)
+    val protected = perturbationModule.applyProtection(loaded, minStrength, faceRegions, config)
+    val defenseReport = if (autoEvaluate) {
+        HidingEvaluation.evaluate(loaded, protected, config, defenseEvaluator)
     } else {
         null
     }
     val saveResult = saveImageToGallery(protected)
 
     runOnUiThread {
-        renderBatchResult(loaded, protected, minStrength, defenseReport, saveResult, itemNumber, total)
+        renderBatchResult(loaded, protected, minStrength, config, defenseReport, saveResult, itemNumber, total)
     }
     return saveResult.success
 }

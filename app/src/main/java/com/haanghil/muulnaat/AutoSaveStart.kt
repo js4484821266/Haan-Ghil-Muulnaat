@@ -10,13 +10,19 @@ import android.os.Build
  * 자동 저장 포그라운드 서비스를 시작하는 공개 헬퍼입니다.
  *
  * companion 확장으로 두면 기존 호출 형태인
- * `AutoSaveProtectionService.start(context, uris)`를 유지할 수 있습니다.
+ * `AutoSaveProtectionService.start(context, uris, config)`를 유지할 수 있습니다.
  */
-fun AutoSaveProtectionService.Companion.start(context: Context, uris: List<Uri>) {
+fun AutoSaveProtectionService.Companion.start(
+    context: Context,
+    uris: List<Uri>,
+    config: HidingConfig = HidingConfig.noise(),
+) {
     val intent = Intent(context, AutoSaveProtectionService::class.java).apply {
         action = ShareContract.ACTION_START_AUTO_SAVE
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         putParcelableArrayListExtra(ShareContract.EXTRA_URIS, ArrayList(uris))
+        putExtra(ShareContract.EXTRA_HIDING_METHOD, config.method.toShareValue())
+        putExtra(ShareContract.EXTRA_SOLID_COLOR, config.solidColor)
         if (uris.isNotEmpty()) {
             clipData = clipDataForAutoSave(context, uris)
         }
@@ -26,6 +32,12 @@ fun AutoSaveProtectionService.Companion.start(context: Context, uris: List<Uri>)
     } else {
         context.startService(intent)
     }
+}
+
+internal fun HidingMethod.toShareValue(): String = when (this) {
+    HidingMethod.NOISE -> ShareContract.METHOD_NOISE
+    HidingMethod.BLUR -> ShareContract.METHOD_BLUR
+    HidingMethod.SOLID_FILL -> ShareContract.METHOD_SOLID_FILL
 }
 
 private fun clipDataForAutoSave(context: Context, uris: List<Uri>): ClipData {
