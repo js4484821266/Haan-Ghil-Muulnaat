@@ -1,7 +1,6 @@
 package com.haanghil.muulnaat
 
 import android.graphics.Bitmap
-import android.graphics.Rect
 
 object NoiseSearcher {
     internal fun candidateStrengths(lo: Int, hi: Int): List<Int> {
@@ -86,7 +85,7 @@ object NoiseSearcher {
         original: Bitmap,
         perturbationModule: PerturbationModule,
         defenseEvaluator: DefenseEvaluator,
-        regions: List<Rect>? = null,
+        regions: List<FaceProtectionRegion>? = null,
         lo: Int = 0,
         hi: Int = 100,
         onStep: ((SearchStep) -> Unit)? = null,
@@ -109,7 +108,7 @@ object NoiseSearcher {
      */
     fun findMinimumStrength(
         original: Bitmap,
-        regions: List<Rect>? = null,
+        regions: List<FaceProtectionRegion>? = null,
         lo: Int = 0,
         hi: Int = 100,
         onStep: ((SearchStep) -> Unit)? = null,

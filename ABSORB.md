@@ -2,7 +2,7 @@
 
 ## 1. 프로젝트 한 문장 요약
 
-Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 얼굴 사각형 영역에 edge-aware perturbation을 적용하고, 로컬 denoising + 2x upscaling 복원 시뮬레이션 뒤에도 얼굴 특징 억제가 유지되는지 확인한 다음 보호 이미지를 갤러리에 저장하는 앱이다.
+Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 얼굴 윤곽 또는 타원형 근사 마스크 영역에 edge-aware perturbation을 적용하고, 로컬 denoising + 2x upscaling 복원 시뮬레이션 뒤에도 얼굴 특징 억제가 유지되는지 확인한 다음 보호 이미지를 갤러리에 저장하는 앱이다.
 
 ## 2. 프로젝트가 해결하려는 문제
 
@@ -10,8 +10,8 @@ Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 얼굴 사각형 
 
 코드에서 확인되는 문제 정의는 다음과 같다.
 
-- [`FaceRegionDetector`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt)는 기기 안에서 ML Kit로 얼굴 bounding box를 찾는다.
-- [`NoiseEngine`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)은 얼굴 사각형 영역에 보호 농도 기반 노이즈를 적용한다.
+- [`FaceRegionDetector`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt)는 기기 안에서 ML Kit로 얼굴 bounding box와 가능한 얼굴 외곽 contour를 찾는다.
+- [`NoiseEngine`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)은 얼굴 contour 또는 bbox 타원 근사 마스크 영역에 보호 농도 기반 노이즈를 적용한다.
 - [`RedTeamEngine`](app/src/main/java/com/haanghil/muulnaat/RedTeamEngine.kt)은 보호 이미지에 denoising, 2x upscaling, sharpening 성격의 복원 시뮬레이션을 적용한다.
 - [`ModelProbe`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt)는 ML Kit face detection landmark/contour와 image labeling 결과를 이용해 얼굴 특징 억제와 라벨 변화량을 점수화한다.
 - [`RestorationAttackProbe`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)는 복원 시뮬레이션 뒤 평가 결과를 [`HELD`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt) 또는 [`BROKEN`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)으로 변환한다.
@@ -26,7 +26,7 @@ Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 얼굴 사각형 
 | [`MainActivityDefenseRender.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityDefenseRender.kt), [`MainActivityImageRender.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageRender.kt), [`MainActivityMetricMath.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityMetricMath.kt), [`MainActivityDialogs.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityDialogs.kt), [`MainActivityIntents.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityIntents.kt) | 메인 화면 보조 렌더링/계산/대화상자/intent 처리 | Medium | UI 파일이 한 덩어리로 비대해지지 않도록 분리 |
 | [`MainBindingAliases.kt`](app/src/main/java/com/haanghil/muulnaat/MainBindingAliases.kt), [`HeaderBindingAliases.kt`](app/src/main/java/com/haanghil/muulnaat/HeaderBindingAliases.kt), [`TechnicalBindingAliases.kt`](app/src/main/java/com/haanghil/muulnaat/TechnicalBindingAliases.kt) | 분리된 include layout의 ViewBinding 별칭 | Medium | Kotlin 호출부가 기존 `binding.*` 이름을 유지하도록 연결 |
 | [`AutoSaveProtectionService.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveProtectionService.kt), [`AutoSaveStart.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveStart.kt), [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt), [`AutoSaveWorkerProgress.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorkerProgress.kt), [`AutoSaveNotifications.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveNotifications.kt), [`AutoSaveFinish.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveFinish.kt), [`AutoSaveNotificationChannel.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveNotificationChannel.kt), [`AutoSaveIntentParsing.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveIntentParsing.kt), [`AutoSaveStatusStore.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveStatusStore.kt) | 공유 시트 기반 백그라운드 자동 보호/저장 처리 | High | service shell, start helper, worker, progress, notification, finish, 상태 전달을 분리 |
-| [`app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt), [`NoiseRegionMask.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseRegionMask.kt), [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | 얼굴 영역 감지와 edge-aware perturbation 생성 | High | ML Kit face bbox를 마스크로 바꾼 뒤 얼굴 사각형 안에만 적용 |
+| [`app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt), [`NoiseRegionMask.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseRegionMask.kt), [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt) | 얼굴 영역 감지와 edge-aware perturbation 생성 | High | ML Kit face contour를 우선 마스크로 쓰고, 없으면 bbox 타원 근사 마스크로 적용 |
 | [`app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt) | 보호 농도 후보에서 최소 통과 농도 탐색 | High | `0,20,40,60,80` coarse 탐색 후 `81..100` dense 탐색 |
 | [`app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt) | 권장 보호 농도 탐색 래퍼와 UI 문구 생성 | Medium | [`NoiseSearcher`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)를 감싼 얇은 계층 |
 | [`ModelProbe.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbe.kt), [`ModelProbeEvaluator.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeEvaluator.kt), [`ModelProbeFeatures.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeFeatures.kt), [`ModelProbeScoring.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeScoring.kt), [`ModelProbeReportText.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeReportText.kt), [`ModelProbeResultFactory.kt`](app/src/main/java/com/haanghil/muulnaat/ModelProbeResultFactory.kt) | ML Kit 얼굴 특징/라벨링 결과를 점수화 | High | face suppression, facial feature suppression, label shift, anti-detection score |
@@ -58,9 +58,9 @@ Haan Ghil Muulnaat는 Android에서 인물 사진을 불러와 얼굴 사각형 
 3. [`ImageStore.loadBitmapFromUri()`](app/src/main/java/com/haanghil/muulnaat/ImageStoreLoad.kt)가 URI에서 비트맵을 읽고, 큰 이미지는 최대 변 기준 1280px 근처로 downsample하며, EXIF 방향을 보정한다.
 4. [`prepareLoadedImage()`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt)가 원본 이미지를 화면에 표시하고 이전 결과를 초기화한다.
 5. [`startOptimalStrengthFlow()`](app/src/main/java/com/haanghil/muulnaat/MainActivityImageFlow.kt)가 백그라운드 thread에서 [`StrengthAdvisor.findRecommendedStrength()`](app/src/main/java/com/haanghil/muulnaat/StrengthAdvisor.kt)를 호출한다.
-6. [`FaceRegionDetector.detectRegions()`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt)가 원본에서 얼굴 사각형을 찾는다.
+6. [`FaceRegionDetector.detectRegions()`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt)가 원본에서 얼굴 bbox와 가능한 얼굴 외곽 contour를 찾는다.
 7. [`NoiseSearcher.findMinimumStrength()`](app/src/main/java/com/haanghil/muulnaat/NoiseSearcher.kt)가 보호 농도 후보를 검사한다.
-8. 각 후보마다 [`NoiseEngine.applyProtection()`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)으로 얼굴 사각형 안에만 보호 이미지를 만들고 [`RestorationAttackProbe.evaluateAfterAttack()`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)으로 denoising + 2x upscaling 후 얼굴 특징 억제를 평가한다.
+8. 각 후보마다 [`NoiseEngine.applyProtection()`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt)으로 얼굴 contour 또는 타원 근사 마스크 안에만 보호 이미지를 만들고 [`RestorationAttackProbe.evaluateAfterAttack()`](app/src/main/java/com/haanghil/muulnaat/RestorationAttackProbe.kt)으로 denoising + 2x upscaling 후 얼굴 특징 억제를 평가한다.
 9. 최소 [`HELD`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt) 보호 농도가 있으면 UI에 추천값을 표시하고, auto recovery 설정에 따라 보호 적용과 평가를 이어서 실행한다.
 10. 사용자가 저장 버튼을 누르면 [`ImageStore.saveImageToGallery()`](app/src/main/java/com/haanghil/muulnaat/ImageStoreSave.kt)가 PNG를 MediaStore에 저장한다.
 
@@ -70,7 +70,7 @@ flowchart TD
     B --> C[ImageStore.loadBitmapFromUri]
     C --> D[원본 이미지 표시 및 상태 초기화]
     D --> E[StrengthAdvisor.findRecommendedStrength]
-    E --> R[FaceRegionDetector 얼굴 사각형 감지]
+    E --> R[FaceRegionDetector 얼굴 윤곽 영역 감지]
     R --> F[NoiseSearcher 보호 농도 후보 탐색]
     F --> G[NoiseEngine.applyProtection 얼굴 영역만]
     G --> H[RestorationAttackProbe.evaluateAfterAttack]
@@ -107,7 +107,7 @@ flowchart TD
     G --> H[URI 큐 처리]
     H --> I[ImageStore.loadBitmapFromUri]
     I --> J[StrengthAdvisor.findRecommendedStrength]
-    J --> R[FaceRegionDetector 얼굴 사각형 감지]
+    J --> R[FaceRegionDetector 얼굴 윤곽 영역 감지]
     R --> K[NoiseEngine.applyProtection 얼굴 영역만]
     K --> L[ImageStore.saveImageToGallery]
     L --> M[진행/완료 알림]
@@ -130,14 +130,14 @@ flowchart TD
 
 ### 보호 이미지 생성
 
-* 목적: 원본 이미지에서 얼굴 사각형을 찾고, 해당 영역에만 보호 농도 기반 perturbation을 적용해 보호 이미지를 만든다.
+* 목적: 원본 이미지에서 얼굴 bbox와 가능한 외곽 contour를 찾고, contour 또는 타원 근사 마스크 영역에만 보호 농도 기반 perturbation을 적용해 보호 이미지를 만든다.
 * 관련 파일: [`FaceRegionDetector.kt`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt), [`NoiseRegionMask.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseRegionMask.kt), [`NoiseEngine.kt`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt), [`PipelineContracts.kt`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt), [`MainActivityProtectionFlow.kt`](app/src/main/java/com/haanghil/muulnaat/MainActivityProtectionFlow.kt), [`AutoSaveWorker.kt`](app/src/main/java/com/haanghil/muulnaat/AutoSaveWorker.kt)
 * 주요 함수 또는 클래스: [`FaceRegionDetector.detectRegions`](app/src/main/java/com/haanghil/muulnaat/FaceRegionDetector.kt), [`NoiseRegionMask.build`](app/src/main/java/com/haanghil/muulnaat/NoiseRegionMask.kt), [`NoiseEngine.applyProtection`](app/src/main/java/com/haanghil/muulnaat/NoiseEngine.kt), [`PerturbationModule`](app/src/main/java/com/haanghil/muulnaat/PipelineContracts.kt)
-* 입력: `Bitmap source`, `Int strength`, optional 얼굴 `Rect` 목록
-* 처리: ML Kit face detection으로 bounding box를 얻고, 보호 농도를 허용 범위로 제한한 뒤 얼굴 사각형 안에서만 edge-aware 채널별 노이즈를 적용한다.
+* 입력: `Bitmap source`, `Int strength`, optional 얼굴 `FaceProtectionRegion` 목록
+* 처리: ML Kit face detection으로 bounding box와 가능한 contour를 얻고, contour가 있으면 polygon 마스크를, 없으면 bbox 안의 타원 마스크를 만든 뒤 해당 픽셀에만 edge-aware 채널별 노이즈를 적용한다.
 * 출력: 새 `Bitmap` 보호 이미지
 * 예외 또는 주의점: 모든 픽셀을 순회하므로 이미지 크기에 비례해 비용이 든다. 원본 alpha는 보존하지 않고 출력 alpha를 `0xFF`로 설정한다.
-* 내가 면접에서 설명해야 할 핵심: “사진 전체를 훼손하지 않고, 기기 안에서 감지한 얼굴 사각형에만 edge-aware perturbation을 적용하도록 구현했다.”
+* 내가 면접에서 설명해야 할 핵심: “사진 전체를 훼손하지 않고, 기기 안에서 감지한 얼굴 윤곽 또는 타원 근사 마스크에만 edge-aware perturbation을 적용하도록 구현했다.”
 
 ### 최소 보호 농도 탐색
 

@@ -1,7 +1,6 @@
 package com.haanghil.muulnaat
 
 import android.graphics.Bitmap
-import android.graphics.Rect
 
 enum class ProtectionStatus {
     PASS,
@@ -35,7 +34,7 @@ data class DefenseEvaluationReport(
 )
 
 interface PerturbationModule {
-    fun applyProtection(source: Bitmap, strength: Int, regions: List<Rect>? = null): Bitmap
+    fun applyProtection(source: Bitmap, strength: Int, regions: List<FaceProtectionRegion>? = null): Bitmap
 }
 
 interface DefenseEvaluator {

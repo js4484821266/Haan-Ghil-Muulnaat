@@ -1,7 +1,6 @@
 package com.haanghil.muulnaat
 
 import android.graphics.Bitmap
-import android.graphics.Rect
 import androidx.core.graphics.createBitmap
 import kotlin.math.abs
 import kotlin.math.max
@@ -16,7 +15,7 @@ object NoiseEngine : PerturbationModule {
     private const val NOISE_BASE = 2f
     private const val NOISE_STRENGTH_MULTIPLIER = 2.5f
 
-    override fun applyProtection(source: Bitmap, strength: Int, regions: List<Rect>?): Bitmap {
+    override fun applyProtection(source: Bitmap, strength: Int, regions: List<FaceProtectionRegion>?): Bitmap {
         val safeStrength = strength.coerceIn(0, 100)
         val width = source.width
         val height = source.height
@@ -68,7 +67,7 @@ object NoiseEngine : PerturbationModule {
         }
     }
 
-    fun protect(source: Bitmap, strength: Int, regions: List<Rect>? = null): Bitmap =
+    fun protect(source: Bitmap, strength: Int, regions: List<FaceProtectionRegion>? = null): Bitmap =
         applyProtection(source, strength, regions)
 
     private fun buildEdgeMap(pixels: IntArray, width: Int, height: Int): FloatArray {
